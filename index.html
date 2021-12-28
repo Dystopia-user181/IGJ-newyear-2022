@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>idc</title>
+	<script src="js/lib/vue.js"></script>
+	<script src="js/lib/break_infinity.js"></script>
+	<script src="js/lib/useful_funcs.js"></script>
+	<script src="js/lib/noise.js"></script>
+	<script src="js/core/mobile.js"></script>
+	<script src="js/core/player.js"></script>
+	<script src="js/core/map.js"></script>
+	<script src="js/core/game_loop.js"></script>
+	<script src="js/lib/notifier.js"></script>
+	<script src="js/lib/modals.js"></script>
+	<script src="js/core/buildings.js"></script>
+	<script src="js/core/menus.js"></script>
+	<script src="js/core/canvas.js"></script>
+	<script src="js/core/controls.js"></script>
+	<script src="js/lib/number_formatting.js"></script>
+	<script src="js/vue/app.js"></script>
+	<script src="js/core/load.js"></script>
+	<link rel="stylesheet" type="text/css" href="styles.css"/>
+
+	<link rel="stylesheet" type="text/css" href="stylesheets/Defaults.css"/>
+	<link rel="stylesheet" type="text/css" href="stylesheets/Modals.css"/>
+	<link rel="stylesheet" type="text/css" href="stylesheets/Notifier.css"/>
+	<link rel="stylesheet" type="text/css" href="stylesheets/Dark.css"/>
+	<link rel="stylesheet" type="text/css" href="stylesheets/Iosevka.css"/>
+
+	<meta charset="utf-8"/>
+</head>
+<body onload="load()">
+	<div id="app" style="height: 100%">
+		<notifier-container></notifier-container>
+		<div id="other-text">
+			<span v-if="false">Loading game... (May take a while)</span>
+			<top-text></top-text>
+		</div>
+		<div id="c-container">
+			<attributes></attributes>
+			<canvas id="c" class="c" :style="{
+				filter: 'grayscale(' + (controls.nightvision ? 0.8 : 0) +')'
+			}"></canvas>
+			<canvas id="c1" class="c"></canvas>
+			<canvas id="c2" class="c"></canvas>
+		</div>
+		<modal></modal>
+		<div v-if="Modal.showing" style="height: 100%; width: 100%;
+		position: absolute; z-index: 12; top: 0; left: 0;
+		background: #1119"></div>
+		<mobile-controls></mobile-controls>
+	</div>
+</body>
+</html>

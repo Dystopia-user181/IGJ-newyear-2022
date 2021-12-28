@@ -1,0 +1,381 @@
+:root {
+	--bg1: #171411;
+	--bg2: #17141188;
+	--c1: #fff;
+	--c2: #fff8;
+
+	--c-shards: #1bf;
+	--c-magic: #cc66ee;
+
+	--c-power: #ff0;
+	--c-health: #f00;
+	--c-meat: #ca5010;
+}
+
+@font-face {
+	font-family: 'Iosevka Term SS08 Web';
+	font-weight: 200;
+	font-style: normal;
+	src: url("fonts/iosevka-term-ss08-extralight.woff") format("woff")
+}
+@font-face {
+	font-family: 'Iosevka Term SS08 Web';
+	font-weight: 200;
+	font-style: italic;
+	src: url("fonts/iosevka-term-ss08-extralightitalic.woff") format("woff")
+}
+@font-face {
+	font-family: 'Iosevka Term SS08 Web';
+	font-weight: 400;
+	font-style: normal;
+	src: url("fonts/iosevka-term-ss08-regular.woff") format("woff")
+}
+@font-face {
+	font-family: 'Iosevka Term SS08 Web';
+	font-weight: 400;
+	font-style: italic;
+	src: url("fonts/iosevka-term-ss08-italic.woff") format("woff")
+}
+@font-face {
+	font-family: 'Iosevka Term SS08 Web';
+	font-weight: 600;
+	font-style: normal;
+	src: url("fonts/iosevka-term-ss08-semibold.woff") format("woff")
+}
+@font-face {
+	font-family: 'Iosevka Term SS08 Web';
+	font-weight: 600;
+	font-style: italic;
+	src: url("fonts/iosevka-term-ss08-semibolditalic.woff") format("woff")
+}
+@font-face {
+	font-family: 'Iosevka Term SS08 Web';
+	font-weight: 800;
+	font-style: normal;
+	src: url("fonts/iosevka-term-ss08-extrabold.woff") format("woff")
+}
+@font-face {
+	font-family: 'Iosevka Term SS08 Web';
+	font-weight: 800;
+	font-style: italic;
+	src: url("fonts/iosevka-term-ss08-extrabolditalic.woff") format("woff")
+}
+
+* {
+	color: var(--c1);
+	font: 15px "Iosevka Term SS08 Web";
+	user-select: none;
+	cursor: inherit;
+	font-size: inherit;
+}
+h1 {
+	font-size: 30px;
+	margin: 5px;
+}
+b {
+	font-weight: 800;
+}
+html {
+	background-color: var(--bg1);
+	margin: 0;
+	padding: 0;
+	position: fixed;
+	cursor: default;
+}
+body {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	position: fixed;
+}
+button {
+	background-color: var(--bg1);
+	border: 2px solid;
+	cursor: pointer;
+	outline: none;
+}
+.mid {
+	vertical-align: middle;
+}
+.single-button {
+	height: 30px;
+	width: 30px;
+	vertical-align: middle;
+}
+.med-button, .mobile {
+	height: 40px;
+	width: 50px;
+	vertical-align: middle;
+}
+.mobile {
+	font-size: 24px;
+	margin: 2px;
+}
+.mobile.fulltxt {
+	font-size: 18px;
+}
+.sub {
+	opacity: 0.7;
+	font-style: italic;
+}
+
+.notifier {
+	border: 2px solid;
+	border-radius: 3px;
+	position: absolute;
+	bottom: 100%;
+	height: 40px;
+	width: 160px;
+	padding: 0 5px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: var(--bg1);
+	z-index: 20;
+}
+.notifier-container {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	width: 172px;
+}
+
+.modal {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	height: 400px;
+	width: 600px;
+	z-index: 13;
+	background-color: var(--bg1);
+	border: 2px solid;
+}
+.modal-top {
+	text-align: left;
+	font-size: 30px;
+	height: 46px;
+	width: 100%;
+	border-bottom: 2px solid #fff;
+	display: flex;
+	justify-content: left;
+	align-items: center;
+}
+.modal-top > * {
+	margin: 0;
+}
+
+.option {
+	width: 180px;
+	height: 60px;
+	font-size: 18px;
+	vertical-align: top;
+	margin: 5px 0;
+}
+
+#other-text {
+	border: 2px solid;
+	height: 90px;
+	padding: 5px;
+}
+#c-container {
+	margin-top: 4px;
+	width: calc(100% - 4px);
+	border: 2px solid;
+	position: relative;
+	height: calc(100% - 113px);
+}
+.c {
+	position: absolute;
+}
+
+.building-segment {
+	border-bottom: 2px dashed var(--c2);
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	cursor: pointer;
+	height: 60px;
+	font-size: 15px;
+}
+.research-segment {
+	border-bottom: 2px dashed var(--c2);
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	height: 100px;
+	padding: 0 5px;
+}
+.locked {
+	opacity: 0.5;
+	cursor: not-allowed !important;
+}
+
+
+/* Currencies */
+.curr {
+	font-size: 20px;
+	vertical-align: middle;
+	position: relative;
+}
+.attr {
+	display: inline-block;
+	font-size: 30px;
+	vertical-align: middle;
+	width: 30px;
+	text-align: center;
+}
+
+
+.shards {
+	display: inline-block;
+	height: 0px;
+	color: var(--c-shards);
+	font-size: 24px;
+	bottom: 20px;
+}
+.magic {
+	color: var(--c-magic);
+	bottom: 5px;
+}
+
+.power {
+	background: url(images/power.png) center;
+	display: inline-block;
+	vertical-align: middle;
+}
+.power.curr {
+	background-size: 20px 20px;
+	height: 20px;
+	width: 20px;
+}
+.power.attr {
+	background-size: 30px 30px;
+	height: 30px;
+}
+.health {
+	background: url(images/heart.png) center;
+	display: inline-block;
+	vertical-align: middle;
+}
+.health.curr {
+	background-size: 20px 20px;
+	height: 20px;
+	width: 20px;
+}
+.health.attr {
+	background-size: 30px 30px;
+	height: 30px;
+}
+.healthbg {
+	background-color: var(--c-health);
+}
+.food {
+	color: var(--c-meat);
+	bottom: 0px;
+}
+.meatbg {
+	background-color: var(--c-meat);
+}
+
+#attr-container {
+	background: var(--bg2);
+	border: solid var(--c1);
+	border-width: 0 2px 2px 0;
+	padding: 7px;
+	position: absolute;
+	z-index: 11;
+	border-radius: 0 0 10px 0;
+}
+.bar-background {
+	display: inline-block;
+	background: #fff4;
+	height: 35px;
+	width: 200px;
+	vertical-align: middle;
+	border-radius: 3px;
+}
+.bar-foreground {
+	display: inline-block;
+	height: 35px;
+	border-radius: 3px;
+}
+
+
+.buildingImg {
+	font-size: 40px;
+	transform: scale(1.4, 1);
+	display: inline-block;
+}
+
+/* Menu stuff */
+.sector-select {
+	background-color: var(--c2);
+	height: 50px;
+	width: 50px;
+	margin: 2px;
+	display: inline-block;
+	vertical-align: middle;
+}
+.sector-select.selected {
+	background-color: #f008;
+}
+
+/* Magic */
+
+.enchant {
+	width: 200px;
+	height: 150px;
+	margin: 2px;
+	font-size: 15px;
+	display: inline-flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	vertical-align: middle;
+}
+.spell {
+	width: 160px;
+	height: 160px;
+	margin: 2px;
+	font-size: 15px;
+	display: inline-flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	vertical-align: middle;
+}
+.bought {
+	background-color: #47005a;
+	cursor: default !important;
+}
+.spell.bought {
+	color: #ffa3d1;
+}
+.spell.bought > * {
+	color: #ffa3d1;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+	width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+	background: var(--bg1);
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+	background: var(--c2); 
+	border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+	background: #fffa; 
+}

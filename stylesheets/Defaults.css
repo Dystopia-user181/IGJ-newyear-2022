@@ -1,0 +1,71 @@
+* {
+	transition: all 0.3s linear;
+	color: inherit;
+	font-family: var(--font);
+	touch-action: manipulation;
+}
+input {
+	background: var(--b-1);
+	color: var(--c-1);
+}
+html {
+	margin: 0;
+	overflow-x: hidden;
+}
+body {
+	background: var(--bg-1);
+	color: var(--c-1);
+	height: 100vh;
+	width: 100vw;
+	margin: 0;
+}
+#app {
+	height: 100vh;
+}
+
+button {
+	border: 2px solid;
+	background: var(--bg-1);
+	outline: none;
+	padding: 2px 8px;
+	margin: 2px;
+	font-size: 14px;
+}
+button:hover {
+	border: 2px solid #fb7;
+	box-shadow: 0px 0px 7px 1px #fb7;
+}
+button:active {
+	background: var(--bg-3);
+}
+button:disabled, .disabled {
+	opacity: 0.5;
+}
+select {
+	background: var(--bg-1) !important;
+}
+
+.tab {
+	padding: 5px;
+	background: var(--bg-2);
+	transition: none;
+	display: flex;
+	justify-content: center;
+}
+.tab-comp {
+	width: 100%;
+	text-align: left;
+}
+
+.optionsbtn {
+	width: 200px;
+	height: 100px;
+	margin: 5px;
+	font-size: 18px;
+}
+
+.bigbtn {
+	min-width: 200px;
+	min-height: 40px;
+	padding: 10px 30px;
+}

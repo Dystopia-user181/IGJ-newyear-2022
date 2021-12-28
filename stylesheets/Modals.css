@@ -1,0 +1,49 @@
+.modal {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	height: 400px;
+	width: 600px;
+	z-index: 13;
+	background-color: var(--bg-1);
+	border: 2px solid;
+}
+.modal-bg {
+	height: 100%;
+	width: 100%;
+	position: absolute;
+	z-index: 12;
+	top: 0;
+	left: 0;
+	background: #0009;
+}
+.modal-top {
+	text-align: left;
+	font-size: 30px;
+	height: 46px;
+	width: 100%;
+	border-bottom: 2px solid #fff;
+	display: flex;
+	justify-content: left;
+	align-items: center;
+}
+.modal-top > * {
+	margin: 0;
+}
+.modal-body {
+	text-align: center;
+	padding: 10px;
+}
+.modal-close {
+	border-right: 2px solid var(--c-1);
+	height: 40px;
+	position: relative;
+	width: 40px;
+}
+.cross-comp {
+	position: absolute;
+	width: 30px; 
+	height: 5px;
+	background-color: var(--c-1);
+}
