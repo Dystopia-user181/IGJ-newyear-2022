@@ -139,7 +139,7 @@
       if (value === undefined) {
         this.m = 0;
         this.e = 0;
-      } else if (value instanceof Decimal) {
+      } else if (typeof value == "object") {
         this.fromDecimal(value);
       } else if (typeof value === "number") {
         this.fromNumber(value);
@@ -612,8 +612,8 @@
     };
 
     Decimal.prototype.fromDecimal = function (value) {
-      this.m = value.m;
-      this.e = value.e;
+      this.m = value.mantissa;
+      this.e = value.exponent;
       return this;
     };
 

@@ -1,35 +1,55 @@
-let notifiers = [];
 let Notifier = {
 	load() {
 		Vue.component("notifier", {
-			props: ["text", "time", "id"],
+			props: ["notifier", "id"],
 			data: () => { return {
-				tick: player.time,
 				Math,
-				notifiers
+				notifiers: Notifier.notifiers,
+				console,
+				Vue
 			}},
-			template: `<div class="notifier" :style="{
-				transform: 'translate(0, ' + Math.min(Math.sin((tick.thisTick - time)/3000 * Math.PI)*100, 40) + 'px)'
-			}" @click="notifiers.splice(id, 1)">
-				<span v-html="text" style="text-align: center;"></span>
+			template: `<div v-if="notifier" class="notifier" @click="Vue.set(notifiers, id, false);" :style="[notifier.style,
+			{top: ((notifiers.length - id)*47 - 43) + 'px'}]">
+				<span v-html="notifier.text" style="text-align: center;"></span>
 			</div>`
 		})
 		Vue.component("notifier-container", {
 			data: () => { return {
-				notifiers
+				Notifier
 			}},
 			template: `<div class="notifier-container">
-				<notifier v-for="(notifier, id) in notifiers" :text="notifier.text" :time="notifier.time" :id="id"></notifier>
+				<notifier v-for="(notifier, id) in Notifier.notifiers" :notifier="notifier" :id="id" :key="notifier.key"></notifier>
 			</div>`
 		})
 
 		new Updater(diff => {
+			let notifiers = Notifier.notifiers;
 			while (notifiers.length && player.time.thisTick - notifiers[notifiers.length - 1].time > 3000) {
 				notifiers.pop();
 			}
 		});
 	},
-	notify(text) {
-		notifiers.push({text, time: new Date().getTime()})
+	notify(text, style={}) {
+		Notifier.notifiers.push({text, time: new Date().getTime(), key: Notifier.count, style})
+		Notifier.count++;
+	},
+	success(text) {
+		this.notify(text, {'background-color': '#020', color: '#afa'});
+	},
+	error(text) {
+		this.notify(text, {'background-color': '#200', color: '#faa'});
+	},
+	notifiers: [],
+	count: 0,
+	update() {
+		let tick = Date.now();
+		let iter = 0;
+		while (iter < Notifier.notifiers.length && (!Notifier.notifiers[iter] || tick - Notifier.notifiers[iter].time > 3000)) {
+			Vue.set(Notifier.notifiers, iter, false);
+			iter++;
+		}
+		if (Notifier.notifiers.filter(_ => !_).length == Notifier.notifiers.length) {
+			Notifier.notifiers.splice(0, Notifier.notifiers.length)
+		}
 	}
 }

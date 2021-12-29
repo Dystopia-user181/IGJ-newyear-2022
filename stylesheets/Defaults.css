@@ -45,27 +45,69 @@ select {
 	background: var(--bg-1) !important;
 }
 
-.tab {
-	padding: 5px;
-	background: var(--bg-2);
-	transition: none;
-	display: flex;
-	justify-content: center;
-}
-.tab-comp {
-	width: 100%;
-	text-align: left;
-}
-
-.optionsbtn {
-	width: 200px;
-	height: 100px;
-	margin: 5px;
+.option {
+	width: 180px;
+	height: 60px;
 	font-size: 18px;
+	vertical-align: top;
+	margin: 5px 0;
 }
 
-.bigbtn {
-	min-width: 200px;
-	min-height: 40px;
-	padding: 10px 30px;
+#other-text {
+	border: 2px solid;
+	height: 90px;
+	padding: 5px;
+}
+#c-container {
+	margin-top: 4px;
+	width: calc(100% - 4px);
+	border: 2px solid;
+	position: relative;
+	height: calc(100% - 113px);
+}
+.c {
+	position: absolute;
+}
+
+.building-segment {
+	border-bottom: 2px dashed var(--c2);
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	cursor: pointer;
+	height: 60px;
+	font-size: 15px;
+}
+.research-segment {
+	border-bottom: 2px dashed var(--c2);
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	height: 100px;
+	padding: 0 5px;
+}
+.locked {
+	opacity: 0.5;
+	cursor: not-allowed !important;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+	width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+	background: var(--bg1);
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+	background: var(--c2); 
+	border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+	background: #fffa; 
 }

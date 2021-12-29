@@ -17,20 +17,16 @@ function loadMap() {
 	for (let i of SPECIAL_TILES) {
 		defMap[i.pos.x][i.pos.y] = deepcopy(i.data);
 	}
-	if (localStorage.getItem(saveKey + 'map') != null) {
-		try {
-			map = JSON.parse(localStorage.getItem(saveKey + 'map'));
-		} catch (error) {
-			map = deepcopy(defMap);
-			console.log(error);
-		}
-	}
-	else
-		map = deepcopy(defMap);
+	map = deepcopy(defMap);
 
 	console.log("Finished loadMap: " + (Date.now() - prevTime) + "ms");
 }
+function fixMap() {
+	for (let i of SPECIAL_TILES) {
+		map[i.pos.x][i.pos.y] = deepcopy(i.data);
+	}
+}
 
 function getMapEmpty(x, y) {
-	return {t: 0}
+	return 0
 }

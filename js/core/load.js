@@ -1,8 +1,17 @@
+if (!window.indexedDB) {
+	Notifier.notify("Browser does not support indexedDB.");
+	throw "No indexedDB";
+}
+
+let request;
+let db;
+
 function load() {
 	setTimeout(function() {
 		let testTime = Date.now();
 		loadMap();
 		loadPlayer();
+		loadDBdata();
 		loadVue();
 		let lastTick = Date.now();
 		interval = setInterval(() => {
@@ -57,36 +66,57 @@ function load() {
 	}, 100);
 }
 
+function loadDBdata() {
+	request = indexedDB.open(saveKey, 1);
+	request.onerror = function(event) {
+		Notifier.notify("Could not access indexedDB when saving.");
+	};
+	request.onsuccess = function(event) {
+		console.log("request success")
+		db = request.result;
+		let transaction = db.transaction("data")
+		transaction.objectStore("data").get("1").onsuccess = function(event) {
+			let data = event.target.result;
+			try {
+				map = deepcopy(data.map);
+				decimaliseArray(map, struct.map);
+				player = deepcopy(data.player);
+				deepSaveParse(player, getStartPlayer());
+				deepDecimalise(player);
+				need0update = true;
+				need1update = true;
+				need2update = true;
+				renderAll();
+			} catch (e) {
+				console.log(e);
+				save();
+				console.log("Loading data for first time");
+			}
+		}
+		db.onerror = function(event) {
+			console.error("Database error: " + event.target.errorCode);
+		};
+	};
+}
+
 function reset() {
-	localStorage.setItem(saveKey, JSON.stringify(getStartPlayer()));
-	localStorage.removeItem(saveKey + 'map');
+	indexedDB.removeDatabase(saveKey);
 	location.reload();
 }
 
 
 function save() {
-	if (!window.indexedDB) {
-		Notifier.notify("Browser does not support indexedDB.");
-		return;
-	}
 	Notifier.notify("Saving...");
-	try {
-		localStorage.setItem(saveKey, JSON.stringify(player));
-		let request = indexedDB.open(saveKey + "map", 1);
-		let db;
-		request.onerror = function(event) {
-			Notifier.notify("Could not access indexedDB when saving.");
-		};
-		request.onsuccess = function(event) {
-			// Do something with request.result!
-			db = request.result;
-			let trans = db.transaction(["map"], "readwrite");
-
-			Notifier.notify("Saved Game.");
-		};
-	} catch {
-		localStorage.removeItem(saveKey);
-		Notifier.notify("SAVE FAILED: NOT ENOUGH SPACE")
+	let transaction = db.transaction(["data"], "readwrite");
+	transaction.objectStore("data").delete("1");
+	transaction = db.transaction(["data"], "readwrite");
+	transaction.onerror = function() {
+		Notifier.error("Could Not Save.");
+	};
+	let objectStore = transaction.objectStore("data");
+	let objectStoreRequest = objectStore.add({player, map, id: "1"});
+	objectStoreRequest.onsuccess = function(event) {
+		Notifier.success("Saved Game.");
 	}
 }
 

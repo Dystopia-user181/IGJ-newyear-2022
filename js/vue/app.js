@@ -47,7 +47,7 @@ function loadVue() {
 					Game and Graphics: Scarlet<br><br>
 					Inspired by: <b>Cleansed</b> by Yhvr (<a href='https://yhvr.itch.io/cleansed' target='newtab'>Link</a>)<br><br>
 					People who helped out:
-					Yhvr
+					Yhvr\`,
 					buttons: [{text: 'Close', onClick() {Modal.close()}}]
 				})">Credits</button>
 			</div>
@@ -97,7 +97,8 @@ function loadVue() {
 		Shift+WASD/arrow keys: Rotate building when placing<br>
 		Space: Place building<br>
 		Esc: Close Modal/Stop placing building/Pause game<br>
-		<br>`
+		<br>
+		</div>`
 	})
 	Vue.component('mobile-controls', {
 		data: () => { return {
@@ -117,7 +118,6 @@ function loadVue() {
 			format,
 			formatWhole,
 			Decimal,
-			notifiers,
 			Notifier,
 			Modal,
 			controls

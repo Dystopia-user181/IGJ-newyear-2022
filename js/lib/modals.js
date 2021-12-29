@@ -8,8 +8,8 @@ const Modal = {
 				<div class="modal-top">
 					<div style="border-right: 2px solid #fff; height: 40px; position: relative; width: 40px;"
 					onclick="Modal.closeFunc()">
-						<div style="position: absolute; width: 30px; transform: translate(5px, 17.5px) rotate(45deg); height: 5px; background-color: var(--c1)"></div>
-						<div style="position: absolute; width: 30px; transform: translate(5px, 17.5px) rotate(-45deg); height: 5px; background-color: var(--c1)"></div>
+						<div style="position: absolute; width: 30px; transform: translate(5px, 17.5px) rotate(45deg); height: 5px; background-color: var(--c-1)"></div>
+						<div style="position: absolute; width: 30px; transform: translate(5px, 17.5px) rotate(-45deg); height: 5px; background-color: var(--c-1)"></div>
 					</div>
 					<span v-html="Modal.data.title" style="padding-left: 7px; font-size: 20px"></span>
 				</div>
