@@ -31,11 +31,15 @@ function loadPlayer() {
 	player = getStartPlayer();
 }
 
+function getArrayDiscrepancy(a, b) {
+	return (a.constructor == Array) ^ (b.constructor == Array)
+} 
+
 function deepSaveParse(data, initData) {
 	for (let i in initData) {
 		let initProp = initData[i];
 
-		if (data[i] == undefined || (typeof data[i] !== typeof initData[i]))
+		if (data[i] == undefined || (typeof data[i] !== typeof initData[i]) || getArrayDiscrepancy(data[i], initData[i]))
 			data[i] = initProp;
 
 		if (initProp.constructor == Object || Array.isArray(initProp)) 

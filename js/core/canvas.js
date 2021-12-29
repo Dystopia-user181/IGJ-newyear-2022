@@ -87,7 +87,7 @@ function tooltipText(context, x, y, text, arrowDir = "top") {
 
 	context.fillText(text, x, y + yDiff + 19);
 }
-
+let pi = Math.PI
 function render() {
 	let testTime = Date.now();
 	c.width = window.innerWidth - 4;
@@ -104,7 +104,7 @@ function render() {
 			let y = j + player.pos.y - Math.floor(height/2);
 			if (y < 0 || y > 99) continue;
 			let tile = map[x][y].t;
-			ctx.fillStyle = `#11${50 + (x + y)%3*3}00`;
+			ctx.fillStyle = `#11${50 + ((Math.floor(x/4) + Math.floor(y/4))%2)*5}00`;
 			ctx.fillRect(i*20, j*25, 20, 25);
 
 			if (x == player.pos.x && y == player.pos.y)
