@@ -11,22 +11,7 @@ function load() {
 		let testTime = Date.now();
 		loadMap();
 		loadPlayer();
-		loadDBdata();
-		loadVue();
-		let lastTick = Date.now();
-		interval = setInterval(() => {
-			thisTick = Date.now();
-			gameLoop((Date.now() - lastTick)/1000);
-			lastTick = Date.now();
-		}, 25);
-		renderInterval = setInterval(() => {
-			if (paused) return;
-			renderLoop();
-		}, 125);
-		setInterval(() => {if (player.options.autosave && !paused) save()}, 20000);
-		loadCanvas();
-		loadControls();
-		console.log((Date.now() - testTime) + "ms to load game");
+		loadDBdata(testTime);
 
 		/*if (!player.unlocks.start) {
 			Modal.show({
@@ -66,41 +51,60 @@ function load() {
 	}, 100);
 }
 
-function loadDBdata() {
+function loadDBdata(testTime) {
 	request = indexedDB.open(saveKey, 1);
 	request.onerror = function(event) {
 		Notifier.notify("Could not access indexedDB when saving.");
 	};
+	request.onupgradeneeded = function(event) {
+		let db = event.target.result;
+		objectStore = db.createObjectStore("data", {keyPath: "id"});
+		objectStore.transaction.oncomplete = function(event) {
+			db.transaction("data", "readwrite").objectStore("data").add({player: deepcopy(player), map: deepcopy(map), id: "1"});
+		}
+	}
 	request.onsuccess = function(event) {
 		console.log("request success")
 		db = request.result;
-		let transaction = db.transaction("data")
+		
+		let transaction = db.transaction("data");
 		transaction.objectStore("data").get("1").onsuccess = function(event) {
 			let data = event.target.result;
-			try {
-				map = deepcopy(data.map);
-				decimaliseArray(map, struct.map);
-				player = deepcopy(data.player);
-				deepSaveParse(player, getStartPlayer());
-				deepDecimalise(player);
-				need0update = true;
-				need1update = true;
-				need2update = true;
-				renderAll();
-			} catch (e) {
-				console.log(e);
-				save();
-				console.log("Loading data for first time");
-			}
+			map = deepcopy(data.map);
+			decimaliseArray(map, struct.map);
+			player = deepcopy(data.player);
+			deepSaveParse(player, getStartPlayer());
+			deepDecimalise(player);
+			need0update = true;
+			need1update = true;
+			need2update = true;
+			renderAll();
 		}
+		
 		db.onerror = function(event) {
 			console.error("Database error: " + event.target.errorCode);
 		};
+
+		loadVue();
+		let lastTick = Date.now();
+		interval = setInterval(() => {
+			thisTick = Date.now();
+			gameLoop((Date.now() - lastTick)/1000);
+			lastTick = Date.now();
+		}, 25);
+		renderInterval = setInterval(() => {
+			if (paused) return;
+			renderLoop();
+		}, 125);
+		setInterval(() => {if (player.options.autosave && !paused) save()}, 20000);
+		loadCanvas();
+		loadControls();
+		console.log((Date.now() - testTime) + "ms to load game");
 	};
 }
 
 function reset() {
-	indexedDB.removeDatabase(saveKey);
+	indexedDB.deleteDatabase(saveKey);
 	location.reload();
 }
 
