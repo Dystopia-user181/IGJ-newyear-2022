@@ -15,7 +15,7 @@ function loadVue() {
 		}},
 		template: `<div style="position: relative; height: 100%;">
 			<div style="position: absolute;">
-				<span style="font-size: 20px"></span>
+				<span style="font-size: 20px">({{player.pos.x}}, {{player.pos.y}})</span>
 				<br>
 				Welcome to Not Cassiopeia. Press WASD to navigate around the planet.
 			</div>

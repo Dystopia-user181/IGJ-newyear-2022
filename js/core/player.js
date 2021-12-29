@@ -1,6 +1,6 @@
 function getStartPlayer() {
 	return {
-		pos: [0, 0],
+		pos: {x: 0, y: 0},
 		unlocks: {
 			start: false,
 			place: false

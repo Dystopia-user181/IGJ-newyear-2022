@@ -47,14 +47,14 @@ function clampWithinCanvas(x, y, buffer) {
 }
 
 function getPosInCanvas(x, y) {
-	return [(x - player.pos[0] + Math.floor(Math.floor(c.width/20)/2))*20 + 10,
-	(y - player.pos[1] + Math.floor(Math.floor(c.height/25)/2))*25]
+	return [(x - player.pos.x + Math.floor(Math.floor(c.width/20)/2))*20 + 10,
+	(y - player.pos.y + Math.floor(Math.floor(c.height/25)/2))*25]
 }
 function getMapByCanvas(x, y) {
 	let posX = Math.floor(x/20),
 		posY = Math.floor(y/25);
-	return [posX + player.pos[0] - Math.floor(Math.floor(c.width/20)/2),
-	posY + player.pos[1] - Math.floor(Math.floor(c.height/25)/2)];
+	return [posX + player.pos.x - Math.floor(Math.floor(c.width/20)/2),
+	posY + player.pos.y - Math.floor(Math.floor(c.height/25)/2)];
 }
 
 
@@ -98,16 +98,16 @@ function render() {
 		height = Math.floor(c.height/25);
 
 	for (let i = 0; i <= width; i++) {
-		let x = i + player.pos[0] - Math.floor(width/2);
+		let x = i + player.pos.x - Math.floor(width/2);
 		if (x < 0 || x > 99) continue;
 		for (let j = 0; j <= height; j++) {
-			let y = j + player.pos[1] - Math.floor(height/2);
+			let y = j + player.pos.y - Math.floor(height/2);
 			if (y < 0 || y > 99) continue;
 			let tile = map[x][y].t;
 			ctx.fillStyle = `#11${50 + (x + y)%3*3}00`;
 			ctx.fillRect(i*20, j*25, 20, 25);
 
-			if (x == player.pos[0] && y == player.pos[1])
+			if (x == player.pos.x && y == player.pos.y)
 				tile = -1;
 
 			tileStyle[tile](i*20, j*25);

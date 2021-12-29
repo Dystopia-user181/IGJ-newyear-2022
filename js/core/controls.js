@@ -1,3 +1,8 @@
+function setPos(x, y) {
+	player.pos.x = x;
+	player.pos.y = y;
+}
+
 function loadControls() {
 	window.addEventListener("keydown", function (e) {
 		let key = e.key.toLowerCase();
@@ -51,19 +56,19 @@ function loadControls() {
 
 		if (controls.shift && placeData.node) return;
 
-		let [x, y] = player.pos;
+		let {x, y} = player.pos;
 
 		if (right && checkTileAccess(x + 1, y)) {
-			player.pos[0]++;
+			player.pos.x++;
 			x++; //Needed to prevent diagonal clipping into blocks. Don't remove it again!
 		} else if (left && checkTileAccess(x - 1, y)) {
-			player.pos[0]--;
+			player.pos.x--;
 			x--;
 		}
 		if (up && checkTileAccess(x, y - 1)) {
-			player.pos[1]--;
+			player.pos.y--;
 		} else if (down && checkTileAccess(x, y + 1)) {
-			player.pos[1]++;
+			player.pos.y++;
 		}
 
 		render();
@@ -163,7 +168,7 @@ let controls = {
 
 let walkable = [0];
 function getXYfromDir(dir) {
-	let [x, y] = player.pos;
+	let {x, y} = player.pos;
 	dir = Number(dir);
 	switch (dir) {
 		case 0: return [x + 1, y];

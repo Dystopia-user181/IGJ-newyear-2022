@@ -66,7 +66,7 @@ function loadDBdata(testTime) {
 	request.onsuccess = function(event) {
 		console.log("request success")
 		db = request.result;
-		
+
 		let transaction = db.transaction("data");
 		transaction.objectStore("data").get("1").onsuccess = function(event) {
 			let data = event.target.result;
@@ -75,31 +75,30 @@ function loadDBdata(testTime) {
 			player = deepcopy(data.player);
 			deepSaveParse(player, getStartPlayer());
 			deepDecimalise(player);
+			loadVue();
+			let lastTick = Date.now();
+			interval = setInterval(() => {
+				thisTick = Date.now();
+				gameLoop((Date.now() - lastTick)/1000);
+				lastTick = Date.now();
+			}, 25);
+			renderInterval = setInterval(() => {
+				if (paused) return;
+				renderLoop();
+			}, 125);
+			setInterval(() => {if (player.options.autosave && !paused) save()}, 20000);
+			loadCanvas();
+			loadControls();
 			need0update = true;
 			need1update = true;
 			need2update = true;
 			renderAll();
+			console.log((Date.now() - testTime) + "ms to load game");
 		}
 		
 		db.onerror = function(event) {
 			console.error("Database error: " + event.target.errorCode);
 		};
-
-		loadVue();
-		let lastTick = Date.now();
-		interval = setInterval(() => {
-			thisTick = Date.now();
-			gameLoop((Date.now() - lastTick)/1000);
-			lastTick = Date.now();
-		}, 25);
-		renderInterval = setInterval(() => {
-			if (paused) return;
-			renderLoop();
-		}, 125);
-		setInterval(() => {if (player.options.autosave && !paused) save()}, 20000);
-		loadCanvas();
-		loadControls();
-		console.log((Date.now() - testTime) + "ms to load game");
 	};
 }
 
