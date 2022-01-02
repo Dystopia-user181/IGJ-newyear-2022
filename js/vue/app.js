@@ -3,6 +3,7 @@ let app;
 function loadVue() {
 	Notifier.load();
 	Modal.load();
+	loadCurrency();
 	Vue.config.devtools = true;
 
 	Vue.component('top-text', {
@@ -15,17 +16,22 @@ function loadVue() {
 		}},
 		template: `<div style="position: relative; height: 100%;">
 			<div style="position: absolute;">
-				<span style="font-size: 20px">({{player.pos.x}}, {{player.pos.y}})</span>
+				<span style="font-size: 20px"><money-display></money-display></span>
 				<br>
-				Welcome to Not Cassiopeia. Press WASD to navigate around the planet.
+				Welcome to Time Game. Press WASD to navigate.
 			</div>
 			<a href="https://discord.gg/DVy4XjB" target="newtab" style="position: absolute; left: 0; bottom: 0;">Discord</a>
-			<button style="position: absolute; right: 0; bottom: 0;" onclick="Modal.show({
-				title: 'Controls',
-				bind: 'controls-menu'
-			})">
-				Controls
-			</button>
+			<div style="position: absolute; right: 0; bottom: 0;">
+				<button onclick="openMenu(3, 3)">
+					Construction
+				</button>
+				<button onclick="Modal.show({
+					title: 'Controls',
+					bind: 'controls-menu'
+				})">
+					Controls
+				</button>
+			</div>
 			<div style="position: absolute; right: 0">
 				<button onclick="Modal.show({
 					title: 'Options',
@@ -120,7 +126,8 @@ function loadVue() {
 			Decimal,
 			Notifier,
 			Modal,
-			controls
+			controls,
+			Currency
 		},
 		methods: {
 			D

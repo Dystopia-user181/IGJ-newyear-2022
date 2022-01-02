@@ -45,6 +45,12 @@ select {
 	background: var(--bg-1) !important;
 }
 
+.centre {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
 .option {
 	width: 180px;
 	height: 60px;
@@ -70,16 +76,16 @@ select {
 }
 
 .building-segment {
-	border-bottom: 2px dashed var(--c2);
+	border-bottom: 2px dashed var(--c-2);
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
 	cursor: pointer;
-	height: 60px;
+	height: 80px;
 	font-size: 15px;
 }
 .research-segment {
-	border-bottom: 2px dashed var(--c2);
+	border-bottom: 2px dashed var(--c-2);
 	display: flex;
 	align-items: center;
 	cursor: pointer;

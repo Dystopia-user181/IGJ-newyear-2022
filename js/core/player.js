@@ -7,24 +7,37 @@ function getStartPlayer() {
 		},
 		options: {
 			autosave: true,
-			showTileU: true
+			showTilePopups: true,
+			buildMultiple: false
 		},
 		time: {
 			timeStat: 0,
 			lastTick: Date.now()
 		},
-		testValue: new Decimal(0)
+		currency: {
+			money: new Decimal(10)
+		},
+		buildings: []
 	};
 }
 let saveKey = "IGJnewyear-IGJ2022-Scarlet";
 let player;
 let struct = {
-	buildings: {},
+	buildings: {
+		level: Decimal,
+		pos: {x: Number, y: Number},
+		t: Number,
+		meta: {
+			building: Number,
+		},
+		time: Decimal,
+		upgrading: Boolean
+	},
 	map: {
 		t: Number,
-		data: {}
-	},
-	pos: Number
+		data: {
+		}
+	}
 }
 
 function loadPlayer() {

@@ -17,6 +17,7 @@
 	<script src="js/core/canvas.js"></script>
 	<script src="js/core/controls.js"></script>
 	<script src="js/lib/number_formatting.js"></script>
+	<script src="js/core/currencies.js"></script>
 	<script src="js/vue/app.js"></script>
 	<script src="js/core/load.js"></script>
 
@@ -36,7 +37,6 @@
 			<top-text></top-text>
 		</div>
 		<div id="c-container">
-			<attributes></attributes>
 			<canvas id="c" class="c" :style="{
 				filter: 'grayscale(' + (controls.nightvision ? 0.8 : 0) +')'
 			}"></canvas>
@@ -46,7 +46,7 @@
 		<modal></modal>
 		<div v-if="Modal.showing" style="height: 100%; width: 100%;
 		position: absolute; z-index: 12; top: 0; left: 0;
-		background: #1119"></div>
+		background: #0009"></div>
 		<mobile-controls></mobile-controls>
 	</div>
 </body>

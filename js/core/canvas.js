@@ -1,13 +1,45 @@
 let c, c1, c2, ctx, ctx1, ctx2;
 
 let tileStyle = {
-	"-1"(x, y) {
-		ctx.fillStyle = "#88f";
-		ctx.fillRect(x, y, 20, 25);
-		ctx.fillStyle = "#000";
+	"-2"(x, y, ctx) {
+		ctx.fillStyle = "#eaf";
+		ctx.shadowBlur = 15;
+		ctx.shadowColor = "#eaf";
+		ctx.beginPath();
+		ctx.moveTo(x + 10, y);
+		ctx.lineTo(x + 20, y + 12.5);
+		ctx.lineTo(x + 10, y + 25);
+		ctx.lineTo(x, y + 12.5);
+		ctx.fill();
+	},
+	"-1"(x, y, ctx) {
+		ctx.shadowBlur = 0;
+		ctx.fillStyle = "#aaf";
 		ctx.fillText("@", x + 3, y + 20);
 	},
-	"0"() {}
+	"0"() {},
+	"1"(x, y, cctx) {
+		if (cctx != ctx1)
+			cctx.fillStyle = "#b84";
+		cctx.shadowBlur = 0;
+		cctx.fillRect(x + 1, y + 5, 18, 5);
+		cctx.fillRect(x + 1, y + 15, 18, 5);
+		cctx.fillRect(x + 4, y + 1, 5, 23);
+		cctx.fillRect(x + 12, y + 1, 5, 23);
+	},
+	"2"(x, y, ctx) {
+		ctx.strokeStyle = "#afaaee";
+		ctx.shadowBlur = 0;
+		ctx.lineWidth = 4;
+		ctx.lineCap = "round";
+		ctx.beginPath();
+		ctx.moveTo(x + 2, y + 2);
+		ctx.lineTo(x + 2, y + 15);
+		ctx.lineTo(x + 10, y + 23);
+		ctx.lineTo(x + 18, y + 15);
+		ctx.lineTo(x + 18, y + 2);
+		ctx.stroke();
+	}
 }
 
 function loadCanvas() {
@@ -47,8 +79,8 @@ function clampWithinCanvas(x, y, buffer) {
 }
 
 function getPosInCanvas(x, y) {
-	return [(x - player.pos.x + Math.floor(Math.floor(c.width/20)/2))*20 + 10,
-	(y - player.pos.y + Math.floor(Math.floor(c.height/25)/2))*25]
+	return [(x - player.pos.x + Math.floor(Math.floor(c.width/20)/2))*20,
+	(y - player.pos.y + Math.floor(Math.floor(c.height/25)/2))*25];
 }
 function getMapByCanvas(x, y) {
 	let posX = Math.floor(x/20),
@@ -65,7 +97,7 @@ function tooltipText(context, x, y, text, arrowDir = "top") {
 	context.strokeStyle = "#fff";
 	context.fillStyle = "#000b";
 	context.lineWidth = 2;
-	let yDiff = arrowDir == "top" ? -25 : 32;
+	let yDiff = arrowDir == "top" ? -32 : 32;
 	let length = context.measureText(text).width + 8,
 		xDiff = length/2;
 	context.fillRect(x - xDiff, y + yDiff, length, 25);
@@ -74,9 +106,9 @@ function tooltipText(context, x, y, text, arrowDir = "top") {
 	context.fillStyle = "#fff";
 	context.beginPath();
 	if (arrowDir == "top") {
-		context.moveTo(x - 5, y);
-		context.lineTo(x + 5, y);
-		context.lineTo(x, y + 5);
+		context.moveTo(x - 5, y - 7);
+		context.lineTo(x + 5, y - 7);
+		context.lineTo(x, y - 2);
 	} else {
 		context.moveTo(x - 5, y + 32);
 		context.lineTo(x + 5, y + 32);
@@ -99,44 +131,50 @@ function render() {
 
 	for (let i = 0; i <= width; i++) {
 		let x = i + player.pos.x - Math.floor(width/2);
-		if (x < 0 || x > 99) continue;
+		if (x < 0 || x > mapWidth - 1) continue;
 		for (let j = 0; j <= height; j++) {
 			let y = j + player.pos.y - Math.floor(height/2);
-			if (y < 0 || y > 99) continue;
-			let tile = map[x][y].t;
-			ctx.fillStyle = `#11${50 + ((Math.floor(x/4) + Math.floor(y/4))%2)*5}00`;
+			if (y < 0 || y > mapHeight - 1) continue;
+			ctx.fillStyle = `#33${"7" + ((Math.floor(x/4) + Math.floor(y/4))%2)*9}88`;
+			ctx.shadowBlur = 0;
 			ctx.fillRect(i*20, j*25, 20, 25);
+		}
+	}
+	for (let i = 0; i <= width; i++) {
+		let x = i + player.pos.x - Math.floor(width/2);
+		if (x < 0 || x > mapWidth - 1) continue;
+		for (let j = 0; j <= height; j++) {
+			let y = j + player.pos.y - Math.floor(height/2);
+			if (y < 0 || y > mapHeight - 1) continue;
+			let tile = map[x][y].t;
 
 			if (x == player.pos.x && y == player.pos.y)
 				tile = -1;
 
-			tileStyle[tile](i*20, j*25);
+			tileStyle[tile](i*20, j*25, ctx);
 		}
 	}
 }
 
 function renderLayer1() {
+	c1.style.opacity = 0.8;
 	c1.width = window.innerWidth - 4;
 	c1.height = window.innerHeight - 114;
 
 	if (placeData.node) {
-		ctx1.font = '25px Iosevka Term SS08 Web';
-		ctx1.textAlign = "center";
 
 		let [x, y] = getXYfromDir(placeData.facing);
 		let [px, py] = getPosInCanvas(x, y);
-		py += 25;
 
-		ctx1.shadowBlur = 15;
 		if (!BUILDINGS[placeData.node].canPlace(x, y)) {
 			ctx1.fillStyle = "#f00";
 			ctx1.shadowColor = "#f00"
 		} else {
-			ctx1.fillStyle = tileStyle[placeData.node];
-			ctx1.shadowColor = tileStyle[placeData.node];
+			ctx1.fillStyle = "#b84";
+			ctx1.shadowColor = "#b84";
 		}
 
-		ctx1.fillText(placeData.node, px, py)
+		tileStyle[1](px, py, ctx1);
 	}
 }
 
@@ -152,9 +190,9 @@ function renderLayer2() {
 			let [x, y] = getPosInCanvas(...getXYfromDir(i));
 			let text = "Use [" + ["D", "S", "A", "W"][i] + "]";
 			if (i == 1 || i == 2) {
-				tooltipText(ctx2, x, y, text, "bottom");
+				tooltipText(ctx2, x + 10, y, text, "bottom");
 			} else {
-				tooltipText(ctx2, x, y, text, "top");
+				tooltipText(ctx2, x + 10, y, text, "top");
 			}
 		}
 	}

@@ -16,6 +16,22 @@ function gameLoop(d) {
 	let trueDiff = d;
 
 	if (player.unlocks.start) {
+		for (let i of buildingList(1)) {
+			i.time = i.time.add(d);
+			if (i.time.gte(BUILDINGS[i.meta.building].buildTime)) {
+				i.time = D(0);
+				i.t = i.meta.building;
+				mfb(i).t = i.meta.building;
+				i.meta = BUILDINGS[i.meta.building].startMeta(i.pos.x, i.pos.y);
+				if (Modal.data.bind == "constructing-menu")
+					Modal.close();
+				canvas.need0update = true;
+				updateTileUsage();
+			}
+		}
+		for (let i of buildingList(2)) {
+			Currency.money.amt = Currency.money.amt.add(d);
+		}
 	}
 
 	for (let i in Updater.updates) {

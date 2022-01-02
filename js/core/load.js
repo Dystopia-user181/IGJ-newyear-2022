@@ -12,42 +12,6 @@ function load() {
 		loadMap();
 		loadPlayer();
 		loadDBdata(testTime);
-
-		/*if (!player.unlocks.start) {
-			Modal.show({
-				title: "The beginning of the end.",
-				text: `<div style="margin: 30px;">Thousands of years have passed, and the conditions on Earth are deteriorating.<br><br>
-					Almost all the resources have run out, and it was projected that we would be completely devoid of new resources in 5 years.
-				</div>`,
-				buttons: [{
-					text: "Next",
-					onClick() {
-						Modal.closeFunc();
-					}
-				}],
-				close() {
-					Modal.show({
-						title: "The beginning of the end.",
-						text: `<div style="margin: 30px;">It was too late to save Earth, so many missions to space were planned.<br>
-							You were tasked to explore this new planet, named Cassiopeia, and set up a new civilisation.<br><br>
-							Rather unfortunately, this turned out to be a bare planet, with only sparse bits of useful resources scattered in between.
-							<br><br>
-							Best of luck surviving.
-						</div>`,
-						buttons: [{
-							text: "Next",
-							onClick() {
-								Modal.closeFunc();
-							}
-						}],
-						close() {
-							player.unlocks.start = true;
-							Modal.close();
-						}
-					})
-				}
-			})
-		}*/
 	}, 100);
 }
 
@@ -72,10 +36,31 @@ function loadDBdata(testTime) {
 			let data = event.target.result;
 			map = deepcopy(data.map);
 			decimaliseArray(map, struct.map);
+			if (map.length < mapWidth) {
+				while (map.length < mapWidth) {
+					let x = [];
+					for (let i = 0; i < mapHeight; i++) {
+						x.push({t: 0});
+					}
+					map.push(x);
+				}
+			}
+			if (map[0].length < mapHeight) {
+				while (map[0].length < mapHeight) {
+					for (let i = 0; i < mapWidth; i++) {
+						map[i][map[0].length] = {t: 0};
+					}
+				}
+			}
+			for (let i of SPECIAL_TILES) {
+				map[i.pos.x][i.pos.y] = deepcopy(i.data);
+			}
 			player = deepcopy(data.player);
 			deepSaveParse(player, getStartPlayer());
 			deepDecimalise(player);
 			loadVue();
+			Building.load();
+
 			let lastTick = Date.now();
 			interval = setInterval(() => {
 				thisTick = Date.now();
@@ -94,6 +79,23 @@ function loadDBdata(testTime) {
 			need2update = true;
 			renderAll();
 			console.log((Date.now() - testTime) + "ms to load game");
+
+			if (!player.unlocks.start) {
+				Modal.show({
+					title: "Time Game",
+					text: `<div style="margin: 30px;">I'm too lazy to make lore</div>`,
+					buttons: [{
+						text: "Next",
+						onClick() {
+							Modal.closeFunc();
+						}
+					}],
+					close() {
+						player.unlocks.start = true;
+						Modal.close();
+					}
+				})
+			}
 		}
 		
 		db.onerror = function(event) {

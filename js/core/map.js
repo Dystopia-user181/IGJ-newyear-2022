@@ -1,13 +1,20 @@
 let map, defMap;
 
-let SPECIAL_TILES = []
+
+const mapWidth = 100, mapHeight = 100;
+
+
+let SPECIAL_TILES = [{
+	pos: {x: 3, y: 3},
+	data: {t: -2}
+}]
 function loadMap() {
 	let prevTime = Date.now();
 
 	let defaultMap = [];
-	for (let i = 0; i < 100; i++) {
+	for (let i = 0; i < mapWidth; i++) {
 		defaultMap.push([]);
-		for (let j = 0; j < 100; j++) {
+		for (let j = 0; j < mapHeight; j++) {
 			defaultMap[i][j] = {t: 0};
 		}
 	}
@@ -28,5 +35,5 @@ function fixMap() {
 }
 
 function getMapEmpty(x, y) {
-	return 0
+	return 0;
 }
