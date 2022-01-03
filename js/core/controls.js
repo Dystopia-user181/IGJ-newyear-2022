@@ -6,7 +6,7 @@ function setPos(x, y) {
 function loadControls() {
 	window.addEventListener("keydown", function (e) {
 		let key = e.key.toLowerCase();
-		if (typeof controls["press" + key.toUpperCase()] == "function") controls["press" + key.toUpperCase()]();
+		if (typeof controls["press" + key.toUpperCase()] == "function") controls["press" + key.toUpperCase()](e);
 		if (controls[key] != undefined && !Modal.showing)
 			controls[key] = true;
 	})
@@ -20,7 +20,7 @@ function loadControls() {
 		let right = controls.d || controls.arrowright,
 			left = controls.a || controls.arrowleft,
 			up = controls.w || controls.arrowup,
-			down = controls.s || controls.arrowdown;
+			down = (controls.s && !controls.control) || controls.arrowdown;
 
 		if (right || left || up || down) {
 			controls.ticks++;
@@ -92,6 +92,7 @@ let controls = {
 	n: false,
 	compass: false,
 	shift: false,
+	control: false,
 	"press "() {
 		if (paused) return;
 		Building.stopPlacing();
@@ -103,6 +104,11 @@ let controls = {
 	pressE() {
 		if (!Modal.showing)
 			openMenu(3, 3);
+	},
+	pressS(e) {
+		if (paused || !controls.control) return;
+		e.preventDefault();
+		save();
 	},
 	pressESCAPE() {
 		if (Modal.showing)

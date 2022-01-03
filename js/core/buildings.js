@@ -194,6 +194,9 @@ const Building = {
 				format,
 				Building
 			}},
+			methods: {
+				queue
+			},
 			computed: {
 				building() {
 					return BUILDINGS[this.bId]

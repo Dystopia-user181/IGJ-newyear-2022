@@ -100,7 +100,7 @@ function loadMenus() {
 			<div v-if="!building.upgrading">
 				<h3>Level {{building.level + 1}}</h3>
 				Production<br>
-				<money-display :amt="0.5"></money-display>/s
+				<money-display :amt="BD[2].levelScaling(building.level).mul(0.5)"></money-display>/s
 				<br><br>
 				<button @click="Building.sell(data.x, data.y)">Sell</button><br>
 				<button @click="Building.level(data.x, data.y)" v-if="player.unlocks.level"
