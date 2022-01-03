@@ -3,7 +3,9 @@ function getStartPlayer() {
 		pos: {x: 0, y: 0},
 		unlocks: {
 			start: false,
-			place: false
+			place: false,
+			base: false,
+			level: false
 		},
 		options: {
 			autosave: true,
@@ -36,6 +38,8 @@ let struct = {
 	map: {
 		t: Number,
 		data: {
+			forceWalkable: Boolean,
+			time: Number
 		}
 	}
 }

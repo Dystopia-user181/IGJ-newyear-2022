@@ -1,6 +1,32 @@
 let c, c1, c2, ctx, ctx1, ctx2;
 
 let tileStyle = {
+	"-5"(i, j, ctx, x, y) {
+		if (!map[x][y].data.forceWalkable) {
+			ctx.fillStyle = "#245";
+			ctx.shadowBlur = 0;
+			if (y == 48) ctx.fillRect(i, j + 10, 20, 5);
+			if (x == 48) ctx.fillRect(i + 7.5, j, 5, 25);
+			ctx.fillRect(i + 5, j + 7.5, 10, 10);
+		}
+	},
+	"-3"(x, y, ctx) {
+		ctx.strokeStyle = "#d91";
+		ctx.fillStyle = "#011";
+		ctx.lineWidth = 2;
+		ctx.shadowBlur = 0;
+		ctx.beginPath();
+		ctx.moveTo(x + 2, y + 22)
+		ctx.lineTo(x + 18, y + 22);
+		ctx.lineTo(x + 18, y + 11);
+		if (player.unlocks.base) {
+			ctx.lineTo(x + 10, y + 3);
+			ctx.lineTo(x + 2, y + 11);
+		}
+		ctx.lineTo(x + 2, y + 22)
+		ctx.fill();
+		ctx.stroke();
+	},
 	"-2"(x, y, ctx) {
 		ctx.fillStyle = "#eaf";
 		ctx.shadowBlur = 15;
@@ -27,8 +53,8 @@ let tileStyle = {
 		cctx.fillRect(x + 4, y + 1, 5, 23);
 		cctx.fillRect(x + 12, y + 1, 5, 23);
 	},
-	"2"(x, y, ctx) {
-		ctx.strokeStyle = "#afaaee";
+	"2"(x, y, ctx, x1, y1) {
+		ctx.strokeStyle = (Building.getByPos(x1, y1).level < 5 ? "#aae" : "#fd2");
 		ctx.shadowBlur = 0;
 		ctx.lineWidth = 4;
 		ctx.lineCap = "round";
@@ -151,7 +177,10 @@ function render() {
 			if (x == player.pos.x && y == player.pos.y)
 				tile = -1;
 
-			tileStyle[tile](i*20, j*25, ctx);
+			tileStyle[tile](i*20, j*25, ctx, x, y);
+			if (BUILDINGS[tile] && Building.getByPos(x, y).upgrading) {
+				tileStyle[1](i*20, j*25, ctx);
+			}
 		}
 	}
 }

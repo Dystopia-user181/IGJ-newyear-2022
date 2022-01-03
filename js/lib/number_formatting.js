@@ -1,6 +1,8 @@
-function format(num, precision = 2, precisionAfter = 3) {
+function format(num, precision = 2, precisionAfter = 3, small = false) {
 	num = D(num);
-	if (num < 1e6) return Number(num).toFixed(precision);
+	if (num.e > 1e15) return "Infinity";
+	if (num.e < -3 && small) return `${num.m.toFixed(precisionAfter)}e${formatWhole(num.e)}`;
+	if (num.abs() < 1e6) return Number(num).toFixed(precision);
 	let e = num.e, m = num.m;
 	if (m >= 9.995) {
 		m = 1;
@@ -10,7 +12,7 @@ function format(num, precision = 2, precisionAfter = 3) {
 }
 
 function formatWhole(num) {
-	if (num.e < -1) return format(num);
+	if (num.e < 0) return format(num);
 	num = D(num).floor();
 	if (num.e < 5) return num.toString();
 	return num.replace(/\B(?=(\d{3})+(?!\d))/g, ",");

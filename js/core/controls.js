@@ -100,6 +100,10 @@ let controls = {
 	arrowleft: false,
 	arrowdown: false,
 	arrowright: false,
+	pressE() {
+		if (!Modal.showing)
+			openMenu(3, 3);
+	},
 	pressESCAPE() {
 		if (Modal.showing)
 			Modal.closeFunc();
@@ -137,7 +141,7 @@ function getXYfromDir(dir) {
 function checkTileAccess(x, y) {
 	if (x > mapWidth - 1 || x < 0) return false;
 	if (y > mapHeight - 1 || y < 0) return false;
-	return walkable.includes(map[x][y].t);
+	return walkable.includes(map[x][y].t) || map[x][y].data?.forceWalkable;
 }
 function updateTileUsage() {
 	accessData.tiles = [];
@@ -145,8 +149,8 @@ function updateTileUsage() {
 	let dirList = [0, 1, 2, 3];
 	for (let i in dirList) {
 		let [x, y] = getXYfromDir(i);
-		if (x < 0 || x > mapWidth - 1 || y < 0 || y > mapHeight - 1) return;
-		if (MENU_DATA[map[x][y].t]) accessData.tiles.push(Number(i));
+		if (x < 0 || x > mapWidth - 1 || y < 0 || y > mapHeight - 1) continue;
+		if (MENU_DATA[map[x][y].t] && !map[x][y].data?.forceWalkable) accessData.tiles.push(Number(i));
 	}
 
 	canvas.need2update = true;

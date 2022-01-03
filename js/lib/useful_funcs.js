@@ -18,10 +18,23 @@ function deepcopy(thing) {
 
 	val = new thing.constructor();
 	for (let i in thing) {
-		if (thing[i].constructor == Object || Array.isArray(thing[i]))
+		if (pureObjRef(thing[i]))
 			val[i] = deepcopy(thing[i]);
 		else
 			val[i] = thing[i];
 	}
 	return val;
+}
+
+function deepcopyto(obj1, obj2) {
+	for (let i in obj1) {
+		if (pureObjRef(obj1[i]) && pureObjRef(obj2[i]))
+			deepcopyto(obj1[i], obj2[i]);
+		else
+			obj2[i] = obj1[i];
+	}
+}
+
+function pureObjRef(x) {
+	return x && (x.constructor == Object || Array.isArray(x));
 }

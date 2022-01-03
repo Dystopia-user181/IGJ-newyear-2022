@@ -5,8 +5,8 @@
 	transform: translate(-50%, -50%);
 	height: 400px;
 	width: 600px;
-	max-height: 100vh;
-	max-width: 100vw;
+	max-height: calc(100vh - 4px);
+	max-width: calc(100vw - 4px);
 	z-index: 13;
 	background-color: var(--bg-1);
 	border: 2px solid;
@@ -35,8 +35,8 @@
 	margin: 0;
 }
 .modal-body {
-	text-align: center;
-	padding: 10px;
+	height: calc(100% - 42px);
+	overflow-y: auto;
 }
 .modal-close {
 	border-right: 2px solid var(--c-1);

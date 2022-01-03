@@ -29,9 +29,22 @@ function gameLoop(d) {
 				updateTileUsage();
 			}
 		}
-		for (let i of buildingList(2)) {
-			Currency.money.amt = Currency.money.amt.add(d);
+		for (let i of player.buildings) {
+			if (!i.upgrading) continue;
+			i.time = i.time.add(d);
+			if (i.time.gte(BUILDINGS[i.t].levelTime(i.level))) {
+				i.time = D(0);
+				i.level++;
+				i.upgrading = false;
+				canvas.need0update = true;
+			}
 		}
+		let prevMoney = Currency.money.amt;
+		for (let i of buildingList(2)) {
+			if (!i.upgrading)
+				Currency.money.amt = Currency.money.amt.add(BD[2].levelScaling(i.level).mul(0.5).mul(d));
+		}
+		tmp.moneyGain = Currency.money.amt.sub(prevMoney).div(d);
 	}
 
 	for (let i in Updater.updates) {
@@ -57,5 +70,5 @@ function renderLoop() {
 let interval, autoInterval, renderInterval;
 
 let tmp = {
-	shardGain: D(0)
+	moneyGain: D(0)
 }

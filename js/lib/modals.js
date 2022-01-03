@@ -13,10 +13,12 @@ const Modal = {
 					</div>
 					<span v-html="Modal.data.title" style="padding-left: 7px; font-size: 20px"></span>
 				</div>
-				<div v-if="Modal.data.bind" :is="Modal.data.bind" :data="Modal.data.bindData"></div>
-				<div v-else v-html="Modal.data.text" style="text-align: center; padding: 10px"></div>
-				<div style="position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); text-align: center">
-					<button v-for="btn in Modal.data.buttons" @click="btn.onClick" style="min-width: 75px; margin: 0 5px">{{btn.text}}</button>
+				<div class="modal-body">
+					<div v-if="Modal.data.bind" :is="Modal.data.bind" :data="Modal.data.bindData"></div>
+					<div v-else v-html="Modal.data.text" style="text-align: center; padding: 10px"></div>
+					<div style="position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); text-align: center">
+						<button v-for="btn in Modal.data.buttons" @click="btn.onClick" style="min-width: 75px; margin: 0 5px">{{btn.text}}</button>
+					</div>
 				</div>
 			</div>`
 		})

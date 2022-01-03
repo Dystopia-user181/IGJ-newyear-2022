@@ -30,6 +30,7 @@ button {
 	padding: 2px 8px;
 	margin: 2px;
 	font-size: 14px;
+	cursor: default;
 }
 button:hover {
 	border: 2px solid #fb7;
@@ -40,6 +41,7 @@ button:active {
 }
 button:disabled, .disabled {
 	opacity: 0.5;
+	cursor: not-allowed !important;
 }
 select {
 	background: var(--bg-1) !important;
@@ -49,6 +51,10 @@ select {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+}
+.col {
+	display: flex;
+	flex-direction: column;
 }
 
 .option {
@@ -92,9 +98,16 @@ select {
 	height: 100px;
 	padding: 0 5px;
 }
-.locked {
-	opacity: 0.5;
-	cursor: not-allowed !important;
+.bought {
+	opacity: 1 !important;
+	cursor: default !important;
+	background-color: #060;
+}
+
+.upg-button {
+	width: 150px;
+	min-height: 150px;
+	vertical-align: top;
 }
 
 /* Custom Scrollbar */
@@ -104,12 +117,12 @@ select {
 
 /* Track */
 ::-webkit-scrollbar-track {
-	background: var(--bg1);
+	background: var(--bg-2);
 }
  
 /* Handle */
 ::-webkit-scrollbar-thumb {
-	background: var(--c2); 
+	background: var(--c-2); 
 	border-radius: 5px;
 }
 

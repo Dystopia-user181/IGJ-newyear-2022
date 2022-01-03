@@ -1,13 +1,28 @@
 let map, defMap;
 
 
-const mapWidth = 100, mapHeight = 100;
+const mapWidth = 200, mapHeight = 200;
 
 
 let SPECIAL_TILES = [{
 	pos: {x: 3, y: 3},
 	data: {t: -2}
+}, {
+	pos: {x: 20, y: 20},
+	data: {t: -3}
 }]
+for (let i = 0; i < mapWidth; i++) {
+	SPECIAL_TILES.push({
+		pos: {x: i, y: 48},
+		data: {t: -5, data: {forceWalkable: false}}
+	})
+}
+for (let i = 0; i < mapHeight; i++) {
+	SPECIAL_TILES.push({
+		pos: {x: 48, y: i},
+		data: {t: -5, data: {forceWalkable: false}}
+	})
+}
 function loadMap() {
 	let prevTime = Date.now();
 

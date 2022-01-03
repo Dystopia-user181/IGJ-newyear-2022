@@ -23,10 +23,7 @@ let Notifier = {
 		})
 
 		new Updater(diff => {
-			let notifiers = Notifier.notifiers;
-			while (notifiers.length && player.time.thisTick - notifiers[notifiers.length - 1].time > 3000) {
-				notifiers.pop();
-			}
+			Notifier.update();
 		});
 	},
 	notify(text, style={}) {

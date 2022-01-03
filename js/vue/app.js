@@ -12,11 +12,12 @@ function loadVue() {
 			format,
 			formatWhole,
 			Decimal,
-			Modal
+			Modal,
+			tmp
 		}},
 		template: `<div style="position: relative; height: 100%;">
 			<div style="position: absolute;">
-				<span style="font-size: 20px"><money-display></money-display></span>
+				<span style="font-size: 20px"><money-display></money-display> (+{{format(tmp.moneyGain)}}/s)</span>
 				<br>
 				Welcome to Time Game. Press WASD to navigate.
 			</div>
@@ -59,13 +60,6 @@ function loadVue() {
 			</div>
 		</div>`
 	});
-	Vue.component('attributes', {
-		data: () => { return {}},
-		methods: {
-			format
-		},
-		template: `<div id="attr-container"></div>`
-	})
 	Vue.component('options-menu', {
 		data: () => { return {
 			player
@@ -102,6 +96,7 @@ function loadVue() {
 		WASD/arrow keys: Move/Access building<br>
 		Shift+WASD/arrow keys: Rotate building when placing<br>
 		Space: Place building<br>
+		E: Open construction menu<br>
 		Esc: Close Modal/Stop placing building/Pause game<br>
 		<br>
 		</div>`

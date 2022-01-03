@@ -6,14 +6,15 @@ class CurrencyState {
 		Object.assign(this, data);
 		root.style.setProperty("--" + id + "-colour", this.colour);
 		Vue.component(id + "-display", {
-			props: ["amt"],
+			props: ["amt", "whole"],
 			data() { return {
 				Currency
 			}},
 			methods: {
-				format
+				format,
+				formatWhole
 			},
-			template: `<span><span class="${id}">${data.display}</span> {{format(amt || Currency.${id}.amt)}}</span>`
+			template: `<span><span class="${id}">${data.display}</span> {{(whole ? formatWhole : format)(amt || Currency.${id}.amt)}}</span>`
 		})
 		Currency.style += `.${id} {color: var(--${id}-colour)}  `;
 	}

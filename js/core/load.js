@@ -39,25 +39,35 @@ function loadDBdata(testTime) {
 			if (map.length < mapWidth) {
 				while (map.length < mapWidth) {
 					let x = [];
-					for (let i = 0; i < mapHeight; i++) {
+					for (let i = 0; i < mapWidth; i++) {
 						x.push({t: 0});
 					}
 					map.push(x);
 				}
 			}
+			if (map.length > mapWidth) {
+				map = map.slice(0, mapWidth);
+			}
 			if (map[0].length < mapHeight) {
 				while (map[0].length < mapHeight) {
+					let x = map[0].length;
 					for (let i = 0; i < mapWidth; i++) {
-						map[i][map[0].length] = {t: 0};
+						map[i][x] = {t: 0};
 					}
 				}
 			}
+			if (map[0].length > mapHeight) {
+				map = map.map(sub => sub.slice(0, mapWidth));
+			}
 			for (let i of SPECIAL_TILES) {
-				map[i.pos.x][i.pos.y] = deepcopy(i.data);
+				if (map[i.pos.x][i.pos.y].t != i.data.t)
+					map[i.pos.x][i.pos.y] = deepcopy(i.data);
 			}
 			player = deepcopy(data.player);
 			deepSaveParse(player, getStartPlayer());
 			deepDecimalise(player);
+			if (player.pos.x > mapWidth) player.pos.x = mapWidth - 1;
+			if (player.pos.y > mapHeight) player.pos.y = mapHeight - 1;
 			loadVue();
 			Building.load();
 
