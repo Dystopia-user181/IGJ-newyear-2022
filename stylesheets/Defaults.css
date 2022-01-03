@@ -110,6 +110,20 @@ select {
 	vertical-align: top;
 }
 
+
+.med-button, .mobile {
+	height: 40px;
+	width: 50px;
+	vertical-align: middle;
+}
+.mobile {
+	font-size: 24px;
+	margin: 2px;
+}
+.mobile.fulltxt {
+	font-size: 18px;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
 	width: 10px;

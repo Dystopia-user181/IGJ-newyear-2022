@@ -101,14 +101,8 @@ function loadVue() {
 		<br>
 		</div>`
 	})
-	Vue.component('mobile-controls', {
-		data: () => { return {
-			isMobile,
-			placeData
-		}},
-		template: `<div style="position: absolute; border: 2px solid; background-color: var(--bg2); bottom: 0;" v-if="isMobile">
-		</div>`
-	})
+
+	loadMobile();
 
 	loadMenus();
 	
