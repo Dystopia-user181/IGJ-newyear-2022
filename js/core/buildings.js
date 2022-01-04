@@ -20,11 +20,11 @@ const BUILDINGS = {
 			if (lvl == 0) return D(1);
 			if (lvl == 1) return D(5);
 
-			return D(4*lvl);
+			return Decimal.pow(2, lvl).mul(3);
 		},
 		levelTime(lvl) {
 			if (lvl == 0) return D(20);
-			return D(80);
+			return D(60);
 		}
 	}
 }

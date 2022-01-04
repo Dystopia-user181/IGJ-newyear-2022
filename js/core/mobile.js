@@ -28,7 +28,7 @@ function loadMobile() {
 			placeData,
 			sh: false
 		}},
-		template: `<div style="position: absolute; border: 2px solid; background-color: var(--bg2); bottom: 0;" v-if="isMobile">
+		template: `<div style="position: absolute; border: 2px solid; background-color: var(--bg-2); bottom: 0;" v-if="isMobile">
 			<div style="display: flex" v-if="placeData.node">
 				<button class="mobile fulltxt" style="width: 70px;"
 				@mousedown="simulateKeypress(' ', 'down')">Place</button>

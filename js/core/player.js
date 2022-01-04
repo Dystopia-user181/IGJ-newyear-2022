@@ -19,7 +19,8 @@ function getStartPlayer() {
 		currency: {
 			money: new Decimal(10)
 		},
-		buildings: []
+		buildings: [],
+		version: "0.1"
 	};
 }
 let saveKey = "IGJnewyear-IGJ2022-Scarlet";
@@ -103,6 +104,16 @@ function decimaliseProperties(data, struct) {
 		} else {
 			if (typeof data[i] !== "object") continue;
 			Object.setPrototypeOf(data[i], struct[i].prototype);
+		}
+	}
+}
+
+function fixOldSave(version) {
+	console.log(version);
+	if (version == undefined) {
+		for (let i = 49; i < 200; i++) {
+			map[48][i] = {t: 0};
+			map[i][48] = {t: 0};
 		}
 	}
 }

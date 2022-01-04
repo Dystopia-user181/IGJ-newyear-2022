@@ -17,6 +17,7 @@ function loadControls() {
 	})
 
 	new Updater(function () {
+		if (Modal.showing) return;
 		let right = controls.d || controls.arrowright,
 			left = controls.a || controls.arrowleft,
 			up = controls.w || controls.arrowup,
@@ -50,6 +51,23 @@ function loadControls() {
 
 		let {x, y} = player.pos;
 
+		if (left && accessData.tiles.includes(2)) {
+			openMenu(...getXYfromDir(2))
+			return;
+		}
+		if (right && accessData.tiles.includes(0)) {
+			openMenu(...getXYfromDir(0))
+			return;
+		}
+		if (up && accessData.tiles.includes(3)) {
+			openMenu(...getXYfromDir(3))
+			return;
+		}
+		if (down && accessData.tiles.includes(1)) {
+			openMenu(...getXYfromDir(1))
+			return;
+		}
+
 		if (right && checkTileAccess(x + 1, y)) {
 			player.pos.x++;
 			x++; //Needed to prevent diagonal clipping into blocks. Don't remove it again!
@@ -61,19 +79,6 @@ function loadControls() {
 			player.pos.y--;
 		} else if (down && checkTileAccess(x, y + 1)) {
 			player.pos.y++;
-		}
-
-		if (left && accessData.tiles.includes(2)) {
-			openMenu(...getXYfromDir(2))
-		}
-		if (right && accessData.tiles.includes(0)) {
-			openMenu(...getXYfromDir(0))
-		}
-		if (up && accessData.tiles.includes(3)) {
-			openMenu(...getXYfromDir(3))
-		}
-		if (down && accessData.tiles.includes(1)) {
-			openMenu(...getXYfromDir(1))
 		}
 
 		render();
