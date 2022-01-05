@@ -14,18 +14,77 @@ const BUILDINGS = {
 		levelCost(lvl) {
 			if (lvl > 2) return D(Infinity);
 
-			return Decimal.pow(10, Math.pow(lvl, 1.2)).mul(100);
+			return Decimal.pow(10, Math.pow(lvl, 1.19855)).mul(100).floor();
 		},
 		levelScaling(lvl) {
 			if (lvl == 0) return D(1);
 			if (lvl == 1) return D(5);
 
-			return Decimal.pow(2, lvl).mul(3);
+			return Decimal.pow(3, lvl).mul(2);
 		},
 		levelTime(lvl) {
-			if (lvl == 0) return D(20);
-			return D(60);
+			if (lvl == 0) return D(15);
+			if (lvl == 1) return D(35);
+			if (lvl == 2) return D(60);
+		},
+		getProduction(x, y) {
+			let b = Building.getByPos(x, y);
+			let enhancers = 0;
+			for (let i = Math.max(x - 1, 0); i <= Math.min(x + 1, mapWidth); i++) {
+				for (let j = Math.max(y - 1, 0); j <= Math.min(y + 1, mapHeight); j++) {
+					if (map[i][j].t == 4) {
+						enhancers++;
+					}
+				}
+			}
+			return BD[2].levelScaling(b.level).mul(0.5*(1 + enhancers*3));
 		}
+	},
+	3: {
+		name: "Essence Collector",
+		desc: "Produces <span class='essence'>*</span> 0.05/s.",
+		get cost() {
+			return Decimal.pow(1.5, Math.pow(costAmt(3), 1.2)).mul(1e3).floor();
+		},
+		currencyName: "money",
+		canPlace(x, y) {
+			return checkTileAccess(x, y);
+		},
+		startMeta(x, y) { return {} },
+		buildTime: D(15),
+		levelCost(lvl) {
+			if (lvl > -1) return D(Infinity);
+
+			return Decimal.pow(10, Math.pow(lvl, 1.2)).mul(100);
+		},
+		levelScaling(lvl) {
+			return D(1)
+			if (lvl == 0) return D(1);
+			if (lvl == 1) return D(5);
+
+			return Decimal.pow(3, lvl).mul(2);
+		},
+		levelTime(lvl) {
+			if (lvl == 0) return D(15);
+			if (lvl == 1) return D(40);
+		},
+		getProduction(x, y) {
+			let b = Building.getByPos(x, y);
+			return BD[3].levelScaling(b.level).mul(0.05);
+		}
+	},
+	4: {
+		name: "Enhancer",
+		desc: "Increases efficiency of all laterally and horizontally adjacent gold mines.<br>Does not stack.",
+		get cost() {
+			return Decimal.pow(4, Math.pow(costAmt(4), 1.5)).mul(3);
+		},
+		currencyName: "essence",
+		canPlace(x, y) {
+			return checkTileAccess(x, y);
+		},
+		startMeta(x, y) { return {} },
+		buildTime: D(20)
 	}
 }
 const BD = BUILDINGS;
@@ -50,7 +109,7 @@ const Building = {
 	startPlacing(id) {
 		let building = BUILDINGS[id];
 		if (building.cost.gt(player.currency[building.currencyName])) return;
-		if (queue() > 0) return;
+		if (queue() > queueMax() - 1) return;
 		Modal.close();
 
 		if (!player.unlocks.place) {
@@ -113,12 +172,12 @@ const Building = {
 		let b = Building.getByPos(x, y);
 		let cBD = BD[b.t];
 		if (Currency[cBD.currencyName].amt.lt(cBD.levelCost(b.level))) return;
-		if (queue() > 0) {
+		if (queue() > queueMax() - 1) {
 			let currentModal = deepcopy(Modal.data);
 			let prevCloseFunc = Modal.closeFunc;
 			Modal.show({
 				title: "Warning",
-				text: "Building queue is full (" + queue() + "/1)",
+				text: "Building queue is full (" + queue() + "/" + queueMax() + ")",
 				buttons: [{
 					text: "Back",
 					onClick() {
@@ -195,7 +254,8 @@ const Building = {
 				Building
 			}},
 			methods: {
-				queue
+				queue,
+				queueMax
 			},
 			computed: {
 				building() {
@@ -204,7 +264,7 @@ const Building = {
 			},
 			template: `<div :class="{
 				'building-segment': true,
-				'disabled': player.currency[building.currencyName].lt(building.cost) || queue() > 0
+				'disabled': player.currency[building.currencyName].lt(building.cost) || queue() >= queueMax()
 			}" @click="Building.startPlacing(bId, type)">
 				<span style="width: 5px;"></span>
 				<span style="width: 600px;">
@@ -223,6 +283,11 @@ const Building = {
 
 function queue() {
 	return buildingAmt(1) + player.buildings.filter(i => i.upgrading).length;
+}
+function queueMax() {
+	let base = 1;
+	base = base + player.builders;
+	return base;
 }
 // Map From Building
 function mfb(b) {

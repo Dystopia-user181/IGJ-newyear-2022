@@ -1,7 +1,7 @@
 let map, defMap;
 
 
-const mapWidth = 200, mapHeight = 200;
+const mapWidth = 60, mapHeight = 60;
 
 
 let SPECIAL_TILES = [{
@@ -10,6 +10,12 @@ let SPECIAL_TILES = [{
 }, {
 	pos: {x: 20, y: 20},
 	data: {t: -3}
+}, {
+	pos: {x: 49, y: 49},
+	data: {t: -4}
+}, {
+	pos: {x: 51, y: 51},
+	data: {t: -6}
 }]
 for (let i = 0; i < 49; i++) {
 	SPECIAL_TILES.push({
@@ -49,4 +55,9 @@ function fixMap() {
 
 function getMapEmpty(x, y) {
 	return 0;
+}
+
+function getMap(x, y) {
+	// needed so vue doesn't freak out whenever loading a component that needs to use map
+	return map[x][y];
 }

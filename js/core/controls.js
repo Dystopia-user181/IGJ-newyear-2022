@@ -43,7 +43,7 @@ function loadControls() {
 		}
 
 		if (controls.ticks != 1) {
-			controls.ticks = controls.ticks%4;
+			controls.ticks = controls.ticks%(player.obelisk.repairing ? Math.floor(4*Math.pow(player.obelisk.time + 1, 0.7)) : 4);
 			return;
 		}
 

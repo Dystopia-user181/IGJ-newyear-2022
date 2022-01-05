@@ -18,6 +18,7 @@ function loadVue() {
 		template: `<div style="position: relative; height: 100%;">
 			<div style="position: absolute;">
 				<span style="font-size: 20px"><money-display></money-display> (+{{format(tmp.moneyGain)}}/s)</span>
+				<span style="font-size: 20px" v-if="player.base.newBuildings > 0"> | <essence-display></essence-display> (+{{format(tmp.essenceGain)}}/s)</span>
 				<br>
 				Welcome to Time Game. Press WASD to navigate.
 			</div>
@@ -100,7 +101,22 @@ function loadVue() {
 		Esc: Close Modal/Stop placing building/Pause game<br>
 		<br>
 		</div>`
-	})
+	});
+
+	Vue.component('bar', {
+		props: ["time", "max"],
+		methods: {
+			formatTime
+		},
+		template: `
+		<div style="width: 200px; height: 25px; border: 2px solid; position: relative; display: inline-block">
+			<div style="width: 200px; height: 25px;" class="centre">
+				{{formatTime(max.sub(time))}}
+			</div>
+			<div style="height: 25px; position: absolute; background-color: #060; top: 0; left: 0; z-index: -1"
+			:style="{width: time.mul(200).div(max).min(200) + 'px'}"></div>
+		</div>`
+	});
 
 	loadMobile();
 

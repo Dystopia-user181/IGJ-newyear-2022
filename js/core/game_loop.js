@@ -10,10 +10,12 @@ Updater.updates = [];
 
 function gameLoop(d) {
 	if (paused) return;
-	d = Math.min(d, 10);
+	d = Math.min(d, player.obelisk.reparing ? 0.2 : 10);
 	player.time.timeStat += d;
 	player.time.thisTick = Date.now();
 	let trueDiff = d;
+
+	d = timerate().mul(d);
 
 	if (player.unlocks.start) {
 		for (let i of buildingList(1)) {
@@ -39,12 +41,42 @@ function gameLoop(d) {
 				canvas.need0update = true;
 			}
 		}
+		if (player.timewall.one.destroying) {
+			player.timewall.one.time = player.timewall.one.time.add(d);
+			if (player.timewall.one.time.gte(80)) {
+				player.timewall.one.destroyed = true;
+				player.timewall.one.destroying = false;
+				for (let i = 0; i < 49; i++) {
+					map[48][i].data.forceWalkable = true;
+					map[i][48].data.forceWalkable = true;
+				}
+				if (Modal.data.bind = "wall1-menu") {
+					Modal.close();
+				}
+				canvas.need0update = true;
+				updateTileUsage();
+			}
+		}
+		if (player.obelisk.repairing) {
+			player.obelisk.time = player.obelisk.time.add(d);
+			canvas.need2update = true;
+			if (player.obelisk.time.gte(6)) {
+				player.obelisk.repaired = true;
+				player.obelisk.repairing = false;
+			}
+		}
 		let prevMoney = Currency.money.amt;
+		let prevEssence = Currency.essence.amt;
 		for (let i of buildingList(2)) {
 			if (!i.upgrading)
-				Currency.money.amt = Currency.money.amt.add(BD[2].levelScaling(i.level).mul(0.5).mul(d));
+				Currency.money.add(BD[2].getProduction(i.pos.x, i.pos.y).mul(d));
+		}
+		for (let i of buildingList(3)) {
+			if (!i.upgrading)
+				Currency.essence.add(BD[3].getProduction(i.pos.x, i.pos.y).mul(d));
 		}
 		tmp.moneyGain = Currency.money.amt.sub(prevMoney).div(d);
+		tmp.essenceGain = Currency.essence.amt.sub(prevEssence).div(d);
 	}
 
 	for (let i in Updater.updates) {
@@ -71,4 +103,12 @@ let interval, autoInterval, renderInterval;
 
 let tmp = {
 	moneyGain: D(0)
+}
+
+function timerate() {
+	let base = D(1);
+	if (player.obelisk.repairing) {
+		base = base.div(Decimal.pow(2, player.obelisk.time));
+	}
+	return base;
 }

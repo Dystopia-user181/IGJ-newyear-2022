@@ -69,7 +69,6 @@ function loadDBdata(testTime) {
 			deepDecimalise(player);
 			if (player.pos.x > mapWidth) player.pos.x = mapWidth - 1;
 			if (player.pos.y > mapHeight) player.pos.y = mapHeight - 1;
-			console.log(prevVersion, thisVersion);
 			if (prevVersion !== thisVersion) {
 				fixOldSave(prevVersion);
 				player.version = thisVersion;

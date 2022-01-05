@@ -25,6 +25,13 @@ class CurrencyState {
 	set amt(x) {
 		player.currency[this.id] = new Decimal(x);
 	}
+
+	add(x) {
+		this.amt = this.amt.add(x);
+	}
+	use(x) {
+		this.amt = this.amt.sub(x);
+	}
 }
 function addCurrencyState(id, data) {
 	Currency[id] = new CurrencyState(id, data);
@@ -39,6 +46,10 @@ function loadCurrency() {
 	addCurrencyState("money", {
 		colour: "#0a0",
 		display: "$"
+	})
+	addCurrencyState("essence", {
+		colour: "#c0c",
+		display: "*"
 	})
 
 	let styles = document.createElement("style");

@@ -16,9 +16,26 @@ function getStartPlayer() {
 			timeStat: 0,
 			lastTick: Date.now()
 		},
-		currency: {
-			money: new Decimal(10)
+		timewall: {
+			one: {
+				time: D(0),
+				destroying: false,
+				destroyed: false
+			}
 		},
+		obelisk: {
+			time: D(0),
+			repairing: false,
+			repaired: false
+		},
+		currency: {
+			money: new Decimal(10),
+			essence: new Decimal(0)
+		},
+		base: {
+			newBuildings: 0
+		},
+		builders: 0,
 		buildings: [],
 		version: "0.1"
 	};

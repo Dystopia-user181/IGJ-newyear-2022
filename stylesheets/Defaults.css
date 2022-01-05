@@ -57,6 +57,10 @@ select {
 	flex-direction: column;
 }
 
+.nomargin {
+	margin: 0 !important;
+}
+
 .option {
 	width: 180px;
 	height: 60px;

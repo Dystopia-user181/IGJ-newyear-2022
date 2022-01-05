@@ -12,18 +12,22 @@ function format(num, precision = 2, precisionAfter = 3, small = false) {
 }
 
 function formatWhole(num) {
+	num = D(num);
 	if (num.e < 0) return format(num);
-	num = D(num).floor();
+	num = num.floor();
+	if (num.e > 1e15) return "Infinity";
 	if (num.e < 5) return num.toString();
-	return num.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 function formatTime(num) {
 	num = D(num);
+	if (num.e > 1e15) return "Infinite time";
 	if (num > 9e15) {
 		return `${format(num.div(86400))}d`
 	}
 	let d = Math.floor(num/86400), h = Math.floor(num/3600)%24, m = Math.floor(num/60)%60, s = num%60;
+	console.log(s)
 	let timeString = "";
 	if (d > 0) timeString += `${d}d `;
 	if (d > 0 || h > 0) timeString += `${h}h `;
