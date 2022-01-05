@@ -1,7 +1,7 @@
 const BUILDINGS = {
 	2: {
 		name: "Gold Mine",
-		desc: "Produces <span class='money'>$</span> 0.5/s.",
+		desc: "Produces <span class='money'>$</span> 0.75/s.",
 		get cost() {
 			return Decimal.pow(1.5, Math.pow(costAmt(2), 1.2)).mul(10).floor();
 		},
@@ -37,7 +37,7 @@ const BUILDINGS = {
 					}
 				}
 			}
-			return BD[2].levelScaling(b.level).mul(0.5*(1 + enhancers*3));
+			return BD[2].levelScaling(b.level).mul(0.75*(1 + enhancers*3));
 		}
 	},
 	3: {
