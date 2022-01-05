@@ -128,7 +128,7 @@ function decimaliseProperties(data, struct) {
 function fixOldSave(version) {
 	console.log(version);
 	if (version == undefined) {
-		for (let i = 49; i < 200; i++) {
+		for (let i = 49; i < 60; i++) {
 			map[48][i] = {t: 0};
 			map[i][48] = {t: 0};
 		}
