@@ -27,14 +27,14 @@ function loadVue() {
 				<button onclick="openMenu(3, 3)">
 					Construction
 				</button>
+				<button onclick="openMenu(20, 20)" v-if="player.unlocks.base">
+					Base
+				</button>
+				<button onclick="openMenu(49, 49)" v-if="player.builders > 0">
+					Builders
+				</button>
 				<button onclick="openMenu(51, 51)" v-if="player.obelisk.repaired">
 					Obelisk
-				</button>
-				<button onclick="Modal.show({
-					title: 'Controls',
-					bind: 'controls-menu'
-				})">
-					Controls
 				</button>
 			</div>
 			<div style="position: absolute; right: 0">
@@ -61,6 +61,12 @@ function loadVue() {
 					Yhvr\`,
 					buttons: [{text: 'Close', onClick() {Modal.close()}}]
 				})">Credits</button>
+				<button onclick="Modal.show({
+					title: 'Controls',
+					bind: 'controls-menu'
+				})">
+					Controls
+				</button>
 			</div>
 		</div>`
 	});
