@@ -36,8 +36,8 @@ const BUILDINGS = {
 		getProduction(x, y) {
 			let b = Building.getByPos(x, y);
 			let enhancers = 0;
-			for (let i = Math.max(x - 1, 0); i <= Math.min(x + 1, mapWidth); i++) {
-				for (let j = Math.max(y - 1, 0); j <= Math.min(y + 1, mapHeight); j++) {
+			for (let i = Math.max(x - 1, 0); i <= Math.min(x + 1, mapWidth - 1); i++) {
+				for (let j = Math.max(y - 1, 0); j <= Math.min(y + 1, mapHeight - 1); j++) {
 					if (map[i][j].t == 4) {
 						enhancers++;
 					}
@@ -78,8 +78,8 @@ const BUILDINGS = {
 			let b = Building.getByPos(x, y);
 			let enhancers = 0;
 			if (player.base.enhanceCollectors)
-				for (let i = Math.max(x - 1, 0); i <= Math.min(x + 1, mapWidth); i++) {
-					for (let j = Math.max(y - 1, 0); j <= Math.min(y + 1, mapHeight); j++) {
+				for (let i = Math.max(x - 1, 0); i <= Math.min(x + 1, mapWidth - 1); i++) {
+					for (let j = Math.max(y - 1, 0); j <= Math.min(y + 1, mapHeight - 1); j++) {
 						if (map[i][j].t == 4) {
 							enhancers++;
 						}
