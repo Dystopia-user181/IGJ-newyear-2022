@@ -115,6 +115,10 @@ let controls = {
 		e.preventDefault();
 		save();
 	},
+	pressO() {
+		if (!Modal.showing && player.obelisk.repaired)
+			openMenu(51, 51)
+	},
 	pressESCAPE() {
 		if (Modal.showing)
 			Modal.closeFunc();

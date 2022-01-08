@@ -105,7 +105,7 @@ select {
 .bought {
 	opacity: 1 !important;
 	cursor: default !important;
-	background-color: #060;
+	background-color: #040;
 }
 
 .upg-button {

@@ -87,7 +87,20 @@ function loadMenus() {
 				
 				Currency.money.use(cost);
 				player.base.newBuildings++;
-			}
+			},
+			buyUpg3() {
+				if (Currency.money.amt.lt(2e5) || buildingAmt(2) < 16) return;
+
+				Currency.money.use(2e5);
+				player.base.lowerMineCost = 1;
+			},
+			buyUpg4() {
+				if (Currency.money.amt.lt(2e7)) return;
+
+				Currency.money.use(2e7);
+				player.base.enhanceCollectors = 1;
+			},
+			buildingAmt
 		},
 		template: `<div class="centre in-modal">
 			<button @click="buyUpg0" :disabled="Currency.money.amt.lt(250)" class="upg-button" v-if="!player.unlocks.base">
@@ -105,6 +118,18 @@ function loadMenus() {
 					<br><br>Cost: <money-display :amt="upg2Cost[player.base.newBuildings]" whole="a"></money-display>
 					</span>
 				</button>
+				<button @click="buyUpg3" :disabled="Currency.money.amt.lt(2e5) || buildingAmt(2) < 16" :class="{ 'upg-button': true, bought: player.base.lowerMineCost }">
+					<b><span class="money">Mines</span> scale slower.</b>
+					<span v-if="buildingAmt(2) < 16 && !player.base.lowerMineCost"><br>Requirement: {{buildingAmt(2)}}/16 gold mines placed</span>
+					<br><br>Cost: <money-display amt="2e5" whole="a"></money-display>
+				</button>
+				<br>
+				<span v-if="player.base.newBuildings > 0">
+					<button @click="buyUpg4" :disabled="Currency.money.amt.lt(2e7)" :class="{ 'upg-button': true, bought: player.base.enhanceCollectors }">
+						<b>Enhancers <span class="essence">enhance</span> collectors.</b>
+						<br><br>Cost: <money-display amt="2e7" whole="a"></money-display>
+					</button>
+				</span>
 			</div>
 		</div>`
 	})
@@ -112,7 +137,7 @@ function loadMenus() {
 	Vue.component("builder-menu", {
 		data() { return {
 			player,
-			builderCosts: [3e4]
+			builderCosts: [3e4, 1.2e5, 1e6, 2e8]
 		}},
 		methods: {
 			buyBuilder() {
@@ -185,7 +210,9 @@ function loadMenus() {
 
 	Vue.component("obelisk-menu", {
 		data() { return {
-			player
+			player,
+			tmp,
+			Obelisk
 		}},
 		methods: {
 			reactivate() {
@@ -193,8 +220,14 @@ function loadMenus() {
 				Currency.essence.use(50);
 				player.obelisk.repairing = true;
 			},
+			activate() {
+				if (Currency.essence.amt.lt(40) || player.obelisk.activeTime.gt(0) || player.obelisk.cooldownTime.lt(tmp.obelisk.cooldownTime)) return;
+				Currency.essence.use(40);
+				player.obelisk.activeTime = D(0.0001);
+			},
 			timerate,
 			format,
+			formatTime,
 			D
 		},
 		template: `<div style="padding: 10px">
@@ -207,8 +240,39 @@ function loadMenus() {
 				You feel like something's not quite right...<br>
 				<bar :time="player.obelisk.time" :max="D(6)"></bar>
 			</div>
-			<div v-if="player.obelisk.repaired">
-				End of content for now
+			<div v-if="player.obelisk.repaired" class="centre col">
+				Obelisk effect: x{{format(tmp.obelisk.effect)}} time rate ({{player.obelisk.activeTime.gt(0) ? "" : "IN"}}ACTIVE)<br><br>
+
+				<span v-if="player.obelisk.activeTime.gt(0)">
+					Time active: <bar :time="player.obelisk.activeTime" :max="tmp.obelisk.activeTime"></bar>
+				</span>
+				<span v-else>
+					Cooldown: <bar :time="player.obelisk.cooldownTime" :max="tmp.obelisk.cooldownTime"></bar>
+				</span>
+				<br>
+
+				<button @click="activate" :disabled="player.currency.essence.lt(40) || player.obelisk.activeTime.gt(0) || player.obelisk.cooldownTime.lt(tmp.obelisk.cooldownTime)" class="upg-button">
+					<b>{{player.obelisk.activeTime.gt(0) ? "(ACTIVE)" : "Activate the Obelisk."}}</b>
+					<span v-if="player.obelisk.activeTime.lte(0)"><br><br>Cost: <essence-display :amt="40" whole="a"></essence-display></span>
+				</button>
+
+				<div>
+					<button @click="Obelisk.buyActiveUpg" class="upg-button" :disabled="player.currency.essence.lt(Obelisk.activeUpgCost())">
+						<b>Increase active time by 30%.</b><br>
+						Currently: {{formatTime(tmp.obelisk.activeTime)}}<br><br>
+						Cost: <essence-display :amt="Obelisk.activeUpgCost()" whole="a"></essence-display>
+					</button>
+					<button @click="Obelisk.buyCooldownUpg" class="upg-button" :disabled="player.currency.essence.lt(Obelisk.cooldownUpgCost())">
+						<b>Decrease cooldown time by 20%.</b><br>
+						Currently: {{formatTime(tmp.obelisk.cooldownTime)}}<br><br>
+						Cost: <essence-display :amt="Obelisk.cooldownUpgCost()" whole="a"></essence-display>
+					</button>
+					<button @click="Obelisk.buyPowerUpg" class="upg-button" :disabled="player.currency.essence.lt(Obelisk.powerUpgCost())">
+						<b>Increase obelisk power by 30%.</b><br>
+						Currently: {{format(tmp.obelisk.effect)}}<br><br>
+						Cost: <essence-display :amt="Obelisk.powerUpgCost()" whole="a"></essence-display>
+					</button>
+				</div>
 			</div>
 		</div>`
 	})
@@ -219,6 +283,9 @@ function loadMenus() {
 			player,
 			BD
 		}},
+		methods: {
+			formatTime
+		},
 		computed: {
 			building() {
 				return Building.getByPos(this.data.x, this.data.y);
@@ -233,18 +300,22 @@ function loadMenus() {
 				<br><br>
 				<button @click="Building.sell(data.x, data.y)">Sell</button><br>
 				<button @click="Building.level(data.x, data.y)" v-if="player.unlocks.level"
-				:disabled="player.currency.money.lt(BD[2].levelCost(building.level))">Upgrade<br>
+				:disabled="player.currency.money.lt(BD[2].levelCost(building.level))">Upgrade ({{formatTime(BD[2].levelTime(building.level))}})<br>
 				Cost: <money-display :amt="BD[2].levelCost(building.level)" whole="a"></money-display></button>
 			</div>
 			<upgrade-progress :x="data.x" :y="data.y" v-else></upgrade-progress>
 		</div>`
 	})
+
 	Vue.component("essencecollector-menu", {
 		data() { return {
 			Building,
 			player,
 			BD
 		}},
+		methods: {
+			formatTime
+		},
 		computed: {
 			building() {
 				return Building.getByPos(this.data.x, this.data.y);
@@ -258,9 +329,9 @@ function loadMenus() {
 				<essence-display :amt="BD[3].getProduction(data.x, data.y)"></essence-display>/s
 				<br><br>
 				<button @click="Building.sell(data.x, data.y)">Sell</button><br>
-				<button @click="Building.level(data.x, data.y)" v-if="false && player.unlocks.level"
-				:disabled="player.currency.money.lt(BD[2].levelCost(building.level))">Upgrade<br>
-				Cost: <money-display :amt="BD[2].levelCost(building.level)" whole="a"></money-display></button>
+				<button @click="Building.level(data.x, data.y)" v-if="player.unlocks.level"
+				:disabled="player.currency.money.lt(BD[3].levelCost(building.level))">Upgrade ({{formatTime(BD[3].levelTime(building.level))}})<br>
+				Cost: <money-display :amt="BD[3].levelCost(building.level)" whole="a"></money-display></button>
 			</div>
 			<upgrade-progress :x="data.x" :y="data.y" v-else></upgrade-progress>
 		</div>`
@@ -367,6 +438,10 @@ const MENU_DATA = {
 	},
 	"-6": {
 		id: "obelisk",
-		name: "Obelisk"
+		name: "Obelisk",
+		style: {
+			width: '750px',
+			height: '500px'
+		}
 	}
 }

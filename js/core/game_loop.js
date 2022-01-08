@@ -10,7 +10,7 @@ Updater.updates = [];
 
 function gameLoop(d) {
 	if (paused) return;
-	d = Math.min(d, player.obelisk.reparing ? 0.2 : 10);
+	d = Math.min(d, player.obelisk.repairing ? 0.2 : 10);
 	player.time.timeStat += d;
 	player.time.thisTick = Date.now();
 	let trueDiff = d;
@@ -65,6 +65,20 @@ function gameLoop(d) {
 				player.obelisk.repairing = false;
 			}
 		}
+		if (player.obelisk.repaired) {
+			tmp.obelisk.activeTime = getActiveTime();
+			tmp.obelisk.cooldownTime = getCooldownTime();
+			tmp.obelisk.effect = getObeliskEffect();
+			if (!player.obelisk.activeTime.gt(0)) {
+				player.obelisk.cooldownTime = player.obelisk.cooldownTime.add(trueDiff).min(tmp.obelisk.cooldownTime);
+			} else {
+				player.obelisk.activeTime = player.obelisk.activeTime.add(trueDiff);
+				if (player.obelisk.activeTime.gte(tmp.obelisk.activeTime)) {
+					player.obelisk.activeTime = D(0);
+					player.obelisk.cooldownTime = D(0);
+				}
+			}
+		}
 		let prevMoney = Currency.money.amt;
 		let prevEssence = Currency.essence.amt;
 		for (let i of buildingList(2)) {
@@ -102,13 +116,22 @@ function renderLoop() {
 let interval, autoInterval, renderInterval;
 
 let tmp = {
-	moneyGain: D(0)
+	moneyGain: D(0),
+	essenceGain: D(0),
+	obelisk: {
+		activeTime: D(0),
+		cooldownTime: D(0),
+		effect: D(1)
+	}
 }
 
 function timerate() {
 	let base = D(1);
 	if (player.obelisk.repairing) {
 		base = base.div(Decimal.pow(2, player.obelisk.time));
+	}
+	if (player.obelisk.activeTime.gt(0)){
+		base = base.mul(tmp.obelisk.effect);
 	}
 	return base;
 }

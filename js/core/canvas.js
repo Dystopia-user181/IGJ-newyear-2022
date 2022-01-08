@@ -77,7 +77,7 @@ let tileStyle = {
 	},
 	"2"(x, y, ctx, x1, y1) {
 		let level = Building.getByPos(x1, y1).level;
-		ctx.strokeStyle = (level < 5 ? "#aae" : "#db6");
+		ctx.strokeStyle = (level < 4 ? "#aae" : "#db6");
 		ctx.shadowBlur = 0;
 		let w = px/5;
 		ctx.lineWidth = w;
@@ -100,23 +100,41 @@ let tileStyle = {
 			ctx.lineTo(x + px - w*3/4, y + w/4);
 			ctx.stroke();
 		}
+		if (level > 2) {
+			ctx.beginPath();
+			ctx.fillStyle = "#da1";
+			ctx.arc(x + px/2, y + px/2.5, w, 0, Math.PI*2);
+			ctx.fill();
+		}
 		if (level > 1) {
 			ctx.beginPath();
 			ctx.fillStyle = "#fd2";
 			ctx.arc(x + px/2, y + px/2, w, 0, Math.PI*2);
 			ctx.fill();
 		}
+		if (level > 4) {
+			ctx.beginPath();
+			ctx.fillStyle = "#b8f";
+			ctx.arc(x + px/2, y + px/2, w*0.6, 0, Math.PI*2);
+			ctx.fill();
+		}
 	},
 	"3"(i, j, ctx, x, y) {
-		ctx.fillStyle = "#fff9";
+		let level = Building.getByPos(x, y).level;
+		ctx.fillStyle = (level > 1 ? "#9ab" : "#a83");
 		ctx.shadowBlur = 0;
-		ctx.fillRect(i, j + px/8, px/8, py - px/4);
-		ctx.fillRect(i + px*7/8, j + px/8, px/8, py - px/4);
-		ctx.fillRect(i, j + py - px/8, px, px/8);
+		ctx.fillRect(i + 1, j + px/8, px/8 - 1, py - px/4);
+		ctx.fillRect(i + px*7/8, j + px/8, px/8 - 1, py - px/4);
+		ctx.fillRect(i + 1, j + py - px/8, px - 2, px/8);
 
+		if (level > 0) {
+			ctx.fillStyle = "#a3f";
+			ctx.fillRect(i + px/6, j + py*0.4, px*2/3, py*0.2);
+			ctx.fillRect(i + px*0.4, j + py/6, px*0.2, py*2/3);
+		}
 		ctx.fillStyle = Currency.essence.colour;
 		ctx.beginPath();
-		ctx.arc(i + px/2, j + py/2, px/3, 0, Math.PI*2);
+		ctx.arc(i + px/2, j + py/2, px*0.25, 0, Math.PI*2);
 		ctx.fill();
 	},
 	"4"(i, j, ctx) {

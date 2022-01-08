@@ -26,14 +26,23 @@ function getStartPlayer() {
 		obelisk: {
 			time: D(0),
 			repairing: false,
-			repaired: false
+			repaired: false,
+			activeTime: D(0),
+			cooldownTime: D(200),
+			upgs: {
+				power: 0,
+				active: 0,
+				cooldown: 0
+			}
 		},
 		currency: {
 			money: new Decimal(10),
 			essence: new Decimal(0)
 		},
 		base: {
-			newBuildings: 0
+			newBuildings: 0,
+			lowerMineCost: 0,
+			enhanceCollectors: 0
 		},
 		builders: 0,
 		buildings: [],

@@ -44,7 +44,7 @@ let Currency = {
 function loadCurrency() {
 	root = document.documentElement;
 	addCurrencyState("money", {
-		colour: "#0a0",
+		colour: "#0c0",
 		display: "$"
 	})
 	addCurrencyState("essence", {

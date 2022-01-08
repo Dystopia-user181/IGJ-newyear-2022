@@ -3,6 +3,7 @@ const BUILDINGS = {
 		name: "Gold Mine",
 		desc: "Produces <span class='money'>$</span> 0.75/s.",
 		get cost() {
+			if (player.base.lowerMineCost) return Decimal.pow(costAmt(2), 3.5).floor(); 
 			return Decimal.pow(1.5, Math.pow(costAmt(2), 1.2)).mul(10).floor();
 		},
 		currencyName: "money",
@@ -12,7 +13,7 @@ const BUILDINGS = {
 		startMeta(x, y) { return {} },
 		buildTime: D(5),
 		levelCost(lvl) {
-			if (lvl > 2) return D(Infinity);
+			if (lvl > 4) return D(Infinity);
 
 			return Decimal.pow(10, Math.pow(lvl, 1.19855)).mul(100).floor();
 		},
@@ -20,12 +21,14 @@ const BUILDINGS = {
 			if (lvl == 0) return D(1);
 			if (lvl == 1) return D(5);
 
-			return Decimal.pow(3, lvl).mul(2);
+			return Decimal.pow(3 + Math.max(Math.min(lvl - 3, lvl/2 - 1), 0), lvl).mul(2);
 		},
 		levelTime(lvl) {
 			if (lvl == 0) return D(15);
 			if (lvl == 1) return D(35);
 			if (lvl == 2) return D(60);
+			if (lvl == 3) return D(120);
+			if (lvl == 4) return D(1800);
 		},
 		getProduction(x, y) {
 			let b = Building.getByPos(x, y);
@@ -37,6 +40,7 @@ const BUILDINGS = {
 					}
 				}
 			}
+			enhancers = Math.min(enhancers, 1);
 			return BD[2].levelScaling(b.level).mul(0.75*(1 + enhancers*3));
 		}
 	},
@@ -53,31 +57,40 @@ const BUILDINGS = {
 		startMeta(x, y) { return {} },
 		buildTime: D(15),
 		levelCost(lvl) {
-			if (lvl > -1) return D(Infinity);
+			if (lvl > 1) return D(Infinity);
 
-			return Decimal.pow(10, Math.pow(lvl, 1.2)).mul(100);
+			return Decimal.pow(40, Math.pow(lvl, 1.2)).mul(5e5);
 		},
 		levelScaling(lvl) {
-			return D(1)
 			if (lvl == 0) return D(1);
-			if (lvl == 1) return D(5);
+			if (lvl == 1) return D(10);
 
-			return Decimal.pow(3, lvl).mul(2);
+			return Decimal.pow(3, lvl).mul(4);
 		},
 		levelTime(lvl) {
-			if (lvl == 0) return D(15);
-			if (lvl == 1) return D(40);
+			if (lvl == 0) return D(30);
+			if (lvl == 1) return D(90);
 		},
 		getProduction(x, y) {
 			let b = Building.getByPos(x, y);
-			return BD[3].levelScaling(b.level).mul(0.05);
+			let enhancers = 0;
+			if (player.base.enhanceCollectors)
+				for (let i = Math.max(x - 1, 0); i <= Math.min(x + 1, mapWidth); i++) {
+					for (let j = Math.max(y - 1, 0); j <= Math.min(y + 1, mapHeight); j++) {
+						if (map[i][j].t == 4) {
+							enhancers++;
+						}
+					}
+				}
+			enhancers = Math.min(enhancers, 1);
+			return BD[3].levelScaling(b.level).mul(0.05*(1 + enhancers*3));
 		}
 	},
 	4: {
 		name: "Enhancer",
 		desc: "Increases efficiency of all laterally and horizontally adjacent gold mines.<br>Does not stack.",
 		get cost() {
-			return Decimal.pow(4, Math.pow(costAmt(4), 1.5)).mul(3);
+			return D(Math.pow(costAmt(4)*0.6 + 1, 3)).mul(3).floor();
 		},
 		currencyName: "essence",
 		canPlace(x, y) {
@@ -187,6 +200,7 @@ const Building = {
 				close() {
 					deepcopyto(currentModal, Modal.data);
 					Modal.closeFunc = prevCloseFunc;
+					Modal.data.buttons = [];
 				}
 			})
 			return;

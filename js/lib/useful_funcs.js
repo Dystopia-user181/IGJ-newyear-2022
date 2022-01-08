@@ -15,7 +15,6 @@ function deepcopy(thing) {
 	return JSON.parse(JSON.stringify(thing));
 
 
-
 	val = new thing.constructor();
 	for (let i in thing) {
 		if (pureObjRef(thing[i]))

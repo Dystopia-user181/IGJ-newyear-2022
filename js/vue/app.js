@@ -27,6 +27,9 @@ function loadVue() {
 				<button onclick="openMenu(3, 3)">
 					Construction
 				</button>
+				<button onclick="openMenu(51, 51)" v-if="player.obelisk.repaired">
+					Obelisk
+				</button>
 				<button onclick="Modal.show({
 					title: 'Controls',
 					bind: 'controls-menu'
@@ -92,13 +95,17 @@ function loadVue() {
 		</div>`
 	});
 	Vue.component('controls-menu', {
-		data: () => { return {}},
+		data: () => { return {
+			player
+		}},
 		template: `<div style="text-align: center;"><br><br><br>
 		WASD/arrow keys: Move/Access building<br>
 		Shift+WASD/arrow keys: Rotate building when placing<br>
 		Space: Place building<br>
 		E: Open construction menu<br>
-		Esc: Close Modal/Stop placing building/Pause game<br>
+		<span v-if="player.obelisk.repaired">O: Open obelisk menu</span><br>
+		Esc: Close window/Stop placing building/Pause game<br>
+		Ctrl+S: Save game
 		<br>
 		</div>`
 	});
