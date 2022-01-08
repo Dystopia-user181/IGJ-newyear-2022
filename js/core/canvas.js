@@ -251,6 +251,15 @@ function render() {
 			ctx.fillStyle = `#33${"7" + ((Math.floor(x/4) + Math.floor(y/4))%2)*9}88`;
 			ctx.shadowBlur = 0;
 			ctx.fillRect(i*px, j*py, px, py);
+
+			ctx.fillStyle = "#c3c4";
+			for (let k = Math.max(x - 1, 0); k <= Math.min(x + 1, mapWidth - 1); k++) {
+				for (let l = Math.max(y - 1, 0); l <= Math.min(y + 1, mapHeight - 1); l++) {
+					if (map[k][l].t == 4) {
+						ctx.fillRect(i*px, j*py, px, py);
+					}
+				}
+			}
 		}
 	}
 	for (let i = 0; i <= width; i++) {
