@@ -1,7 +1,3 @@
-function detectMobile() {
-	return window.innerWidth < 700;
-}
-
 function simulateKeypress(key, type, shiftKey = false, ctrlKey = false) {
 	window.dispatchEvent(
 		new KeyboardEvent(`key${type}`, { key, shiftKey, ctrlKey })
@@ -10,15 +6,13 @@ function simulateKeypress(key, type, shiftKey = false, ctrlKey = false) {
 
 let isMobile;
 function loadMobile() {
-	isMobile = detectMobile();
 	Vue.component('mobile-controls', {
 		data: () => { return {
-			isMobile,
 			simulateKeypress,
 			placeData,
 			sh: false
 		}},
-		template: `<div style="position: absolute; border: 2px solid; background-color: var(--bg-2); bottom: 0;" v-if="isMobile">
+		template: `<div class="mobile-controls">
 			<div style="display: flex" v-if="placeData.node">
 				<button class="mobile fulltxt" style="width: 70px;"
 				@touchstart="simulateKeypress(' ', 'down')">Place</button>
