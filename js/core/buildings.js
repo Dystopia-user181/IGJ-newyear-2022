@@ -4,7 +4,7 @@ const BUILDINGS = {
 		desc: "Produces <span class='money'>$</span> 0.75/s.",
 		get cost() {
 			if (player.base.lowerMineCost) {
-				if (costAmt(2) > 64) return Decimal.pow(1.3, Math.pow(costAmt(2) - 64, 1.2)).mul(2097152).floor()
+				if (costAmt(2) >= 64) return Decimal.pow(1.3, Math.pow(costAmt(2), 1.2) - 147).mul(1e8).floor()
 				return Decimal.pow(costAmt(2), 3.5).floor();
 			}
 			return Decimal.pow(1.5, Math.pow(costAmt(2), 1.2)).mul(10).floor();
