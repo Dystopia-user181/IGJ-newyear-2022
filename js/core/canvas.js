@@ -98,6 +98,9 @@ let tileStyle = {
 			ctx.lineTo(x + px/2, y + py - w*3/4);
 			ctx.lineTo(x + px - w*3/4, y + py*3/5);
 			ctx.lineTo(x + px - w*3/4, y + w/4);
+			if (level > 5) {
+				ctx.lineTo(x + w*3/4, y + w/4);
+			}
 			ctx.stroke();
 		}
 		if (level > 1) {
@@ -116,7 +119,7 @@ let tileStyle = {
 		}
 		if (level > 4) {
 			ctx.beginPath();
-			ctx.fillStyle = "#b8f";
+			ctx.fillStyle = "#b7f";
 			ctx.arc(x + px/2, y + px/2, w*0.6, 0, Math.PI*2);
 			ctx.fill();
 		}
@@ -134,7 +137,7 @@ let tileStyle = {
 			ctx.fillRect(i + px/6, j + py*0.4, px*2/3, py*0.2);
 			ctx.fillRect(i + px*0.4, j + py/6, px*0.2, py*2/3);
 		}
-		ctx.fillStyle = Currency.essence.colour;
+		ctx.fillStyle = (level > 2 ? "#f6b" : Currency.essence.colour);
 		ctx.beginPath();
 		ctx.arc(i + px/2, j + py/2, px*0.25, 0, Math.PI*2);
 		ctx.fill();
@@ -153,7 +156,51 @@ let tileStyle = {
 		ctx.arc(i + px/2, j + py/2, px/4, 0, Math.PI*2);
 		ctx.fill();
 		ctx.shadowBlur = 0;
+	},
+	"5"(i, j, ctx) {
+		let w = Math.min(px, py)/2;
+		let ci = i + px/2, cj = j + py/2
+		ctx.fillStyle = "#000";
+		ctx.shadowBlur = 0;
+		ctx.beginPath();
+		ctx.arc(ci, cj, w*0.75, 0, Math.PI*2);
+		ctx.fill();
+
+		ctx.strokeStyle = "#fff4";
+		ctx.lineWidth = 2;
+
+		let t = player.time.thisTick;
+		ctx.beginPath();
+		ctx.moveTo(...antipointFourier(t, ci, cj, w));
+		ctx.lineTo(...antipointFourier(t - 30, ci, cj, w));
+		ctx.stroke();
+		ctx.lineTo(...antipointFourier(t - 60, ci, cj, w));
+		ctx.stroke();
+		ctx.lineTo(...antipointFourier(t - 90, ci, cj, w));
+		ctx.stroke();
+		ctx.lineTo(...antipointFourier(t - 120, ci, cj, w));
+		ctx.stroke();
+		ctx.lineTo(...antipointFourier(t - 150, ci, cj, w));
+		ctx.stroke();
+		ctx.lineTo(...antipointFourier(t - 180, ci, cj, w));
+		ctx.stroke();
+		ctx.lineTo(...antipointFourier(t - 210, ci, cj, w));
+		ctx.stroke();
 	}
+}
+function antipointFourier(t, x, y, w) {
+	t = t/200;
+	let v = [x, y];
+	fourTrans(v, t, 0.15, w*0.3);
+	fourTrans(v, t, 2, w*0.6);
+	fourTrans(v, t, 9, w*0.4);
+	fourTrans(v, t, 15, w*0.3);
+	fourTrans(v, t, 37, w*0.2);
+	return v;
+}
+function fourTrans(x, t, s, m) {
+	x[0] = x[0] + Math.cos(t*s)*m;
+	x[1] = x[1] + Math.sin(t*s)*m;
 }
 
 function loadCanvas() {

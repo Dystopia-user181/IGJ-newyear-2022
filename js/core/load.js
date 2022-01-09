@@ -84,8 +84,8 @@ function loadDBdata(testTime) {
 			}, 25);
 			renderInterval = setInterval(() => {
 				if (paused) return;
-				renderLoop();
-			}, 125);
+				renderAll();
+			}, 30);
 			setInterval(() => {if (player.options.autosave && !paused) save()}, 20000);
 			loadCanvas();
 			loadControls();

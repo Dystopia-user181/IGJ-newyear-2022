@@ -16,7 +16,7 @@ const BUILDINGS = {
 		startMeta(x, y) { return {} },
 		buildTime: D(5),
 		levelCost(lvl) {
-			if (lvl > 5) return D(Infinity);
+			if (lvl > 6) return D(Infinity);
 
 			return Decimal.pow(10, Math.pow(lvl, 1.19855)).mul(100 + 100*(lvl > 4)).floor();
 		},
@@ -32,7 +32,8 @@ const BUILDINGS = {
 			if (lvl == 2) return D(60);
 			if (lvl == 3) return D(120);
 			if (lvl == 4) return D(1800);
-			if (lvl == 5) return D(2538000) //return D(10800);
+			if (lvl == 5) return D(10800);
+			if (lvl == 6) return D(10800000);
 		},
 		getProduction(x, y) {
 			let b = Building.getByPos(x, y);
@@ -52,6 +53,7 @@ const BUILDINGS = {
 		name: "Essence Collector",
 		desc: "Produces <span class='essence'>*</span> 0.05/s.",
 		get cost() {
+			if (costAmt(3) >= 96) return D(Infinity);
 			return Decimal.pow(1.5, Math.pow(costAmt(3), 1.2)).mul(1e3).floor();
 		},
 		currencyName: "money",
@@ -69,12 +71,12 @@ const BUILDINGS = {
 			if (lvl == 0) return D(1);
 			if (lvl == 1) return D(10);
 
-			return Decimal.pow(3, lvl).mul(4);
+			return Decimal.pow(4, lvl).mul(2.25 + 12*(lvl > 2));
 		},
 		levelTime(lvl) {
 			if (lvl == 0) return D(30);
 			if (lvl == 1) return D(90);
-			if (lvl == 2) return D(2538000) //return D(10800);
+			if (lvl == 2) return D(10800);
 		},
 		getProduction(x, y) {
 			let b = Building.getByPos(x, y);
@@ -105,6 +107,22 @@ const BUILDINGS = {
 		},
 		startMeta(x, y) { return {} },
 		buildTime: D(20)
+	},
+	4: {
+		name: "Antipoint",
+		get desc() {
+			return `Reverses time and gives buffs in return.<br>Do not place them within 6 metres of each other.`;
+		},
+		get cost() {
+			if (costAmt(5) > 0) return D(Infinity);
+			return Decimal.pow(1000, costAmt(5)).mul(5e6);
+		},
+		currencyName: "essence",
+		canPlace(x, y) {
+			return checkTileAccess(x, y);
+		},
+		startMeta(x, y) { return {} },
+		buildTime: D(1800)
 	}
 }
 const BD = BUILDINGS;
@@ -184,6 +202,7 @@ const Building = {
 		player.buildings.splice(Building.getByPos(x, y, true), 1);
 		player.currency[b.currencyName] = player.currency[b.currencyName].add(b.cost.mul(0.8));
 		map[x][y] = {t: 0};
+		buildings.delete(x*10000 + y);
 		canvas.need0update = true;
 		updateTileUsage();
 	},
@@ -224,6 +243,7 @@ const Building = {
 		player.buildings.splice(id, 1);
 		Currency[building.currencyName].amt = Currency[building.currencyName].amt.add(building.cost);
 		map[x][y] = {t: 0}
+		buildings.delete(x*10000 + y);
 		canvas.need0update = true;
 		updateTileUsage();
 	},
@@ -256,13 +276,14 @@ const Building = {
 		})
 	},
 	getByPos(x, y, id=false) {
-		if (id) {
-			for (let i in player.buildings) {
-				if (player.buildings[i].pos.x == x && player.buildings[i].pos.y == y) return i;
-			}
-		}
+		let b = buildings.get(x*10000 + y);
+		if (b) return (id ? player.buildings.indexOf(b) : b);
+		
 		for (let i of player.buildings) {
-			if (i.pos.x == x && i.pos.y == y) return i;
+			if (i.pos.x == x && i.pos.y == y) {
+				buildings.set(x*10000 + y, i);
+				return id ? i : player.buildings.indexOf(i);
+			}
 		}
 	},
 	load() {
@@ -289,11 +310,11 @@ const Building = {
 				'disabled': player.currency[building.currencyName].lt(building.cost) || queue() >= queueMax()
 			}" @click="Building.startPlacing(bId, type)">
 				<span style="width: 5px;"></span>
-				<span style="width: 600px;">
+				<span style="width: 620px;">
 					<span v-html="building.name" style="font-size: 22px;"></span><br>
 					<span v-html="building.desc" style="font-size: 15px; text-align: left;"></span>
 				</span>
-				<span style="width: 90px; font-size: 18px;">
+				<span style="width: 125px; font-size: 18px;">
 					<div style="margin-left: 5px; text-align: left;">
 						<component :is="building.currencyName + '-display'" :amt="building.cost" whole="a"></component>
 					</div>
@@ -303,6 +324,7 @@ const Building = {
 	}
 }
 
+let buildings = new Map();
 function queue() {
 	return buildingAmt(1) + player.buildings.filter(i => i.upgrading).length;
 }
