@@ -100,16 +100,18 @@ let tileStyle = {
 			ctx.lineTo(x + px - w*3/4, y + w/4);
 			ctx.stroke();
 		}
-		if (level > 2) {
-			ctx.beginPath();
-			ctx.fillStyle = "#da1";
-			ctx.arc(x + px/2, y + px/2.5, w, 0, Math.PI*2);
-			ctx.fill();
-		}
 		if (level > 1) {
 			ctx.beginPath();
-			ctx.fillStyle = "#fd2";
-			ctx.arc(x + px/2, y + px/2, w, 0, Math.PI*2);
+			if (level > 2) {
+				ctx.fillStyle = "#aef";
+				ctx.moveTo(x + px/2, y + px/2 - w*1.5);
+				ctx.lineTo(x + px/2 - w, y + px/2);
+				ctx.lineTo(x + px/2, y + px/2 + w*1.5);
+				ctx.lineTo(x + px/2 + w, y + px/2);
+			} else {
+				ctx.fillStyle = "#fd2";
+				ctx.arc(x + px/2, y + px/2, w, 0, Math.PI*2);
+			}
 			ctx.fill();
 		}
 		if (level > 4) {

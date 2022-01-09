@@ -16,15 +16,15 @@ const BUILDINGS = {
 		startMeta(x, y) { return {} },
 		buildTime: D(5),
 		levelCost(lvl) {
-			if (lvl > 4) return D(Infinity);
+			if (lvl > 5) return D(Infinity);
 
-			return Decimal.pow(10, Math.pow(lvl, 1.19855)).mul(100).floor();
+			return Decimal.pow(10, Math.pow(lvl, 1.19855)).mul(100 + 100*(lvl > 4)).floor();
 		},
 		levelScaling(lvl) {
 			if (lvl == 0) return D(1);
 			if (lvl == 1) return D(5);
 
-			return Decimal.pow(3 + Math.max(Math.min(lvl - 3, lvl/2 - 1), 0), lvl).mul(2);
+			return Decimal.pow(3 + Math.max(Math.min(lvl - 3, lvl/2 - 1), 0), lvl).mul(2 + 18*(lvl > 4));
 		},
 		levelTime(lvl) {
 			if (lvl == 0) return D(15);
@@ -32,6 +32,7 @@ const BUILDINGS = {
 			if (lvl == 2) return D(60);
 			if (lvl == 3) return D(120);
 			if (lvl == 4) return D(1800);
+			if (lvl == 5) return D(2538000) //return D(10800);
 		},
 		getProduction(x, y) {
 			let b = Building.getByPos(x, y);
@@ -60,7 +61,7 @@ const BUILDINGS = {
 		startMeta(x, y) { return {} },
 		buildTime: D(15),
 		levelCost(lvl) {
-			if (lvl > 1) return D(Infinity);
+			if (lvl > 2) return D(Infinity);
 
 			return Decimal.pow(40, Math.pow(lvl, 1.2)).mul(5e5);
 		},
@@ -73,6 +74,7 @@ const BUILDINGS = {
 		levelTime(lvl) {
 			if (lvl == 0) return D(30);
 			if (lvl == 1) return D(90);
+			if (lvl == 2) return D(2538000) //return D(10800);
 		},
 		getProduction(x, y) {
 			let b = Building.getByPos(x, y);
@@ -239,6 +241,7 @@ const Building = {
 					b.time = D(0);
 					Currency[cBD.currencyName].amt = Currency[cBD.currencyName].amt.add(cBD.levelCost(b.level).mul(0.8));
 					Modal.closeFunc();
+					canvas.need0update = true;
 				}
 			}, {
 				text: "No",
