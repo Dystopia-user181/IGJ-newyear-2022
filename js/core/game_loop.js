@@ -101,7 +101,9 @@ function gameLoop(d) {
 				Currency.essence.amt = Currency.essence.mul(Decimal.pow(0.995, d));
 				player.anti.essence = player.anti.essence.add(prevprevEssence.sub(Currency.essence.amt));
 			} else if (player.anti.drain == "time") {
-				if (Currency.essence.amt.lte(0))
+				if (Currency.essence.amt.lte(0) || Currency.money.amt.lte(0)) {
+					player.anti.drain = "none";
+				}
 			}
 		}
 		tmp.moneyGain = Currency.money.amt.sub(prevMoney).div(d);

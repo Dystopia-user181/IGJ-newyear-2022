@@ -115,7 +115,7 @@ const BUILDINGS = {
 		},
 		get cost() {
 			if (costAmt(5) > 0) return D(Infinity);
-			return Decimal.pow(1000, costAmt(5)).mul(5e6);
+			return Decimal.pow(1000, costAmt(5)).mul(4e6);
 		},
 		currencyName: "essence",
 		canPlace(x, y) {

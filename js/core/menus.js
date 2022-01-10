@@ -23,6 +23,7 @@ function loadMenus() {
 			<building-ui :bId="2"></building-ui>
 			<building-ui :bId="3" v-if="player.base.newBuildings > 0"></building-ui>
 			<building-ui :bId="4" v-if="player.base.newBuildings > 0"></building-ui>
+			<building-ui :bId="5" v-if="player.base.newBuildings > 1"></building-ui>
 		</div>`
 	})
 
@@ -369,7 +370,7 @@ function loadMenus() {
 		props: ["data"],
 		template: `<div style="padding: 10px">
 			<div v-if="!building.upgrading">
-				<h3>Increases production by 300%</h3>
+				<h3>This doesn't do anything yet lol</h3>
 				<br><br>
 				<button @click="Building.sell(data.x, data.y)">Sell</button>
 			</div>
