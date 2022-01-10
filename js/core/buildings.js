@@ -51,7 +51,8 @@ const BUILDINGS = {
 			}
 			enhancers = Math.min(enhancers, 1);
 			return BD[2].levelScaling(b.level).mul(0.75*(1 + enhancers*3)).mul(tmp.anti.essenceEffect);
-		}
+		},
+		canBuild: true
 	},
 	3: {
 		name: "Essence Collector",
@@ -97,6 +98,9 @@ const BUILDINGS = {
 				}
 			enhancers = Math.min(enhancers, 1);
 			return BD[3].levelScaling(b.level).mul(0.05*(1 + enhancers*3)).mul(tmp.anti.moneyEffect);
+		},
+		get canBuild() {
+			return player.base.newBuildings > 0;
 		}
 	},
 	4: {
@@ -112,11 +116,18 @@ const BUILDINGS = {
 			return checkTileAccess(x, y);
 		},
 		startMeta(x, y) { return {} },
-		buildTime: D(20)
+		buildTime: D(20),
+		get canBuild() {
+			return player.base.newBuildings > 0;
+		}
 	},
 	5: {
-		name: "Antipoint",
+		get name() {
+			if (player.base.newBuildings < 2) return "???";
+			return "Antipoint";
+		},
 		get desc() {
+			if (player.base.newBuildings < 2) return "???";
 			return `Reverses time and gives buffs in return.<br>Do not place them within 6 tiles of each other.`;
 		},
 		get cost() {
@@ -138,6 +149,9 @@ const BUILDINGS = {
 			}
 			base = base.div(Math.sqrt(nearby));
 			return base;
+		},
+		get canBuild() {
+			return player.base.newBuildings > 1;
 		}
 	}
 }
@@ -324,7 +338,7 @@ const Building = {
 			},
 			template: `<div :class="{
 				'building-segment': true,
-				'disabled': player.currency[building.currencyName].lt(building.cost) || queue() >= queueMax()
+				'disabled': player.currency[building.currencyName].lt(building.cost) || queue() >= queueMax() || !building.canBuild
 			}" @click="Building.startPlacing(bId, type)">
 				<span style="width: 5px;"></span>
 				<span style="width: 620px;">

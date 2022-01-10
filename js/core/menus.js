@@ -21,9 +21,9 @@ function loadMenus() {
 		template: `<div>
 			<div style="padding: 10px; border-bottom: 2px solid;"><u @click="showQueueMenu" style="cursor: pointer;">Queue</u>: {{queue()}}/{{queueMax()}}</div>
 			<building-ui :bId="2"></building-ui>
-			<building-ui :bId="3" v-if="player.base.newBuildings > 0"></building-ui>
-			<building-ui :bId="4" v-if="player.base.newBuildings > 0"></building-ui>
-			<building-ui :bId="5" v-if="player.base.newBuildings > 1"></building-ui>
+			<building-ui :bId="3"></building-ui>
+			<building-ui :bId="4"></building-ui>
+			<building-ui :bId="5" v-if="player.base.newBuildings > 0"></building-ui>
 		</div>`
 	})
 
