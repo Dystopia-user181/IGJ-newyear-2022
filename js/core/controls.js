@@ -112,8 +112,16 @@ let controls = {
 	},
 	pressS(e) {
 		e.preventDefault();
+		if (Modal.showing && Modal.data.bindData.isBuilding && !(
+			Modal.data.bind == "goldmine-menu" && buildingAmt(2) < 2
+		))
+			Building.sell(Modal.data.bindData.x, Modal.data.bindData.y);
 		if (paused || !controls.control) return;
 		save();
+	},
+	pressU() {
+		if (Modal.showing && Modal.data.bindData.canUpg)
+			Building.level(Modal.data.bindData.x, Modal.data.bindData.y);
 	},
 	pressO() {
 		if (!Modal.showing && player.obelisk.repaired)

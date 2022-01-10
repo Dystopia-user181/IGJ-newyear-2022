@@ -379,12 +379,12 @@ function loadMenus() {
 		template: `<div style="padding: 10px">
 			<div v-if="!building.upgrading">
 				<div class="centre">
-					<button @click="tab = 'a'" :disabled="tab == 'a'" style="width: 30%; padding: 6px; margin: 4px;">Drain</button>
-					<button @click="tab = 'b'" :disabled="tab == 'b'" style="width: 30%; padding: 6px; margin: 4px;">Effects</button>
+					<button @click="tab = 'a'" :disabled="tab == 'a'" style="width: 30%; padding: 6px; margin: 4px;">Global Drain</button>
+					<button @click="tab = 'b'" :disabled="tab == 'b'" style="width: 30%; padding: 6px; margin: 4px;">Global Effects</button>
 				</div>
-				<h2 v-if="BD[5].getEffect(data.x, data.y).lt(1)">This antipoint is enduring competition with nearby antipoints</h2>
-				<div class="col centre" style="border: 2px solid #f0f; padding: 10px;" v-if="tab == 'a'">
-					<button :disabled="player.anti.drain == 'none'" class="upg-button" @click="player.anti.drain = 'none'">
+				<h2 v-if="BD[5].getEffect(data.x, data.y).lt(1)">This antipoint is enduring competition with nearby antipoints, lowering its effectiveness</h2>
+				<div class="col centre" style="padding: 10px;" v-if="tab == 'a'">
+					<button :disabled="player.anti.drain == 'none'" class="upg-button" style="min-height: 120px;" @click="player.anti.drain = 'none'">
 						<span v-if="player.anti.drain != 'none'">
 							<b class="anti">{{player.anti.drain[0].toUpperCase() + player.anti.drain.slice(1)}} drain</b><br><br>
 							<i class="sub">Disable</i>
@@ -395,27 +395,28 @@ function loadMenus() {
 					</button>
 					<br>
 					<div>
-						<button class="upg-button" @click="player.anti.drain = 'money'">
+						<button class="upg-button" style="min-height: 130px;" @click="player.anti.drain = 'money'">
 							<b>Drain <b class="anti">Money</b></b><br><br>
 							Removes 0.3% <span class="money">$</span> every second and converts it to <span class="anti">^$</span>
 						</button>
-						<button class="upg-button" @click="player.anti.drain = 'essence'">
+						<button class="upg-button" style="min-height: 130px;" @click="player.anti.drain = 'essence'">
 							<b>Drain <b class="anti">Essence</b></b><br><br>
 							Removes 0.3% <span class="essence">*</span> every second and converts it to <span class="anti">^*</span>
 						</button>
-						<button class="upg-button" @click="player.anti.drain = 'time'">
+						<button class="upg-button" style="min-height: 130px;" @click="player.anti.drain = 'time'">
 							<b>Drain <b class="anti">Time</b></b><br><br>
 							Reverses and amplifies flow of time, converting it to <span class="anti">^Δ</span>
 						</button>
 					</div>
 				</div>
-				<div style="border: 2px solid #f0f; padding: 10px;" v-if="tab == 'b'">
+				<div style="padding: 10px;" v-if="tab == 'b'">
 					<span style="font-size: 20px;"><span class="anti">^$</span> {{format(player.anti.money)}} | 
 					<span class="anti">^*</span> {{format(player.anti.essence)}} | 
 					<span class="anti">^Δ</span> {{format(player.anti.time)}}</span><br><br>
 					<span class="anti" style="font-size: 20px;">^$</span>: <span class="essence">*</span> gain x{{format(tmp.anti.moneyEffect)}}<br>
 					<span class="anti" style="font-size: 20px;">^*</span>: <span class="money">$</span> gain x{{format(tmp.anti.essenceEffect)}}<br>
-					<span class="anti" style="font-size: 20px;">^Δ</span>: Time rate x{{format(tmp.anti.timeEffect)}}
+					<span class="anti" style="font-size: 20px;">^Δ</span>: Time rate x{{format(tmp.anti.timeEffect)}}<br><br>
+					The effectiveness of above effects is {{format(tmp.anti.antisum)}} (increases with antipoints built)
 				</div>
 				<br><br>
 				<button @click="Building.sell(data.x, data.y)">Sell</button>
@@ -456,7 +457,7 @@ function openMenu(x, y) {
 	Modal.show({
 		title: '<span style="font-size: 35px;">' + name + '</span>',
 		bind: MENU_DATA[tileName].id + '-menu',
-		bindData: {x, y, tile: map[x][y]},
+		bindData: {x, y, tile: map[x][y], isBuilding: (tileName in BD), canUpg: (tileName in BD) && ("levelCost" in BD[tileName])},
 		style: MENU_DATA[tileName].style || {}
 	})
 	if (MENU_DATA[tileName].onOpen) MENU_DATA[tileName].onOpen();
