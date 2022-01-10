@@ -282,7 +282,7 @@ const Building = {
 		for (let i of player.buildings) {
 			if (i.pos.x == x && i.pos.y == y) {
 				buildings.set(x*10000 + y, i);
-				return id ? i : player.buildings.indexOf(i);
+				return id ? player.buildings.indexOf(i) : i;
 			}
 		}
 	},
