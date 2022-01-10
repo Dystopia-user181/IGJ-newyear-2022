@@ -66,7 +66,7 @@ function loadMenus() {
 		data() { return {
 			player,
 			Currency,
-			upg2Cost: [3e3]
+			upg2Cost: [3e3, 1e11]
 		}},
 		methods: {
 			buyUpg0() {
@@ -356,6 +356,26 @@ function loadMenus() {
 			<upgrade-progress :x="data.x" :y="data.y" v-else></upgrade-progress>
 		</div>`
 	})
+	Vue.component("antipoint-menu", {
+		data() { return {
+			player,
+			Building
+		}},
+		computed: {
+			building() {
+				return Building.getByPos(this.data.x, this.data.y);
+			}
+		},
+		props: ["data"],
+		template: `<div style="padding: 10px">
+			<div v-if="!building.upgrading">
+				<h3>Increases production by 300%</h3>
+				<br><br>
+				<button @click="Building.sell(data.x, data.y)">Sell</button>
+			</div>
+			<upgrade-progress :x="data.x" :y="data.y" v-else></upgrade-progress>
+		</div>`
+	})
 
 	Vue.component("upgrade-progress", {
 		data() { return {
@@ -411,6 +431,10 @@ const MENU_DATA = {
 	4: {
 		id: "enhancer",
 		name: "Enhancer"
+	},
+	5: {
+		id: "antipoint",
+		name: "Antipoint"
 	},
 	"-2": {
 		id: 'construction',

@@ -44,6 +44,12 @@ function getStartPlayer() {
 			lowerMineCost: 0,
 			enhanceCollectors: 0
 		},
+		anti: {
+			money: D(0),
+			essence: D(0),
+			time: D(0),
+			drain: "none"
+		},
 		builders: 0,
 		buildings: [],
 		version: "0.1"

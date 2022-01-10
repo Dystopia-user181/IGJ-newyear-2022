@@ -15,6 +15,8 @@ function gameLoop(d) {
 	player.time.thisTick = Date.now();
 	let trueDiff = d;
 
+	tmp.hasAnti = buildingAmt(5) > 0;
+
 	d = timerate().mul(d);
 
 	if (player.unlocks.start) {
@@ -89,6 +91,19 @@ function gameLoop(d) {
 			if (!i.upgrading)
 				Currency.essence.add(BD[3].getProduction(i.pos.x, i.pos.y).mul(d));
 		}
+		if (tmp.hasAnti) {
+			if (player.anti.drain == "money") {
+				let prevprevMoney = Currency.money.amt;
+				Currency.money.amt = Currency.money.mul(Decimal.pow(0.995, d));
+				player.anti.money = player.anti.money.add(prevprevMoney.sub(Currency.money.amt));
+			} else if (player.anti.drain == "essence") {
+				let prevprevEssence = Currency.essence.amt;
+				Currency.essence.amt = Currency.essence.mul(Decimal.pow(0.995, d));
+				player.anti.essence = player.anti.essence.add(prevprevEssence.sub(Currency.essence.amt));
+			} else if (player.anti.drain == "time") {
+				if (Currency.essence.amt.lte(0))
+			}
+		}
 		tmp.moneyGain = Currency.money.amt.sub(prevMoney).div(d);
 		tmp.essenceGain = Currency.essence.amt.sub(prevEssence).div(d);
 	}
@@ -116,6 +131,7 @@ function renderLoop() {
 let interval, autoInterval, renderInterval;
 
 let tmp = {
+	hasAnti: false,
 	moneyGain: D(0),
 	essenceGain: D(0),
 	obelisk: {

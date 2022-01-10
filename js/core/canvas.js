@@ -172,24 +172,24 @@ let tileStyle = {
 		let t = player.time.thisTick;
 		ctx.beginPath();
 		ctx.moveTo(...antipointFourier(t, ci, cj, w));
-		ctx.lineTo(...antipointFourier(t - 30, ci, cj, w));
+		ctx.lineTo(...antipointFourier(t - 50, ci, cj, w));
 		ctx.stroke();
-		ctx.lineTo(...antipointFourier(t - 60, ci, cj, w));
-		ctx.stroke();
-		ctx.lineTo(...antipointFourier(t - 90, ci, cj, w));
-		ctx.stroke();
-		ctx.lineTo(...antipointFourier(t - 120, ci, cj, w));
+		ctx.lineTo(...antipointFourier(t - 100, ci, cj, w));
 		ctx.stroke();
 		ctx.lineTo(...antipointFourier(t - 150, ci, cj, w));
 		ctx.stroke();
-		ctx.lineTo(...antipointFourier(t - 180, ci, cj, w));
+		ctx.lineTo(...antipointFourier(t - 200, ci, cj, w));
 		ctx.stroke();
-		ctx.lineTo(...antipointFourier(t - 210, ci, cj, w));
+		ctx.lineTo(...antipointFourier(t - 250, ci, cj, w));
+		ctx.stroke();
+		ctx.lineTo(...antipointFourier(t - 300, ci, cj, w));
+		ctx.stroke();
+		ctx.lineTo(...antipointFourier(t - 350, ci, cj, w));
 		ctx.stroke();
 	}
 }
 function antipointFourier(t, x, y, w) {
-	t = t/200;
+	t = t/500;
 	let v = [x, y];
 	fourTrans(v, t, 0.15, w*0.3);
 	fourTrans(v, t, 2, w*0.6);

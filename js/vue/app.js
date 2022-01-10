@@ -17,8 +17,8 @@ function loadVue() {
 		}},
 		template: `<div style="position: relative; height: 100%;">
 			<div style="position: absolute;">
-				<span style="font-size: 20px"><money-display></money-display> (+{{format(tmp.moneyGain)}}/s)</span>
-				<span style="font-size: 20px" v-if="player.base.newBuildings > 0"> | <essence-display></essence-display> (+{{format(tmp.essenceGain)}}/s)</span>
+				<span style="font-size: 20px"><money-display></money-display> ({{format(tmp.moneyGain)}}/s)</span>
+				<span style="font-size: 20px" v-if="player.base.newBuildings > 0"> | <essence-display></essence-display> ({{format(tmp.essenceGain)}}/s)</span>
 				<br>
 				Welcome to Time Game. Press WASD to navigate.
 			</div>

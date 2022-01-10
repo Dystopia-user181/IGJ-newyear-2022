@@ -108,7 +108,7 @@ const BUILDINGS = {
 		startMeta(x, y) { return {} },
 		buildTime: D(20)
 	},
-	4: {
+	5: {
 		name: "Antipoint",
 		get desc() {
 			return `Reverses time and gives buffs in return.<br>Do not place them within 6 metres of each other.`;
