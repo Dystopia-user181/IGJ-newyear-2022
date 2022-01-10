@@ -47,6 +47,9 @@ select {
 	background: var(--bg-1) !important;
 }
 
+.small {
+	font-size: 0.95em;
+}
 .centre {
 	display: flex;
 	justify-content: center;
@@ -55,6 +58,11 @@ select {
 .col {
 	display: flex;
 	flex-direction: column;
+}
+
+.sub {
+	opacity: 0.7;
+	font-style: italic;
 }
 
 .nomargin {
@@ -129,8 +137,8 @@ select {
 }
 
 .anti {
-	color: #0000;
-	text-shadow: 0 0px 5px var(--c-1), 0px 0px 5px var(--c-1);
+	color: #000;
+	text-shadow: 0 0px 4px var(--c-1), 0px 0px 4px var(--c-1), 0px 0px 4px var(--c-1);
 }
 
 /* Custom Scrollbar */

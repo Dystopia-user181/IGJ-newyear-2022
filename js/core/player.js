@@ -48,6 +48,7 @@ function getStartPlayer() {
 			money: D(0),
 			essence: D(0),
 			time: D(0),
+			constTime: 0,
 			drain: "none"
 		},
 		builders: 0,
@@ -143,9 +144,12 @@ function decimaliseProperties(data, struct) {
 function fixOldSave(version) {
 	console.log(version);
 	if (version == undefined) {
-		for (let i = 49; i < 60; i++) {
-			map[48][i] = {t: 0};
-			map[i][48] = {t: 0};
+		for (let i = 49; i < 96; i++) {
+			if (map[48][i].t == 5)
+				map[48][i] = {t: 0};
+
+			if (map[i][48].t == 5)
+				map[i][48] = {t: 0};
 		}
 	}
 }

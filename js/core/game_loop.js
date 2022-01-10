@@ -8,6 +8,7 @@ function Updater(func) {
 }
 Updater.updates = [];
 
+const drainConst = D(1/0.997);
 function gameLoop(d) {
 	if (paused) return;
 	d = Math.min(d, player.obelisk.repairing ? 0.2 : 10);
@@ -16,6 +17,18 @@ function gameLoop(d) {
 	let trueDiff = d;
 
 	tmp.hasAnti = buildingAmt(5) > 0;
+	tmp.anti.drainMoney = tmp.hasAnti && player.anti.drain == "money";
+	tmp.anti.drainEssence = tmp.hasAnti && player.anti.drain == "essence";
+	tmp.anti.drainTime = tmp.hasAnti && player.anti.drain == "time";
+
+	tmp.anti.antisum = D(0);
+	for (let i of buildingList(5)) {
+		tmp.anti.antisum = tmp.anti.antisum.add(BD[5].getEffect(i.pos.x, i.pos.y));
+	}
+
+	tmp.anti.moneyEffect = player.anti.money.sqrt().div(3e4).add(1).sqrt().pow(tmp.anti.antisum.pow(0.3));
+	tmp.anti.essenceEffect = player.anti.essence.sqrt().div(3e2).add(1).sqrt().pow(tmp.anti.antisum.pow(0.3));
+	tmp.anti.timeEffect = player.anti.time.div(1000).mul(Decimal.pow(3, tmp.anti.antisum.pow(0.8))).add(1).pow(tmp.anti.antisum.pow(0.3).mul(0.2));
 
 	d = timerate().mul(d);
 
@@ -83,27 +96,42 @@ function gameLoop(d) {
 		}
 		let prevMoney = Currency.money.amt;
 		let prevEssence = Currency.essence.amt;
+		let prodMoney = D(0), prodEssence = D(0);
 		for (let i of buildingList(2)) {
 			if (!i.upgrading)
-				Currency.money.add(BD[2].getProduction(i.pos.x, i.pos.y).mul(d));
+				prodMoney = prodMoney.add(BD[2].getProduction(i.pos.x, i.pos.y))
 		}
 		for (let i of buildingList(3)) {
 			if (!i.upgrading)
-				Currency.essence.add(BD[3].getProduction(i.pos.x, i.pos.y).mul(d));
+				prodEssence = prodEssence.add(BD[3].getProduction(i.pos.x, i.pos.y))
 		}
-		if (tmp.hasAnti) {
-			if (player.anti.drain == "money") {
-				let prevprevMoney = Currency.money.amt;
-				Currency.money.amt = Currency.money.mul(Decimal.pow(0.995, d));
-				player.anti.money = player.anti.money.add(prevprevMoney.sub(Currency.money.amt));
-			} else if (player.anti.drain == "essence") {
-				let prevprevEssence = Currency.essence.amt;
-				Currency.essence.amt = Currency.essence.mul(Decimal.pow(0.995, d));
-				player.anti.essence = player.anti.essence.add(prevprevEssence.sub(Currency.essence.amt));
-			} else if (player.anti.drain == "time") {
-				if (Currency.essence.amt.lte(0) || Currency.money.amt.lte(0)) {
-					player.anti.drain = "none";
-				}
+		if (tmp.anti.drainMoney) {
+			let amt = prodMoney.mul(0.001).sub(Currency.money.amt.mul(drainConst.pow(0.001).sub(1)))
+			.mul(drainConst.pow(0.001).sub(1).recip().mul(
+				Decimal.sub(1, drainConst.pow(0.001).recip().pow(d * 1000))
+			));
+			
+			Currency.money.add(amt);
+			player.anti.money = player.anti.money.add(prodMoney.mul(d).sub(amt));
+		} else  {
+			Currency.money.add(prodMoney.mul(d));
+		}
+		if (tmp.anti.drainEssence) {
+			let amt = prodEssence.mul(0.001).sub(Currency.essence.amt.mul(drainConst.pow(0.001).sub(1)))
+			.mul(drainConst.pow(0.001).sub(1).recip().mul(
+				Decimal.sub(1, drainConst.pow(0.001).recip().pow(d * 1000))
+			));
+			
+			Currency.essence.add(amt);
+			player.anti.essence = player.anti.essence.add(prodEssence.mul(d).sub(amt));
+		} else  {
+			Currency.essence.add(prodEssence.mul(d));
+		}
+		if (tmp.anti.drainTime) {
+			if (Currency.essence.amt.lte(0) || Currency.money.amt.lte(0)) {
+				player.anti.drain = "none";
+			} else {
+				player.anti.time = player.anti.time.add(d.mul(-1));
 			}
 		}
 		tmp.moneyGain = Currency.money.amt.sub(prevMoney).div(d);
@@ -140,6 +168,15 @@ let tmp = {
 		activeTime: D(0),
 		cooldownTime: D(0),
 		effect: D(1)
+	},
+	anti: {
+		drainMoney: false,
+		drainEssence: false,
+		drainTime: false,
+		moneyEffect: D(0),
+		essenceEffect: D(0),
+		timeEffect: D(0),
+		antisum: D(0)
 	}
 }
 
@@ -148,8 +185,10 @@ function timerate() {
 	if (player.obelisk.repairing) {
 		base = base.div(Decimal.pow(2, player.obelisk.time));
 	}
-	if (player.obelisk.activeTime.gt(0)){
+	if (player.obelisk.activeTime.gt(0)) {
 		base = base.mul(tmp.obelisk.effect);
 	}
+	base = base.mul(tmp.anti.timeEffect);
+	if (tmp.anti.drainTime) base = base.mul(-10);
 	return base;
 }

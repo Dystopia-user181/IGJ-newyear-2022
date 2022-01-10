@@ -111,8 +111,8 @@ let controls = {
 			openMenu(3, 3);
 	},
 	pressS(e) {
-		if (paused || !controls.control) return;
 		e.preventDefault();
+		if (paused || !controls.control) return;
 		save();
 	},
 	pressO() {

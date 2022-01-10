@@ -2,6 +2,15 @@ let c, c1, c2, ctx, ctx1, ctx2;
 
 const px = 25, py = 30;
 let tileStyle = {
+	"-7"(i, j, ctx, x, y) {
+		if (!map[x][y].data.forceWalkable) {
+			ctx.fillStyle = "#435";
+			ctx.shadowBlur = 0;
+			if (y == 64) ctx.fillRect(i, j + py/2 - 2.5, px, 5);
+			if (x == 64) ctx.fillRect(i + px/2 - 2.5, j, 5, py);
+			ctx.fillRect(i + px/4, j + py/2 - px/4, px/2, px/2);
+		}
+	},
 	"-6"(i, j, ctx) {
 		let w = Math.min(px, py);
 		ctx.strokeStyle = "#fff";
@@ -77,7 +86,7 @@ let tileStyle = {
 	},
 	"2"(x, y, ctx, x1, y1) {
 		let level = Building.getByPos(x1, y1).level;
-		ctx.strokeStyle = (level < 4 ? "#aae" : "#db6");
+		ctx.strokeStyle = level > 7 ? "#c24" : (level < 4 ? "#aae" : "#db6");
 		ctx.shadowBlur = 0;
 		let w = px/5;
 		ctx.lineWidth = w;
@@ -88,6 +97,12 @@ let tileStyle = {
 		ctx.lineTo(x + px - w/2, y + py*3/5);
 		ctx.lineTo(x + px - w/2, y + w/2 + 1);
 		ctx.stroke();
+		if (level > 6) {
+			ctx.beginPath();
+			ctx.moveTo(x + 2, y + py - w/2 - 1);
+			ctx.lineTo(x + px - 2, y + py - w/2 - 1);
+			ctx.stroke();
+		}
 
 		if (level > 0) {
 			ctx.strokeStyle = "#eef";
@@ -126,7 +141,7 @@ let tileStyle = {
 	},
 	"3"(i, j, ctx, x, y) {
 		let level = Building.getByPos(x, y).level;
-		ctx.fillStyle = (level > 1 ? "#9ab" : "#a83");
+		ctx.fillStyle = level > 3 ? "#eb8" : (level > 1 ? "#9ab" : "#a83");
 		ctx.shadowBlur = 0;
 		ctx.fillRect(i + 1, j + px/8, px/8 - 1, py - px/4);
 		ctx.fillRect(i + px*7/8, j + px/8, px/8 - 1, py - px/4);
@@ -141,6 +156,30 @@ let tileStyle = {
 		ctx.beginPath();
 		ctx.arc(i + px/2, j + py/2, px*0.25, 0, Math.PI*2);
 		ctx.fill();
+
+		if (level > 4) {
+			let w = Math.min(px, py)/2;
+			let ci = i + px/2, cj = j + py/2
+			ctx.strokeStyle = "#edf4";
+			ctx.lineWidth = 3;
+			let t = player.time.thisTick/5;
+			ctx.beginPath();
+			ctx.moveTo(...antipointFourier(t, ci, cj, w));
+			ctx.lineTo(...antipointFourier(t - 10, ci, cj, w));
+			ctx.stroke();
+			ctx.lineTo(...antipointFourier(t - 20, ci, cj, w));
+			ctx.stroke();
+			ctx.lineTo(...antipointFourier(t - 30, ci, cj, w));
+			ctx.stroke();
+			ctx.lineTo(...antipointFourier(t - 40, ci, cj, w));
+			ctx.stroke();
+			ctx.lineTo(...antipointFourier(t - 50, ci, cj, w));
+			ctx.stroke();
+			ctx.lineTo(...antipointFourier(t - 60, ci, cj, w));
+			ctx.stroke();
+			ctx.lineTo(...antipointFourier(t - 70, ci, cj, w));
+			ctx.stroke();
+		}
 	},
 	"4"(i, j, ctx) {
 		ctx.fillStyle = "#aaa";
@@ -301,12 +340,18 @@ function render() {
 			ctx.shadowBlur = 0;
 			ctx.fillRect(i*px, j*py, px, py);
 
-			ctx.fillStyle = "#c3c4";
+			ctx.fillStyle = "#b4c6";
 			for (let k = Math.max(x - 1, 0); k <= Math.min(x + 1, mapWidth - 1); k++) {
 				for (let l = Math.max(y - 1, 0); l <= Math.min(y + 1, mapHeight - 1); l++) {
 					if (map[k][l].t == 4) {
 						ctx.fillRect(i*px, j*py, px, py);
 					}
+				}
+			}
+			ctx.fillStyle = "#0003";
+			for (let k of buildingList(5)) {
+				if (distance([k.pos.x, k.pos.y], [x, y]) < 6.5) {
+					ctx.fillRect(i*px, j*py, px, py);
 				}
 			}
 		}

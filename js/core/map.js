@@ -1,7 +1,7 @@
 let map, defMap;
 
 
-const mapWidth = 60, mapHeight = 60;
+const mapWidth = 96, mapHeight = 96;
 
 
 let SPECIAL_TILES = [{
@@ -25,6 +25,16 @@ for (let i = 0; i < 49; i++) {
 	SPECIAL_TILES.push({
 		pos: {x: 48, y: i},
 		data: {t: -5, data: {forceWalkable: false}}
+	})
+}
+for (let i = 0; i < 65; i++) {
+	SPECIAL_TILES.push({
+		pos: {x: i, y: 64},
+		data: {t: -7, data: {forceWalkable: false}}
+	})
+	SPECIAL_TILES.push({
+		pos: {x: 64, y: i},
+		data: {t: -7, data: {forceWalkable: false}}
 	})
 }
 function loadMap() {

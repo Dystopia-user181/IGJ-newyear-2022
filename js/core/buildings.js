@@ -3,6 +3,9 @@ const BUILDINGS = {
 		name: "Gold Mine",
 		desc: "Produces <span class='money'>$</span> 0.75/s.",
 		get cost() {
+			if (costAmt(2) >= 96) {
+				return D(Infinity);
+			}
 			if (player.base.lowerMineCost) {
 				if (costAmt(2) >= 64) return Decimal.pow(1.3, Math.pow(costAmt(2), 1.2) - 147).mul(1e8).floor()
 				return Decimal.pow(costAmt(2), 3.5).floor();
@@ -16,9 +19,9 @@ const BUILDINGS = {
 		startMeta(x, y) { return {} },
 		buildTime: D(5),
 		levelCost(lvl) {
-			if (lvl > 6) return D(Infinity);
+			if (lvl > 7) return D(Infinity);
 
-			return Decimal.pow(10, Math.pow(lvl, 1.19855)).mul(100 + 100*(lvl > 4)).floor();
+			return Decimal.pow(10, Math.pow(lvl, (lvl > 6) ? 1.21 : 1.19855)).mul(100 + 100*(lvl > 4) + 3e4*(lvl > 5)).floor();
 		},
 		levelScaling(lvl) {
 			if (lvl == 0) return D(1);
@@ -33,7 +36,8 @@ const BUILDINGS = {
 			if (lvl == 3) return D(120);
 			if (lvl == 4) return D(1800);
 			if (lvl == 5) return D(10800);
-			if (lvl == 6) return D(10800000);
+			if (lvl == 6) return D(172800);
+			if (lvl == 7) return D(3456000);
 		},
 		getProduction(x, y) {
 			let b = Building.getByPos(x, y);
@@ -46,14 +50,14 @@ const BUILDINGS = {
 				}
 			}
 			enhancers = Math.min(enhancers, 1);
-			return BD[2].levelScaling(b.level).mul(0.75*(1 + enhancers*3));
+			return BD[2].levelScaling(b.level).mul(0.75*(1 + enhancers*3)).mul(tmp.anti.essenceEffect);
 		}
 	},
 	3: {
 		name: "Essence Collector",
 		desc: "Produces <span class='essence'>*</span> 0.05/s.",
 		get cost() {
-			if (costAmt(3) >= 96) return D(Infinity);
+			if (costAmt(3) >= 48) return D(Infinity);
 			return Decimal.pow(1.5, Math.pow(costAmt(3), 1.2)).mul(1e3).floor();
 		},
 		currencyName: "money",
@@ -63,20 +67,22 @@ const BUILDINGS = {
 		startMeta(x, y) { return {} },
 		buildTime: D(15),
 		levelCost(lvl) {
-			if (lvl > 2) return D(Infinity);
+			if (lvl > 4) return D(Infinity);
 
-			return Decimal.pow(40, Math.pow(lvl, 1.2)).mul(5e5);
+			return Decimal.pow(40, Math.pow(lvl, 1.2)).mul(5e5 + 9.5e6*(lvl > 2));
 		},
 		levelScaling(lvl) {
 			if (lvl == 0) return D(1);
 			if (lvl == 1) return D(10);
 
-			return Decimal.pow(4, lvl).mul(2.25 + 12*(lvl > 2));
+			return Decimal.pow(4, lvl).mul(2.25 + 12*(lvl > 2) + 120*(lvl > 3));
 		},
 		levelTime(lvl) {
 			if (lvl == 0) return D(30);
 			if (lvl == 1) return D(90);
 			if (lvl == 2) return D(10800);
+			if (lvl == 3) return D(172800);
+			if (lvl == 4) return D(3456000);
 		},
 		getProduction(x, y) {
 			let b = Building.getByPos(x, y);
@@ -90,7 +96,7 @@ const BUILDINGS = {
 					}
 				}
 			enhancers = Math.min(enhancers, 1);
-			return BD[3].levelScaling(b.level).mul(0.05*(1 + enhancers*3));
+			return BD[3].levelScaling(b.level).mul(0.05*(1 + enhancers*3)).mul(tmp.anti.moneyEffect);
 		}
 	},
 	4: {
@@ -111,18 +117,28 @@ const BUILDINGS = {
 	5: {
 		name: "Antipoint",
 		get desc() {
-			return `Reverses time and gives buffs in return.<br>Do not place them within 6 metres of each other.`;
+			return `Reverses time and gives buffs in return.<br>Do not place them within 6 tiles of each other.`;
 		},
 		get cost() {
-			if (costAmt(5) > 0) return D(Infinity);
-			return Decimal.pow(1000, costAmt(5)).mul(4e6);
+			if (costAmt(5) > 3) return D(Infinity);
+			return Decimal.pow(30, Math.pow(costAmt(5), 1.5)).mul(4e6);
 		},
 		currencyName: "essence",
 		canPlace(x, y) {
 			return checkTileAccess(x, y);
 		},
 		startMeta(x, y) { return {} },
-		buildTime: D(1800)
+		buildTime: D(1800),
+		getEffect(x, y) {
+			let base = D(1);
+			let nearby = 0;
+			for (i of buildingList(5)) {
+				if (distance([i.pos.x, i.pos.y], [x, y]) < 6.5)
+					nearby++;
+			}
+			base = base.div(Math.sqrt(nearby));
+			return base;
+		}
 	}
 }
 const BD = BUILDINGS;
@@ -271,6 +287,7 @@ const Building = {
 			}],
 			close() {
 				deepcopyto(currentModal, Modal.data);
+				Modal.data.buttons = [];
 				Modal.closeFunc = prevCloseFunc;
 			}
 		})
