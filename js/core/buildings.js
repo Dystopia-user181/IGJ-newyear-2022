@@ -234,6 +234,7 @@ const Building = {
 		let building = BUILDINGS[id];
 		if (building.cost.gt(player.currency[building.currencyName])) return;
 		if (queue() > queueMax() - 1) return;
+		if (!building.canBuild) return;
 		Modal.close();
 
 		if (!player.unlocks.place) {
