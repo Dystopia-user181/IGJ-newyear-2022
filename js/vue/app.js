@@ -110,7 +110,7 @@ function loadVue() {
 		Shift+WASD/arrow keys: Rotate building when placing<br>
 		Space: Place building<br>
 		I: Sell building<br>
-		<span v-if="player.unlocks.level">U: Upgrade building<br><span>
+		<span v-if="player.unlocks.level">U: Upgrade building<br></span>
 		E: Open construction menu<br>
 		<span v-if="player.obelisk.repaired">O: Open obelisk menu</span><br>
 		Esc: Close window/Stop placing building/Pause game<br>
