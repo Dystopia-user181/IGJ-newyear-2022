@@ -23,7 +23,7 @@ function formatWhole(num) {
 function formatTime(num) {
 	num = D(num);
 	if (num.e > 1e15) return "Infinite time";
-	if (num > 9e15) {
+	if (num >= 86400000000) {
 		return `${format(num.div(86400))}d`
 	}
 	let d = Math.floor(num/86400), h = Math.floor(num/3600)%24, m = Math.floor(num/60)%60, s = num%60;

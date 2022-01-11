@@ -16,6 +16,9 @@ let SPECIAL_TILES = [{
 }, {
 	pos: {x: 51, y: 51},
 	data: {t: -6}
+}, {
+	pos: {x: 65, y: 65},
+	data: {t: -8}
 }]
 for (let i = 0; i < 49; i++) {
 	SPECIAL_TILES.push({

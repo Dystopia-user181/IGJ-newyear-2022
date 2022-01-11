@@ -11,7 +11,7 @@ Updater.updates = [];
 const drainConst = D(1/0.997);
 function gameLoop(d) {
 	if (paused) return;
-	d = Math.min(d, player.obelisk.repairing ? 0.2 : 10);
+	d = Math.min(d, (player.obelisk.repairing || player.timewall.two.destroying) ? 0.1 : 10);
 	player.time.timeStat += d;
 	player.time.thisTick = Date.now();
 	let trueDiff = d;
@@ -69,6 +69,21 @@ function gameLoop(d) {
 					Modal.close();
 				}
 				canvas.need0update = true;
+				updateTileUsage();
+			}
+		}
+		if (player.timewall.two.destroying) {
+			player.timewall.two.time = player.timewall.two.time.add(d);
+			if (player.timewall.two.time.gte(2592000)) {
+				player.timewall.two.destroyed = true;
+				player.timewall.two.destroying = false;
+				for (let i = 0; i < 65; i++) {
+					map[64][i].data.forceWalkable = true;
+					map[i][64].data.forceWalkable = true;
+				}
+				if (Modal.data.bind = "wall2-menu") {
+					Modal.close();
+				}
 				updateTileUsage();
 			}
 		}
@@ -189,6 +204,9 @@ function timerate() {
 		base = base.mul(tmp.obelisk.effect);
 	}
 	base = base.mul(tmp.anti.timeEffect);
+	if (player.timewall.two.destroying) {
+		base = base.sub(player.timewall.two.time.mul(0.15)).max(0);
+	}
 	if (tmp.anti.drainTime) base = base.mul(-10);
 	return base;
 }

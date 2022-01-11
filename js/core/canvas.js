@@ -2,6 +2,17 @@ let c, c1, c2, ctx, ctx1, ctx2;
 
 const px = 25, py = 30;
 let tileStyle = {
+	"-8"(i, j, ctx) {
+		ctx.fillStyle = "#6fd";
+		ctx.beginPath();
+		ctx.moveTo(i + px*0.1, j + 1);
+		ctx.lineTo(i + px*0.1, j + py*2/3);
+		ctx.lineTo(i + px/2, j + py - 1);
+		ctx.lineTo(i + px*0.9, j + py*2/3);
+		ctx.lineTo(i + px*0.9, j + 1);
+		ctx.lineTo(i + px/2, j + py/3);
+		ctx.fill();
+	},
 	"-7"(i, j, ctx, x, y) {
 		if (!map[x][y].data.forceWalkable) {
 			ctx.fillStyle = "#435";
@@ -73,7 +84,21 @@ let tileStyle = {
 		ctx.fillStyle = "#aaf";
 		ctx.fillText("@", x + px/2, y + py*0.85);
 	},
-	"0"() {},
+	"0"(i, j, ctx, x, y) {
+		if (distance([x, y], [70, 70]) < 3.5) {
+			ctx.fillStyle = Currency.iridite.colour + '3';
+
+			ctx.fillRect(i, j, px, py);
+			ctx.fillStyle = Currency.iridite.colour;
+			ctx.strokeStyle = "#333";
+			ctx.lineWidth = 1;
+			ctx.shadowBlur = 0;
+			ctx.beginPath();
+			ctx.arc(i + px/2, j + py/2, Math.min(px, py)*0.3, 0, Math.PI*2);
+			ctx.fill();
+			ctx.stroke();
+		}
+	},
 	"1"(x, y, cctx) {
 		if (cctx != ctx1)
 			cctx.fillStyle = "#b84";
@@ -164,20 +189,20 @@ let tileStyle = {
 			ctx.lineWidth = 3;
 			let t = player.time.thisTick/5;
 			ctx.beginPath();
-			ctx.moveTo(...antipointFourier(t, ci, cj, w));
-			ctx.lineTo(...antipointFourier(t - 10, ci, cj, w));
+			ctx.moveTo(...essenceFourier(t, ci, cj, w));
+			ctx.lineTo(...essenceFourier(t - 10, ci, cj, w));
 			ctx.stroke();
-			ctx.lineTo(...antipointFourier(t - 20, ci, cj, w));
+			ctx.lineTo(...essenceFourier(t - 20, ci, cj, w));
 			ctx.stroke();
-			ctx.lineTo(...antipointFourier(t - 30, ci, cj, w));
+			ctx.lineTo(...essenceFourier(t - 30, ci, cj, w));
 			ctx.stroke();
-			ctx.lineTo(...antipointFourier(t - 40, ci, cj, w));
+			ctx.lineTo(...essenceFourier(t - 40, ci, cj, w));
 			ctx.stroke();
-			ctx.lineTo(...antipointFourier(t - 50, ci, cj, w));
+			ctx.lineTo(...essenceFourier(t - 50, ci, cj, w));
 			ctx.stroke();
-			ctx.lineTo(...antipointFourier(t - 60, ci, cj, w));
+			ctx.lineTo(...essenceFourier(t - 60, ci, cj, w));
 			ctx.stroke();
-			ctx.lineTo(...antipointFourier(t - 70, ci, cj, w));
+			ctx.lineTo(...essenceFourier(t - 70, ci, cj, w));
 			ctx.stroke();
 		}
 	},
@@ -225,6 +250,15 @@ let tileStyle = {
 		ctx.stroke();
 		ctx.lineTo(...antipointFourier(t - 350, ci, cj, w));
 		ctx.stroke();
+	},
+	"6"(i, j, ctx) {
+		ctx.fillStyle = Currency.iridite.colour + '3';
+		ctx.fillRect(i, j, px, py);
+		
+		ctx.fillStyle = "#444";
+		ctx.fillRect(i + px/8, j + py*0.8, px*0.75, py*0.1);
+		ctx.fillStyle = "#5fa";
+		ctx.fillRect(i + px/6, j + py*0.7, px*2/3, py*0.1);
 	}
 }
 function antipointFourier(t, x, y, w) {
@@ -235,6 +269,13 @@ function antipointFourier(t, x, y, w) {
 	fourTrans(v, t, 9, w*0.4);
 	fourTrans(v, t, 15, w*0.3);
 	fourTrans(v, t, 37, w*0.2);
+	return v;
+}
+function essenceFourier(t, x, y, w) {
+	t = t/100;
+	let v = [x, y];
+	fourTrans(v, t, 1, w*0.5);
+	fourTrans(v, t, 2.5, w*0.4);
 	return v;
 }
 function fourTrans(x, t, s, m) {
@@ -353,6 +394,11 @@ function render() {
 				if (distance([k.pos.x, k.pos.y], [x, y]) < 6.5) {
 					ctx.fillRect(i*px, j*py, px, py);
 				}
+			}
+
+			if (x == y) {
+				ctx.fillStyle = "#d8d3";
+				ctx.fillRect(i*px, j*py, px, py);
 			}
 		}
 	}

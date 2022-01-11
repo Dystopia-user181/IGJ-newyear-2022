@@ -21,6 +21,11 @@ function getStartPlayer() {
 				time: D(0),
 				destroying: false,
 				destroyed: false
+			},
+			two: {
+				time: D(0),
+				destroying: false,
+				destroyed: false
 			}
 		},
 		obelisk: {
@@ -37,7 +42,8 @@ function getStartPlayer() {
 		},
 		currency: {
 			money: new Decimal(10),
-			essence: new Decimal(0)
+			essence: new Decimal(0),
+			iridite: new Decimal(0)
 		},
 		base: {
 			newBuildings: 0,
@@ -50,6 +56,9 @@ function getStartPlayer() {
 			time: D(0),
 			constTime: 0,
 			drain: "none"
+		},
+		iridite: {
+			newBuilding: 0
 		},
 		builders: 0,
 		buildings: [],

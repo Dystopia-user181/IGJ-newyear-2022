@@ -24,6 +24,7 @@ function loadMenus() {
 			<building-ui :bId="3"></building-ui>
 			<building-ui :bId="4"></building-ui>
 			<building-ui :bId="5" v-if="player.base.newBuildings > 0"></building-ui>
+			<building-ui :bId="6" v-if="player.iridite.newBuildings > 0"></building-ui>
 		</div>`
 	})
 
@@ -278,6 +279,81 @@ function loadMenus() {
 		</div>`
 	})
 
+	Vue.component("wall2-menu", {
+		data() { return {
+			BD,
+			player,
+			Building
+		}},
+		methods: {
+			destroyTimewall() {
+				if (Currency.money.amt.lt(2e20)) return;
+				Currency.money.use(2e20);
+				player.timewall.two.destroying = true;
+				if (player.anti.drain == "time") player.anti.drain = "none";
+			},
+			D,
+			timerate,
+			format
+		},
+		template: `<div style="padding: 10px" v-if="!player.timewall.two.destroyed" class="centre col">
+			Time rate: x {{format(timerate())}}<br><br>
+			<button @click="destroyTimewall" :disabled="player.currency.money.lt(2e20)" class="upg-button" v-if="!player.timewall.two.destroying">
+				<b>Destroy timewall 2.</b><br><br>
+				Cost: <money-display :amt="2e20" whole="a"></money-display>
+			</button>
+			<div v-else>
+				Destroying timewall 2...<br><br>
+			</div>
+			<div v-if="player.timewall.two.time.gt(0)">
+				Time left:
+				<bar :time="player.timewall.two.time" :max="D(2592000)"></bar><br><br>
+			</div>
+			<button v-if="player.timewall.two.destroying" @click="player.timewall.two.destroying = false;">
+				Stop destroying
+			</button>
+		</div>`
+	})
+
+	Vue.component("iridite-menu", {
+		data() { return {
+			player
+		}},
+		methods: {
+			buildingList,
+			buyUpg0() {
+				if (this.mines < 96 || this.collectors < 48) return;
+				let m = buildingList(2), e = buildingList(3);
+				for (let i of m) {
+					Building.sell(i.pos.x, i.pos.y);
+				}
+				for (let i of e) {
+					Building.sell(i.pos.x, i.pos.y);
+				}
+				player.iridite.newBuildings = 1;
+			}
+		},
+		computed: {
+			mines() {
+				return buildingList(2).filter(i => i.level >= 8).length;
+			},
+			collectors() {
+				return buildingList(3).filter(i => i.level >= 5).length;
+			}
+		},
+		template: `<div style="padding: 10px" class="centre col">
+			<button class="upg-button" :disabled="mines < 96 || collectors < 48" v-if="!player.iridite.newBuildings" @click="buyUpg0">
+				<b>Remove <span class="money">gold mines</span> and <span class="essence">essence collectors</span>, but unlock a new building.</b><br><br>
+				Req: {{mines}}/96 level 9 gold mines, {{collectors}}/48 level 6 essence collectors
+			</button>
+			<div class="centre col" v-else>
+				<h2>Project Iridium</h2>
+				<span>Welcome aboard, unnamed scientist.<br>Our goal is to find ways to bend time to our will.<br>
+				You have proven worthy of the task so far. Don't disappoint us.</span>
+			</div>
+		</div>`
+	})
+
 	Vue.component("goldmine-menu", {
 		data() { return {
 			Building,
@@ -337,6 +413,25 @@ function loadMenus() {
 				Cost: <money-display :amt="BD[3].levelCost(building.level)" whole="a"></money-display></button>
 			</div>
 			<upgrade-progress :x="data.x" :y="data.y" v-else></upgrade-progress>
+		</div>`
+	})
+	Vue.component("iriditedrill-menu", {
+		data() { return {
+			Building,
+			player,
+			BD
+		}},
+		methods: {
+			formatTime
+		},
+		computed: {
+			building() {
+				return Building.getByPos(this.data.x, this.data.y);
+			}
+		},
+		props: ["data"],
+		template: `<div style="padding: 10px">
+			This does nothing because you've reached the end of content lol
 		</div>`
 	})
 	Vue.component("enhancer-menu", {
@@ -488,6 +583,10 @@ const MENU_DATA = {
 			height: '500px'
 		}
 	},
+	6: {
+		id: "iriditedrill",
+		name: "Iridite Drill"
+	},
 	"-2": {
 		id: 'construction',
 		name: 'Construction firm',
@@ -519,5 +618,13 @@ const MENU_DATA = {
 			width: '750px',
 			height: '500px'
 		}
+	},
+	"-7": {
+		id: "wall2",
+		name: "Time Wall 2 (Literal)"
+	},
+	"-8": {
+		id: "iridite",
+		name: "Iridium"
 	}
 }

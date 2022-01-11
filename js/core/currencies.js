@@ -51,6 +51,10 @@ function loadCurrency() {
 		colour: "#c0c",
 		display: "*"
 	})
+	addCurrencyState("iridite", {
+		colour: "#5fb",
+		display: "Ø"
+	})
 
 	let styles = document.createElement("style");
 	styles.innerHTML = Currency.style;

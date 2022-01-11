@@ -3,7 +3,7 @@ const BUILDINGS = {
 		name: "Gold Mine",
 		desc: "Produces <span class='money'>$</span> 0.75/s.",
 		get cost() {
-			if (costAmt(2) >= 96) {
+			if (costAmt(2) >= 96 || player.iridite.newBuildings) {
 				return D(Infinity);
 			}
 			if (player.base.lowerMineCost) {
@@ -58,7 +58,7 @@ const BUILDINGS = {
 		name: "Essence Collector",
 		desc: "Produces <span class='essence'>*</span> 0.05/s.",
 		get cost() {
-			if (costAmt(3) >= 48) return D(Infinity);
+			if (costAmt(3) >= 48 || player.iridite.newBuildings) return D(Infinity);
 			return Decimal.pow(1.5, Math.pow(costAmt(3), 1.2)).mul(1e3).floor();
 		},
 		currencyName: "money",
@@ -153,6 +153,62 @@ const BUILDINGS = {
 		get canBuild() {
 			return player.base.newBuildings > 1;
 		}
+	},
+	6: {
+		name: "Iridite drill",
+		desc: `Produces <span class='money'>$</span> 5.00e9, <span class='essence'>*</span> 1.00e7, <span class='iridite'>Ø</span> 1.00e-6/s.<br>
+		<i class="sub">Can only be placed on iridium reserves</i>`,
+		get cost() {
+			if (costAmt(6) <= 0) return D(0);
+			if (costAmt(6) >= 4) return D(Infinity);
+			return Decimal.pow(30, Math.pow(costAmt(6), 1.5)).mul(4e6);
+		},
+		currencyName: "iridite",
+		canPlace(x, y) {
+			return checkTileAccess(x, y) && distance([x, y], [70, 70]) < 3.5;
+		},
+		startMeta(x, y) { return {} },
+		buildTime: D(3456000),
+		levelCost(lvl) {
+			return D(Infinity);
+		},
+		levelScaling(lvl) {
+			return D(1);
+
+
+			if (lvl == 0) return D(1);
+			if (lvl == 1) return D(5);
+
+			return Decimal.pow(3 + Math.max(Math.min(lvl - 3, lvl/2 - 1), 0), lvl).mul(2 + 18*(lvl > 4));
+		},
+		levelTime(lvl) {
+			return D(Infinity);
+
+
+			if (lvl == 0) return D(15);
+			if (lvl == 1) return D(35);
+			if (lvl == 2) return D(60);
+			if (lvl == 3) return D(120);
+			if (lvl == 4) return D(1800);
+			if (lvl == 5) return D(10800);
+			if (lvl == 6) return D(172800);
+			if (lvl == 7) return D(3456000);
+		},
+		getProduction(x, y) {
+			let b = Building.getByPos(x, y);
+			let enhancers = 0;
+			for (let i = Math.max(x - 1, 0); i <= Math.min(x + 1, mapWidth - 1); i++) {
+				for (let j = Math.max(y - 1, 0); j <= Math.min(y + 1, mapHeight - 1); j++) {
+					if (map[i][j].t == 4) {
+						enhancers++;
+					}
+				}
+			}
+			enhancers = Math.min(enhancers, 1);
+			let base = BD[6].levelScaling(b.level);
+			return [base.mul(5e9).mul(tmp.anti.essenceEffect), base.mul(1e7).mul(tmp.anti.moneyEffect), base.mul(1e-6)];
+		},
+		canBuild: true
 	}
 }
 const BD = BUILDINGS;
@@ -224,7 +280,8 @@ const Building = {
 		updateTileUsage();
 	},
 	sell(x, y) {
-		Modal.close();
+		if (Modal.showing && Modal.data.bindData.isBuilding)
+			Modal.close();
 		let building = Building.getByPos(x, y);
 		let b = BUILDINGS[building.t];
 		if (b.onSell) b.onSell(x, y);

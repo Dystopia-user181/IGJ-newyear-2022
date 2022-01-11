@@ -19,13 +19,14 @@ function loadVue() {
 			<div style="position: absolute;">
 				<span style="font-size: 20px"><money-display></money-display> ({{format(tmp.moneyGain)}}/s)</span>
 				<span style="font-size: 20px" v-if="player.base.newBuildings > 0"> | <essence-display></essence-display> ({{format(tmp.essenceGain)}}/s)</span>
+				<span style="font-size: 20px" v-if="player.iridite.newBuildings > 0"> | <iridite-display></iridite-display> ({{format(0)}}/s)</span>
 				<br>
 				Welcome to Time Game. Press WASD to navigate.
 			</div>
 			<a href="https://discord.gg/DVy4XjB" target="newtab" style="position: absolute; left: 0; bottom: 0;">Discord</a>
 			<div style="position: absolute; right: 0; bottom: 0;">
 				<button onclick="openMenu(3, 3)">
-					Construction
+					Construct
 				</button>
 				<button onclick="openMenu(20, 20)" v-if="player.unlocks.base">
 					Base
@@ -108,6 +109,8 @@ function loadVue() {
 		WASD/arrow keys: Move/Access building<br>
 		Shift+WASD/arrow keys: Rotate building when placing<br>
 		Space: Place building<br>
+		I: Sell building<br>
+		<span v-if="player.unlocks.level">U: Upgrade building<br><span>
 		E: Open construction menu<br>
 		<span v-if="player.obelisk.repaired">O: Open obelisk menu</span><br>
 		Esc: Close window/Stop placing building/Pause game<br>
