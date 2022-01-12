@@ -19,7 +19,10 @@ function loadMenus() {
 			queueMax
 		},
 		template: `<div>
-			<div style="padding: 10px; border-bottom: 2px solid;"><u @click="showQueueMenu" style="cursor: pointer;">Queue</u>: {{queue()}}/{{queueMax()}}</div>
+			<div style="padding: 10px; border-bottom: 2px solid; position: relative;">
+				<u @click="showQueueMenu" style="cursor: pointer;">Queue</u>: {{queue()}}/{{queueMax()}}
+				<button style="position: absolute; right: 6px; top: 6px;" @click="player.options.buildMultiple = !player.options.buildMultiple">Build Multiple Buildings at a Time: {{player.options.buildMultiple ? "ON" : "OFF"}}</button>
+			</div>
 			<building-ui :bId="2"></building-ui>
 			<building-ui :bId="3"></building-ui>
 			<building-ui :bId="4"></building-ui>

@@ -23,21 +23,25 @@ let SPECIAL_TILES = [{
 for (let i = 0; i < 49; i++) {
 	SPECIAL_TILES.push({
 		pos: {x: i, y: 48},
-		data: {t: -5, data: {forceWalkable: false}}
+		data: {t: -5, data: {forceWalkable: false}},
+		force: false
 	})
 	SPECIAL_TILES.push({
 		pos: {x: 48, y: i},
-		data: {t: -5, data: {forceWalkable: false}}
+		data: {t: -5, data: {forceWalkable: false}},
+		force: false
 	})
 }
 for (let i = 0; i < 65; i++) {
 	SPECIAL_TILES.push({
 		pos: {x: i, y: 64},
-		data: {t: -7, data: {forceWalkable: false}}
+		data: {t: -7, data: {forceWalkable: false}},
+		force: false
 	})
 	SPECIAL_TILES.push({
 		pos: {x: 64, y: i},
-		data: {t: -7, data: {forceWalkable: false}}
+		data: {t: -7, data: {forceWalkable: false}},
+		force: false
 	})
 }
 function loadMap() {

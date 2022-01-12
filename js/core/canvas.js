@@ -391,11 +391,11 @@ function renderLayer1() {
 	c1.height = window.innerHeight - 114;
 
 	if (placeData.node) {
-
+		let b = BD[placeData.node];
 		let [x, y] = getXYfromDir(placeData.facing);
 		let [px, py] = getPosInCanvas(x, y);
 
-		if (!BUILDINGS[placeData.node].canPlace(x, y)) {
+		if (!b.canPlace(x, y) || Currency[b.currencyName].amt.lt(b.cost) || queue() > queueMax() - 1) {
 			ctx1.fillStyle = "#f00";
 			ctx1.shadowColor = "#f00"
 		} else {

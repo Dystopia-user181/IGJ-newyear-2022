@@ -60,6 +60,7 @@ function loadDBdata(testTime) {
 				map = map.map(sub => sub.slice(0, mapWidth));
 			}
 			for (let i of SPECIAL_TILES) {
+				if (i.force == false) continue;
 				if (map[i.pos.x][i.pos.y].t != i.data.t)
 					map[i.pos.x][i.pos.y] = deepcopy(i.data);
 			}

@@ -1,7 +1,7 @@
 const RESEARCHES = {
 	start: {
 		cost: D(30),
-		desc: "You can charge <span class='iridite'>iridite drills</span>."
+		desc: "<s>You can charge <span class='iridite'>iridite drills</span>.</s> Doesn't work."
 	}
 }
 const RS = RESEARCHES
