@@ -20,7 +20,7 @@ const Obelisk = {
 		return base;
 	},
 	buyActiveUpg() {
-		if (Currency.essence.amt.lt(Obelisk.activeUpgCost())) return;
+		if (Currency.essence.amt.lt(Obelisk.activeUpgCost()) || player.obelisk.upgs.active >= 30) return;
 		Currency.essence.use(Obelisk.activeUpgCost());
 		player.obelisk.upgs.active++;
 	},
@@ -29,7 +29,7 @@ const Obelisk = {
 		return base;
 	},
 	buyCooldownUpg() {
-		if (Currency.essence.amt.lt(Obelisk.cooldownUpgCost())) return;
+		if (Currency.essence.amt.lt(Obelisk.cooldownUpgCost()) || player.obelisk.upgs.cooldown >= 30) return;
 		Currency.essence.use(Obelisk.cooldownUpgCost());
 		player.obelisk.upgs.cooldown++;
 	},
@@ -38,7 +38,7 @@ const Obelisk = {
 		return base;
 	},
 	buyPowerUpg() {
-		if (Currency.essence.amt.lt(Obelisk.powerUpgCost())) return;
+		if (Currency.essence.amt.lt(Obelisk.powerUpgCost()) || player.obelisk.upgs.power >= 30) return;
 		Currency.essence.use(Obelisk.powerUpgCost());
 		player.obelisk.upgs.power++;
 	}

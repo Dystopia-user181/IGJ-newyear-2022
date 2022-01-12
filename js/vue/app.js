@@ -17,27 +17,13 @@ function loadVue() {
 		}},
 		template: `<div style="position: relative; height: 100%;">
 			<div style="position: absolute;">
-				<span style="font-size: 20px"><money-display></money-display> ({{format(tmp.moneyGain)}}/s)</span>
-				<span style="font-size: 20px" v-if="player.base.newBuildings > 0"> | <essence-display></essence-display> ({{format(tmp.essenceGain)}}/s)</span>
-				<span style="font-size: 20px" v-if="player.iridite.newBuildings > 0"> | <iridite-display></iridite-display> ({{format(0)}}/s)</span>
+				<span style="font-size: 20px"><money-display></money-display> ({{format(tmp.moneyGain, 2, 3, 1)}}/s)</span>
+				<span style="font-size: 20px" v-if="player.base.newBuildings > 0"> | <essence-display></essence-display> ({{format(tmp.essenceGain, 2, 3, 1)}}/s)</span>
+				<span style="font-size: 20px" v-if="player.iridite.newBuildings > 0"> | <iridite-display></iridite-display> ({{format(tmp.iriditeGain, 2, 3, 1)}}/s)</span>
 				<br>
 				Welcome to Time Game. Press WASD to navigate.
 			</div>
 			<a href="https://discord.gg/DVy4XjB" target="newtab" style="position: absolute; left: 0; bottom: 0;">Discord</a>
-			<div style="position: absolute; right: 0; bottom: 0;">
-				<button onclick="openMenu(3, 3)">
-					Construct
-				</button>
-				<button onclick="openMenu(20, 20)" v-if="player.unlocks.base">
-					Base
-				</button>
-				<button onclick="openMenu(49, 49)" v-if="player.builders > 0">
-					Builders
-				</button>
-				<button onclick="openMenu(51, 51)" v-if="player.obelisk.repaired">
-					Obelisk
-				</button>
-			</div>
 			<div style="position: absolute; right: 0">
 				<button onclick="Modal.show({
 					title: 'Options',
@@ -69,6 +55,10 @@ function loadVue() {
 					Controls
 				</button>
 			</div>
+			<button style="position: absolute; right: 0; bottom: 0;" onclick="Modal.show({
+				title: 'Quick Access',
+				bind: 'quick-access'
+			})">Quick Access</button>
 		</div>`
 	});
 	Vue.component('options-menu', {
@@ -99,8 +89,44 @@ function loadVue() {
 			<span style="font-size: 18px">Visuals:</span>
 			<br>
 			<button class="option" onclick="player.options.showTilePopups = !player.options.showTilePopups; renderLayer2();">Show "Use" tooltips: {{player.options.showTilePopups ? "ON" : "OFF"}}</button>
+			<button class="option" onclick="player.options.gameTimeProd = !player.options.gameTimeProd;">/s display: {{player.options.gameTimeProd ? "GAME TIME" : "REAL TIME"}}</button>
 		</div>`
 	});
+	Vue.component('quick-access', {
+		data() { return {
+			player
+		}},
+		methods: {
+			buildingAmt
+		},
+		template: `<div style="padding: 10px" class="centre col">
+			<button onclick="openMenu(3, 3)" class="quickaccess">
+				Construction
+			</button>
+			<button onclick="openMenu(20, 20)" v-if="player.unlocks.base" class="quickaccess">
+				Base
+			</button>
+			<button onclick="openMenu(49, 49)" v-if="player.builders > 0" class="quickaccess">
+				Builders
+			</button>
+			<button onclick="openMenu(51, 51)" v-if="player.obelisk.repaired" class="quickaccess">
+				Obelisk
+			</button>
+			<button onclick="Modal.show({
+				title: 'Global Antipoint Space',
+				bind: 'antipoint-menu',
+				bindData: {
+					quick: true
+				},
+				style: {
+					width: '750px',
+					height: '500px'
+				}
+			})" v-if="buildingAmt(5) > 0" class="quickaccess">
+				Antipoint
+			</button>
+		</div>`
+	})
 	Vue.component('controls-menu', {
 		data: () => { return {
 			player

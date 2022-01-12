@@ -75,6 +75,7 @@ function loadDBdata(testTime) {
 			}
 			loadVue();
 			Building.load();
+			Research.load();
 
 			let lastTick = Date.now();
 			interval = setInterval(() => {
@@ -84,7 +85,7 @@ function loadDBdata(testTime) {
 			}, 25);
 			renderInterval = setInterval(() => {
 				if (paused) return;
-				renderAll();
+				renderLoop();
 			}, 50);
 			setInterval(() => {if (player.options.autosave && !paused) save()}, 20000);
 			loadCanvas();

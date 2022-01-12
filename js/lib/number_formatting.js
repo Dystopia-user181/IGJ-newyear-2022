@@ -1,14 +1,14 @@
 function format(num, precision = 2, precisionAfter = 3, small = false) {
 	num = D(num);
-	if (num.e > 1e15) return "Infinity";
-	if (num.e < -3 && small) return `${num.m.toFixed(precisionAfter)}e${formatWhole(num.e)}`;
-	if (num.abs() < 1e6) return Number(num).toFixed(precision);
 	let e = num.e, m = num.m;
 	if (m >= 9.995) {
 		m = 1;
 		e++;
 	}
-	return `${num.m.toFixed(precisionAfter)}e${formatWhole(num.e)}`
+	if (e > 1e15) return "Infinity";
+	if (e < -3 && small) return `${m.toFixed(precisionAfter)}e${formatWhole(e)}`;
+	if (num.abs() < 1e6) return Number(num).toFixed(precision);
+	return `${m.toFixed(precisionAfter)}e${formatWhole(e)}`
 }
 
 function formatWhole(num) {

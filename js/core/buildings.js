@@ -167,7 +167,10 @@ const BUILDINGS = {
 		canPlace(x, y) {
 			return checkTileAccess(x, y) && distance([x, y], [70, 70]) < 3.5;
 		},
-		startMeta(x, y) { return {} },
+		startMeta(x, y) { return {
+			charge: D(0),
+			charging: false
+		}},
 		buildTime: D(3456000),
 		levelCost(lvl) {
 			return D(Infinity);
@@ -206,6 +209,7 @@ const BUILDINGS = {
 			}
 			enhancers = Math.min(enhancers, 1);
 			let base = BD[6].levelScaling(b.level);
+			base = base.mul(1);
 			return [base.mul(5e9).mul(tmp.anti.essenceEffect), base.mul(1e7).mul(tmp.anti.moneyEffect), base.mul(1e-6)];
 		},
 		canBuild: true
@@ -267,6 +271,8 @@ const Building = {
 		let [x, y] = getXYfromDir(placeData.facing);
 
 		if (!b.canPlace(x, y)) return;
+		if (b.cost.gt(player.currency[b.currencyName])) return;
+		if (queue() > queueMax() - 1) return;
 
 		if (b.onPlace) b.onPlace(x, y);
 

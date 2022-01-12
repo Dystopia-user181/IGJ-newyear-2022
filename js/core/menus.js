@@ -259,17 +259,20 @@ function loadMenus() {
 				</button>
 
 				<div>
-					<button @click="Obelisk.buyActiveUpg" class="upg-button" :disabled="player.currency.essence.lt(Obelisk.activeUpgCost())">
+					<button @click="Obelisk.buyActiveUpg" class="upg-button" :disabled="player.currency.essence.lt(Obelisk.activeUpgCost())"
+					:class="{bought: player.obelisk.upgs.active >= 30}">
 						<b>Increase active time by 30%.</b><br>
 						Currently: {{formatTime(tmp.obelisk.activeTime)}}<br><br>
 						Cost: <essence-display :amt="Obelisk.activeUpgCost()" whole="a"></essence-display>
 					</button>
-					<button @click="Obelisk.buyCooldownUpg" class="upg-button" :disabled="player.currency.essence.lt(Obelisk.cooldownUpgCost())">
+					<button @click="Obelisk.buyCooldownUpg" class="upg-button" :disabled="player.currency.essence.lt(Obelisk.cooldownUpgCost())"
+					:class="{bought: player.obelisk.upgs.cooldown >= 30}">
 						<b>Decrease cooldown time by 20%.</b><br>
 						Currently: {{formatTime(tmp.obelisk.cooldownTime)}}<br><br>
 						Cost: <essence-display :amt="Obelisk.cooldownUpgCost()" whole="a"></essence-display>
 					</button>
-					<button @click="Obelisk.buyPowerUpg" class="upg-button" :disabled="player.currency.essence.lt(Obelisk.powerUpgCost())">
+					<button @click="Obelisk.buyPowerUpg" class="upg-button" :disabled="player.currency.essence.lt(Obelisk.powerUpgCost())"
+					:class="{bought: player.obelisk.upgs.power >= 30}">
 						<b>Increase obelisk power by 30%.</b><br>
 						Currently: {{format(tmp.obelisk.effect)}}<br><br>
 						Cost: <essence-display :amt="Obelisk.powerUpgCost()" whole="a"></essence-display>
@@ -317,20 +320,17 @@ function loadMenus() {
 
 	Vue.component("iridite-menu", {
 		data() { return {
-			player
+			player,
+			layout: [
+			["start"]
+			]
 		}},
 		methods: {
 			buildingList,
 			buyUpg0() {
-				if (this.mines < 96 || this.collectors < 48) return;
-				let m = buildingList(2), e = buildingList(3);
-				for (let i of m) {
-					Building.sell(i.pos.x, i.pos.y);
-				}
-				for (let i of e) {
-					Building.sell(i.pos.x, i.pos.y);
-				}
-				player.iridite.newBuildings = 1;
+				if (Currency.iridite.amt.lt(15)) return;
+				Currency.iridite.use(15);
+				player.unlocks.iridite = true;
 			}
 		},
 		computed: {
@@ -346,10 +346,19 @@ function loadMenus() {
 				<b>Remove <span class="money">gold mines</span> and <span class="essence">essence collectors</span>, but unlock a new building.</b><br><br>
 				Req: {{mines}}/96 level 9 gold mines, {{collectors}}/48 level 6 essence collectors
 			</button>
-			<div class="centre col" v-else>
+			<div class="centre col" v-else-if="!player.unlocks.iridite">
 				<h2>Project Iridium</h2>
 				<span>Welcome aboard, unnamed scientist.<br>Our goal is to find ways to bend time to our will.<br>
-				You have proven worthy of the task so far. Don't disappoint us.</span>
+				You have proven worthy of the task so far. Don't disappoint us.<br><br></span>
+				<button @click="buyUpg0" :disabled="player.currency.iridite.lt(15)">Begin the project<br>Cost: <iridite-display amt="15" whole="a" @click="buyUpg0"></iridite-display></button>
+			</div>
+			<div class="centre col" v-else>
+				<br>
+				Iridite production channeled to {{player.iridite.researching ? "research" : "storage"}}
+				<br><br>
+				<div class="centre" v-for="r in layout">
+					<research-ui v-for="id in r" :rId="id"></research-ui>
+				</div>
 			</div>
 		</div>`
 	})
@@ -362,7 +371,8 @@ function loadMenus() {
 		}},
 		methods: {
 			formatTime,
-			buildingAmt
+			buildingAmt,
+			timerate
 		},
 		computed: {
 			building() {
@@ -374,7 +384,7 @@ function loadMenus() {
 			<div v-if="!building.upgrading">
 				<h3>Level {{building.level + 1}}</h3>
 				Production<br>
-				<money-display :amt="BD[2].getProduction(data.x, data.y)"></money-display>/s
+				<money-display :amt="BD[2].getProduction(data.x, data.y).mul(player.options.gameTimeProd ? 1 : timerate())"></money-display>/s
 				<br><br>
 				<button @click="Building.sell(data.x, data.y)"
 				:disabled="buildingAmt(2) < 2">Sell</button><br>
@@ -393,7 +403,8 @@ function loadMenus() {
 			BD
 		}},
 		methods: {
-			formatTime
+			formatTime,
+			timerate
 		},
 		computed: {
 			building() {
@@ -405,7 +416,7 @@ function loadMenus() {
 			<div v-if="!building.upgrading">
 				<h3>Level {{building.level + 1}}</h3>
 				Production<br>
-				<essence-display :amt="BD[3].getProduction(data.x, data.y)"></essence-display>/s
+				<essence-display :amt="BD[3].getProduction(data.x, data.y).mul(player.options.gameTimeProd ? 1 : timerate())"></essence-display>/s
 				<br><br>
 				<button @click="Building.sell(data.x, data.y)">Sell</button><br>
 				<button @click="Building.level(data.x, data.y)" v-if="player.unlocks.level"
@@ -422,16 +433,32 @@ function loadMenus() {
 			BD
 		}},
 		methods: {
+			timerate,
 			formatTime
 		},
 		computed: {
 			building() {
 				return Building.getByPos(this.data.x, this.data.y);
+			},
+			production() {
+				return BD[6].getProduction(this.data.x, this.data.y)
 			}
 		},
 		props: ["data"],
 		template: `<div style="padding: 10px">
-			This does nothing because you've reached the end of content lol
+			<div v-if="!building.upgrading">
+				<h3>Level {{building.level + 1}}</h3>
+				Production<br>
+				<money-display :amt="production[0].mul(player.options.gameTimeProd ? 1 : timerate())"></money-display>/s<br>
+				<essence-display :amt="production[1].mul(player.options.gameTimeProd ? 1 : timerate())"></essence-display>/s<br>
+				<iridite-display :amt="production[2].mul(player.options.gameTimeProd ? 1 : timerate())"></iridite-display>/s
+				<br><br>
+				<button @click="Building.sell(data.x, data.y)">Sell</button><br>
+				<button @click="Building.level(data.x, data.y)" v-if="player.unlocks.level"
+				:disabled="player.currency.iridite.lt(BD[6].levelCost(building.level))">Upgrade ({{formatTime(BD[6].levelTime(building.level))}})<br>
+				Cost: <iridite-display :amt="BD[6].levelCost(building.level)" whole="a"></iridite-display></button>
+			</div>
+			<upgrade-progress :x="data.x" :y="data.y" v-else></upgrade-progress>
 		</div>`
 	})
 	Vue.component("enhancer-menu", {
@@ -472,12 +499,12 @@ function loadMenus() {
 		},
 		props: ["data"],
 		template: `<div style="padding: 10px">
-			<div v-if="!building.upgrading">
+			<div v-if="data.quick || !building.upgrading">
 				<div class="centre">
 					<button @click="tab = 'a'" :disabled="tab == 'a'" style="width: 30%; padding: 6px; margin: 4px;">Global Drain</button>
 					<button @click="tab = 'b'" :disabled="tab == 'b'" style="width: 30%; padding: 6px; margin: 4px;">Global Effects</button>
 				</div>
-				<h2 v-if="BD[5].getEffect(data.x, data.y).lt(1)">This antipoint is enduring competition with nearby antipoints, lowering its effectiveness</h2>
+				<h2 v-if="!data.quick && BD[5].getEffect(data.x, data.y).lt(1)">This antipoint is enduring competition with nearby antipoints, lowering its effectiveness</h2>
 				<div class="col centre" style="padding: 10px;" v-if="tab == 'a'">
 					<button :disabled="player.anti.drain == 'none'" class="upg-button" style="min-height: 120px;" @click="player.anti.drain = 'none'">
 						<span v-if="player.anti.drain != 'none'">
@@ -514,7 +541,7 @@ function loadMenus() {
 					The effectiveness of above effects is {{format(tmp.anti.antisum)}} (increases with antipoints built)
 				</div>
 				<br><br>
-				<button @click="Building.sell(data.x, data.y)">Sell</button>
+				<button v-if="!data.quick" @click="Building.sell(data.x, data.y)">Sell</button>
 			</div>
 			<upgrade-progress :x="data.x" :y="data.y" v-else></upgrade-progress>
 		</div>`
@@ -625,6 +652,14 @@ const MENU_DATA = {
 	},
 	"-8": {
 		id: "iridite",
-		name: "Iridium"
+		name: "Iridium",
+		style: {
+			width: "100%",
+			height: "calc(100% - 112px)",
+			top: "108px",
+			left: "0",
+			transform: "translate(0, 0)",
+			"overflow-x": "auto"
+		}
 	}
 }

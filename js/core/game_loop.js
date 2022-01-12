@@ -84,6 +84,7 @@ function gameLoop(d) {
 				if (Modal.data.bind = "wall2-menu") {
 					Modal.close();
 				}
+				canvas.need0update = true;
 				updateTileUsage();
 			}
 		}
@@ -111,7 +112,8 @@ function gameLoop(d) {
 		}
 		let prevMoney = Currency.money.amt;
 		let prevEssence = Currency.essence.amt;
-		let prodMoney = D(0), prodEssence = D(0);
+		let prevIridite = player.iridite.researching ? player.iridite.researches[player.iridite.researching] : Currency.iridite.amt;
+		let prodMoney = D(0), prodEssence = D(0), prodIridite = D(0);
 		for (let i of buildingList(2)) {
 			if (!i.upgrading)
 				prodMoney = prodMoney.add(BD[2].getProduction(i.pos.x, i.pos.y))
@@ -119,6 +121,14 @@ function gameLoop(d) {
 		for (let i of buildingList(3)) {
 			if (!i.upgrading)
 				prodEssence = prodEssence.add(BD[3].getProduction(i.pos.x, i.pos.y))
+		}
+		for (let i of buildingList(6)) {
+			if (!i.upgrading) {
+				let prod = BD[6].getProduction(i.pos.x, i.pos.y);
+				prodMoney = prodMoney.add(prod[0]);
+				prodEssence = prodEssence.add(prod[1]);
+				prodIridite = prodIridite.add(prod[2]);
+			}
 		}
 		if (tmp.anti.drainMoney) {
 			let amt = prodMoney.mul(0.001).sub(Currency.money.amt.mul(drainConst.pow(0.001).sub(1)))
@@ -142,15 +152,20 @@ function gameLoop(d) {
 		} else  {
 			Currency.essence.add(prodEssence.mul(d));
 		}
+		if (player.iridite.researching)
+			Research.update(d, prodIridite);
+		else
+			Currency.iridite.add(prodIridite.mul(d));
 		if (tmp.anti.drainTime) {
-			if (Currency.essence.amt.lte(0) || Currency.money.amt.lte(0)) {
+			if (Currency.essence.amt.lt(0) || Currency.money.amt.lt(0) || Currency.iridite.amt.lt(0)) {
 				player.anti.drain = "none";
 			} else {
 				player.anti.time = player.anti.time.add(d.mul(-1));
 			}
 		}
-		tmp.moneyGain = Currency.money.amt.sub(prevMoney).div(d);
-		tmp.essenceGain = Currency.essence.amt.sub(prevEssence).div(d);
+		tmp.moneyGain = Currency.money.amt.sub(prevMoney).div(player.options.gameTimeProd ? d : trueDiff);
+		tmp.essenceGain = Currency.essence.amt.sub(prevEssence).div(player.options.gameTimeProd ? d : trueDiff);
+		tmp.iriditeGain = (player.iridite.researching ? player.iridite.researches[player.iridite.researching] : Currency.iridite.amt).sub(prevIridite).div(player.options.gameTimeProd ? d : trueDiff);
 	}
 
 	for (let i in Updater.updates) {
@@ -167,10 +182,7 @@ function renderLoop() {
 		renderLayer1();
 		canvas.need1update = false;
 	}
-	if (canvas.need2update) {
-		renderLayer2();
-		canvas.need2update = false;
-	}
+	renderLayer2();
 }
 
 let interval, autoInterval, renderInterval;

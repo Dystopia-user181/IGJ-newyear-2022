@@ -80,6 +80,8 @@ let tileStyle = {
 		ctx.fill();
 	},
 	"-1"(x, y, ctx) {
+		ctx.font = py + 'px Iosevka Term SS08 Web';
+		ctx.textAlign = 'center';
 		ctx.shadowBlur = 0;
 		ctx.fillStyle = "#aaf";
 		ctx.fillText("@", x + px/2, y + py*0.85);
@@ -93,10 +95,12 @@ let tileStyle = {
 			ctx.strokeStyle = "#333";
 			ctx.lineWidth = 1;
 			ctx.shadowBlur = 0;
-			ctx.beginPath();
-			ctx.arc(i + px/2, j + py/2, Math.min(px, py)*0.3, 0, Math.PI*2);
-			ctx.fill();
-			ctx.stroke();
+			if (player.pos.x != x || player.pos.y != y) {
+				ctx.beginPath();
+				ctx.arc(i + px/2, j + py/2, Math.min(px, py)*0.3, 0, Math.PI*2);
+				ctx.fill();
+				ctx.stroke();
+			}
 		}
 	},
 	"1"(x, y, cctx) {
@@ -181,30 +185,6 @@ let tileStyle = {
 		ctx.beginPath();
 		ctx.arc(i + px/2, j + py/2, px*0.25, 0, Math.PI*2);
 		ctx.fill();
-
-		if (level > 4) {
-			let w = Math.min(px, py)/2;
-			let ci = i + px/2, cj = j + py/2
-			ctx.strokeStyle = "#edf4";
-			ctx.lineWidth = 3;
-			let t = player.time.thisTick/5;
-			ctx.beginPath();
-			ctx.moveTo(...essenceFourier(t, ci, cj, w));
-			ctx.lineTo(...essenceFourier(t - 10, ci, cj, w));
-			ctx.stroke();
-			ctx.lineTo(...essenceFourier(t - 20, ci, cj, w));
-			ctx.stroke();
-			ctx.lineTo(...essenceFourier(t - 30, ci, cj, w));
-			ctx.stroke();
-			ctx.lineTo(...essenceFourier(t - 40, ci, cj, w));
-			ctx.stroke();
-			ctx.lineTo(...essenceFourier(t - 50, ci, cj, w));
-			ctx.stroke();
-			ctx.lineTo(...essenceFourier(t - 60, ci, cj, w));
-			ctx.stroke();
-			ctx.lineTo(...essenceFourier(t - 70, ci, cj, w));
-			ctx.stroke();
-		}
 	},
 	"4"(i, j, ctx) {
 		ctx.fillStyle = "#aaa";
@@ -229,27 +209,6 @@ let tileStyle = {
 		ctx.beginPath();
 		ctx.arc(ci, cj, w*0.75, 0, Math.PI*2);
 		ctx.fill();
-
-		ctx.strokeStyle = "#fff4";
-		ctx.lineWidth = 2;
-
-		let t = player.time.thisTick;
-		ctx.beginPath();
-		ctx.moveTo(...antipointFourier(t, ci, cj, w));
-		ctx.lineTo(...antipointFourier(t - 50, ci, cj, w));
-		ctx.stroke();
-		ctx.lineTo(...antipointFourier(t - 100, ci, cj, w));
-		ctx.stroke();
-		ctx.lineTo(...antipointFourier(t - 150, ci, cj, w));
-		ctx.stroke();
-		ctx.lineTo(...antipointFourier(t - 200, ci, cj, w));
-		ctx.stroke();
-		ctx.lineTo(...antipointFourier(t - 250, ci, cj, w));
-		ctx.stroke();
-		ctx.lineTo(...antipointFourier(t - 300, ci, cj, w));
-		ctx.stroke();
-		ctx.lineTo(...antipointFourier(t - 350, ci, cj, w));
-		ctx.stroke();
 	},
 	"6"(i, j, ctx) {
 		ctx.fillStyle = Currency.iridite.colour + '3';
@@ -301,10 +260,9 @@ let canvas = {
 	need1update: false,
 	need2update: false,
 	objs: {
-		lights: [],
-		areaC: [],
-		sectorC: [],
-		i: []
+		essenceFourier: [],
+		antipointFourier: [],
+		player: {x: 0, y: 0}
 	}
 }
 
@@ -362,11 +320,11 @@ function tooltipText(context, x, y, text, arrowDir = "top") {
 }
 let pi = Math.PI
 function render() {
+	canvas.objs.antipointFourier = [];
+	canvas.objs.essenceFourier = [];
 	let testTime = Date.now();
 	c.width = window.innerWidth - 4;
 	c.height = window.innerHeight - 114;
-	ctx.font = py + 'px Iosevka Term SS08 Web';
-	ctx.textAlign = 'center';
 
 	let width = Math.floor(c.width/px),
 		height = Math.floor(c.height/py);
@@ -411,7 +369,13 @@ function render() {
 			let tile = map[x][y].t;
 
 			if (x == player.pos.x && y == player.pos.y)
-				tile = -1;
+				canvas.objs.player = {i: i*px, j: j*py};
+
+			if (tile == 3 && Building.getByPos(x, y).level > 4)
+				canvas.objs.essenceFourier.push({i: i*px, j: j*py, x, y});
+
+			if (tile == 5)
+				canvas.objs.antipointFourier.push({i: i*px, j: j*py, x, y});
 
 			tileStyle[tile](i*px, j*py, ctx, x, y);
 			if (BUILDINGS[tile] && Building.getByPos(x, y).upgrading) {
@@ -446,6 +410,57 @@ function renderLayer1() {
 function renderLayer2() {
 	c2.width = window.innerWidth - 4;
 	c2.height = window.innerHeight - 114;
+
+	let {i, j} = canvas.objs.player;
+	tileStyle[-1](i, j, ctx2);
+	for (let b of canvas.objs.essenceFourier) {
+		let {i, j} = b;
+		let w = Math.min(px, py)/2;
+		let ci = i + px/2, cj = j + py/2
+		ctx2.strokeStyle = "#edf4";
+		ctx2.lineWidth = 2;
+		let t = player.time.thisTick/5;
+		ctx2.beginPath();
+		ctx2.moveTo(...essenceFourier(t, ci, cj, w));
+		ctx2.lineTo(...essenceFourier(t - 10, ci, cj, w));
+		ctx2.stroke();
+		ctx2.lineTo(...essenceFourier(t - 20, ci, cj, w));
+		ctx2.stroke();
+		ctx2.lineTo(...essenceFourier(t - 30, ci, cj, w));
+		ctx2.stroke();
+		ctx2.lineTo(...essenceFourier(t - 40, ci, cj, w));
+		ctx2.stroke();
+		ctx2.lineTo(...essenceFourier(t - 50, ci, cj, w));
+		ctx2.stroke();
+		ctx2.lineTo(...essenceFourier(t - 60, ci, cj, w));
+		ctx2.stroke();
+		ctx2.lineTo(...essenceFourier(t - 70, ci, cj, w));
+		ctx2.stroke();
+	}
+	for (let b of canvas.objs.antipointFourier) {
+		let {i, j} = b;
+		let w = Math.min(px, py)/2;
+		let ci = i + px/2, cj = j + py/2
+		ctx2.strokeStyle = "#fff4";
+		ctx2.lineWidth = 2;
+		let t = player.time.thisTick;
+		ctx2.beginPath();
+		ctx2.moveTo(...antipointFourier(t, ci, cj, w));
+		ctx2.lineTo(...antipointFourier(t - 50, ci, cj, w));
+		ctx2.stroke();
+		ctx2.lineTo(...antipointFourier(t - 100, ci, cj, w));
+		ctx2.stroke();
+		ctx2.lineTo(...antipointFourier(t - 150, ci, cj, w));
+		ctx2.stroke();
+		ctx2.lineTo(...antipointFourier(t - 200, ci, cj, w));
+		ctx2.stroke();
+		ctx2.lineTo(...antipointFourier(t - 250, ci, cj, w));
+		ctx2.stroke();
+		ctx2.lineTo(...antipointFourier(t - 300, ci, cj, w));
+		ctx2.stroke();
+		ctx2.lineTo(...antipointFourier(t - 350, ci, cj, w));
+		ctx2.stroke();
+	}
 
 	if (player.options.showTilePopups) {
 		ctx2.font = '18px Iosevka Term SS08 Web';

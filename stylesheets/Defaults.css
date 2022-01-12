@@ -46,6 +46,14 @@ button:disabled, .disabled {
 select {
 	background: var(--bg-1) !important;
 }
+.anti-button {
+	border: 2px solid var(--c-1);
+	background: var(--c-1);
+	color: var(--bg-1);
+}
+.anti-button:hover {
+	background: #fb7;
+}
 
 .small {
 	font-size: 0.95em;
@@ -110,7 +118,7 @@ select {
 	height: 100px;
 	padding: 0 5px;
 }
-.bought {
+.bought, .disabled.bought, button:disabled.bought {
 	opacity: 1 !important;
 	cursor: default !important;
 	background-color: #040;
@@ -139,6 +147,19 @@ select {
 .anti {
 	color: #000;
 	text-shadow: 0 0px 4px var(--c-1), 0px 0px 4px var(--c-1), 0px 0px 4px var(--c-1);
+}
+
+.quickaccess {
+	width: 150px;
+	height: 50px;
+}
+
+.research {
+	width: 250px;
+	height: 100px;
+}
+.research.researching {
+	background-color: #fc36;
 }
 
 /* Custom Scrollbar */

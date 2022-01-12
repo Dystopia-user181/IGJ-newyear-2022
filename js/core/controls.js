@@ -180,3 +180,20 @@ function updateTileUsage() {
 
 	canvas.need2update = true;
 }
+function clearControls() {
+	for (let i in controls) {
+		if (typeof controls[i] == "boolean")
+			controls[i] = false;
+	}
+}
+document.addEventListener( 'visibilitychange' , function() {
+	if (document.hidden) {
+		clearControls();
+	}
+}, false );
+window.onblur = function() {
+	clearControls();
+}
+window.oncontextmenu = function () {
+	clearControls();
+} 

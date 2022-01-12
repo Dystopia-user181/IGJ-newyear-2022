@@ -5,12 +5,14 @@ function getStartPlayer() {
 			start: false,
 			place: false,
 			base: false,
-			level: false
+			level: false,
+			iridite: false
 		},
 		options: {
 			autosave: true,
 			showTilePopups: true,
-			buildMultiple: false
+			buildMultiple: false,
+			gameTimeProd: true
 		},
 		time: {
 			timeStat: 0,
@@ -58,11 +60,15 @@ function getStartPlayer() {
 			drain: "none"
 		},
 		iridite: {
-			newBuilding: 0
+			newBuilding: 0,
+			researches: {
+				start: D(0)
+			},
+			researching: ""
 		},
 		builders: 0,
 		buildings: [],
-		version: "0.1"
+		version: "0.2"
 	};
 }
 let saveKey = "IGJnewyear-IGJ2022-Scarlet";
@@ -152,6 +158,14 @@ function decimaliseProperties(data, struct) {
 
 function fixOldSave(version) {
 	console.log(version);
+	if (version == "0.1") {
+		player.obelisk.upgs.active = Math.min(player.obelisk.upgs.active, 30);
+		player.obelisk.upgs.cooldown = Math.min(player.obelisk.upgs.cooldown, 30);
+		player.obelisk.upgs.power = Math.min(player.obelisk.upgs.power, 30);
+		for (let i of buildingList(6)) {
+			i.meta = BD[6].startMeta(i.pos.x, i.pos.y);
+		}
+	}
 	if (version == undefined) {
 		for (let i = 49; i < 96; i++) {
 			if (map[48][i].t == 5)
