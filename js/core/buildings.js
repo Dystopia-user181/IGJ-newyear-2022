@@ -58,7 +58,7 @@ const BUILDINGS = {
 		name: "Essence Collector",
 		desc: "Produces <span class='essence'>*</span> 0.05/s.",
 		get cost() {
-			if (costAmt(3) >= 48 || player.iridite.newBuildings) return D(Infinity);
+			if (costAmt(3) >= 48 || player.iridite.newBuildings || player.base.newBuildings < 1) return D(Infinity);
 			return Decimal.pow(1.5, Math.pow(costAmt(3), 1.2)).mul(1e3).floor();
 		},
 		currencyName: "money",
@@ -68,7 +68,7 @@ const BUILDINGS = {
 		startMeta(x, y) { return {} },
 		buildTime: D(15),
 		levelCost(lvl) {
-			if (lvl > 4) return D(Infinity);
+			if (lvl > 4 || player.base.newBuildings < 1) return D(Infinity);
 
 			return Decimal.pow(40, Math.pow(lvl, 1.2)).mul(5e5 + 9.5e6*(lvl > 2));
 		},
@@ -238,6 +238,7 @@ const Building = {
 		let building = BUILDINGS[id];
 		if (building.cost.gt(player.currency[building.currencyName])) return;
 		if (queue() > queueMax() - 1) return;
+		if (!building.canBuild) return;
 		Modal.close();
 
 		if (!player.unlocks.place) {
