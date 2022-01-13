@@ -17,9 +17,9 @@ function loadVue() {
 		}},
 		template: `<div style="position: relative; height: 100%;">
 			<div style="position: absolute;">
-				<span style="font-size: 20px"><money-display></money-display> ({{format(tmp.moneyGain, 2, 3, 1)}}/s)</span>
-				<span style="font-size: 20px" v-if="player.base.newBuildings > 0"> | <essence-display></essence-display> ({{format(tmp.essenceGain, 2, 3, 1)}}/s)</span>
-				<span style="font-size: 20px" v-if="player.iridite.newBuildings > 0"> | <iridite-display></iridite-display> ({{format(tmp.iriditeGain, 2, 3, 1)}}/s)</span>
+				<span style="font-size: 20px"><money-display></money-display> ({{format(tmp.moneyGain, 2, 2, 1)}}/s)</span>
+				<span style="font-size: 20px" v-if="player.base.newBuildings > 0"> | <essence-display></essence-display> ({{format(tmp.essenceGain, 2, 2, 1)}}/s)</span>
+				<span style="font-size: 20px" v-if="player.iridite.newBuildings > 0"> | <iridite-display></iridite-display> ({{format(tmp.iriditeGain, 2, 2, 1)}}/s)</span>
 				<br>
 				Welcome to Time Game. Press WASD to navigate.
 			</div>
@@ -137,6 +137,7 @@ function loadVue() {
 		Space: Place building<br>
 		I: Sell building<br>
 		<span v-if="player.unlocks.level">U: Upgrade building<br></span>
+		Q: Open quick access<br>
 		E: Open construction menu<br>
 		<span v-if="player.obelisk.repaired">O: Open obelisk menu</span><br>
 		Esc: Close window/Stop placing building/Pause game<br>

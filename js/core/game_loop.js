@@ -30,6 +30,15 @@ function gameLoop(d) {
 	tmp.anti.essenceEffect = player.anti.essence.sqrt().div(3e2).add(1).sqrt().pow(tmp.anti.antisum.pow(0.3));
 	tmp.anti.timeEffect = player.anti.time.div(1000).mul(Decimal.pow(3, tmp.anti.antisum.pow(0.8))).add(1).pow(tmp.anti.antisum.pow(0.3).mul(0.2));
 
+	if (Research.has("acv1")) {
+		tmp.iridite.timespeed = D(1);
+		for (let i of buildingList(6)) {
+			tmp.iridite.timespeed = tmp.iridite.timespeed.add(BD[6].timespeed(i.pos.x, i.pos.y));
+		}
+	} else {
+		tmp.iridite.timespeed = D(1);
+	}
+
 	d = timerate().mul(d);
 
 	if (player.unlocks.start) {
@@ -125,9 +134,23 @@ function gameLoop(d) {
 		for (let i of buildingList(6)) {
 			if (!i.upgrading) {
 				let prod = BD[6].getProduction(i.pos.x, i.pos.y);
-				prodMoney = prodMoney.add(prod[0]);
-				prodEssence = prodEssence.add(prod[1]);
-				prodIridite = prodIridite.add(prod[2]);
+				if (i.meta.charging) {
+					i.meta.charge = i.meta.charge.add(prod[2].mul(RS.septuplerII.effect).mul(d));
+					if (Research.has("acv1"))
+						if (i.meta.timespeed.lt(9))
+							i.meta.timespeed = i.meta.timespeed.pow(RS.acv2.effect).add(d.mul(2e-7)).pow(1/RS.acv2.effect).min(10);
+						else
+							i.meta.timespeed = i.meta.timespeed.pow(i.meta.timespeed.mul(RS.acv2.effect/9)).add(d.mul(2e-7)).pow(i.meta.timespeed.mul(RS.acv2.effect/9).recip());
+				} else {
+					prodMoney = prodMoney.add(prod[0]);
+					prodEssence = prodEssence.add(prod[1]);
+					prodIridite = prodIridite.add(prod[2]);
+					if (Research.has("acv1"))
+						if (i.meta.timespeed.gte(10))
+							i.meta.timespeed = i.meta.timespeed.pow(Decimal.pow(Research.has("acv2") ? 0.7 : 0.85, trueDiff)).max(0);
+						else
+							i.meta.timespeed = i.meta.timespeed.sub(trueDiff*(0.4 + 0.2*Research.has("acv2"))).max(0);
+				}
 			}
 		}
 		if (tmp.anti.drainMoney) {
@@ -139,6 +162,8 @@ function gameLoop(d) {
 			Currency.money.add(amt);
 			player.anti.money = player.anti.money.add(prodMoney.mul(d).sub(amt));
 		} else  {
+			if (Research.has("idl2"))
+				player.anti.money = player.anti.money.add(Currency.money.amt.mul(d).mul(1 - 1/drainConst));
 			Currency.money.add(prodMoney.mul(d));
 		}
 		if (tmp.anti.drainEssence) {
@@ -149,7 +174,9 @@ function gameLoop(d) {
 			
 			Currency.essence.add(amt);
 			player.anti.essence = player.anti.essence.add(prodEssence.mul(d).sub(amt));
-		} else  {
+		} else {
+			if (Research.has("idl2"))
+				player.anti.essence = player.anti.essence.add(Currency.essence.amt.mul(d).mul(1 - 1/drainConst));
 			Currency.essence.add(prodEssence.mul(d));
 		}
 		if (player.iridite.researching)
@@ -162,6 +189,8 @@ function gameLoop(d) {
 			} else {
 				player.anti.time = player.anti.time.add(d.mul(-1));
 			}
+		} else if (Research.has("idl1")) {
+			player.anti.time = player.anti.time.add(d.mul(0.3));
 		}
 		tmp.moneyGain = Currency.money.amt.sub(prevMoney).div(player.options.gameTimeProd ? d : trueDiff);
 		tmp.essenceGain = Currency.essence.amt.sub(prevEssence).div(player.options.gameTimeProd ? d : trueDiff);
@@ -204,6 +233,9 @@ let tmp = {
 		essenceEffect: D(0),
 		timeEffect: D(0),
 		antisum: D(0)
+	},
+	iridite: {
+		timespeed: D(0)
 	}
 }
 
@@ -216,6 +248,10 @@ function timerate() {
 		base = base.mul(tmp.obelisk.effect);
 	}
 	base = base.mul(tmp.anti.timeEffect);
+	base = base.mul(RS.doublerII.effect).mul(RS.doublerIII.effect);
+
+	base = base.mul(tmp.iridite.timespeed);
+
 	if (player.timewall.two.destroying) {
 		base = base.sub(player.timewall.two.time.mul(0.15)).max(0);
 	}

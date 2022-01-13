@@ -325,7 +325,11 @@ function loadMenus() {
 		data() { return {
 			player,
 			layout: [
-			["start"]
+			["start"],
+			["doublerI", "quintuplerI"],
+			["triplerII", "doublerII", "septuplerII"],
+			["acv1-active", "doublerIII", "idl1-idle"],
+			["acv2-active", "idl2-idle"]
 			]
 		}},
 		methods: {
@@ -360,7 +364,7 @@ function loadMenus() {
 				Iridite production channeled to {{player.iridite.researching ? "research" : "storage"}}
 				<br><br>
 				<div class="centre" v-for="r in layout">
-					<research-ui v-for="id in r" :rId="id"></research-ui>
+					<research-ui v-for="id in r" :rId="id.split('-')[0]" :class="id.split('-')[1]"></research-ui>
 				</div>
 			</div>
 		</div>`
@@ -433,29 +437,44 @@ function loadMenus() {
 		data() { return {
 			Building,
 			player,
-			BD
+			BD,
+			Research,
+			tmp
 		}},
 		methods: {
 			timerate,
-			formatTime
+			formatTime,
+			format
 		},
 		computed: {
 			building() {
 				return Building.getByPos(this.data.x, this.data.y);
 			},
-			production() {
-				return BD[6].getProduction(this.data.x, this.data.y)
+			prod() {
+				return this.building.meta.charging ? [D(0),D(0),BD[6].getProduction(this.data.x, this.data.y)[2]] : BD[6].getProduction(this.data.x, this.data.y)
 			}
 		},
 		props: ["data"],
 		template: `<div style="padding: 10px">
 			<div v-if="!building.upgrading">
 				<h3>Level {{building.level + 1}}</h3>
-				Production<br>
-				<money-display :amt="production[0].mul(player.options.gameTimeProd ? 1 : timerate())"></money-display>/s<br>
-				<essence-display :amt="production[1].mul(player.options.gameTimeProd ? 1 : timerate())"></essence-display>/s<br>
-				<iridite-display :amt="production[2].mul(player.options.gameTimeProd ? 1 : timerate())"></iridite-display>/s
-				<br><br>
+				<div class="centre stretch">
+					<div style="width: 100%; flex-shrink: 1;">
+						Production<br>
+						<money-display :amt="prod[0].mul(player.options.gameTimeProd ? 1 : timerate())"></money-display>/s<br>
+						<essence-display :amt="prod[1].mul(player.options.gameTimeProd ? 1 : timerate())"></essence-display>/s<br>
+						<iridite-display :amt="prod[2].mul(player.options.gameTimeProd ? 1 : timerate())"></iridite-display>/s
+					</div>
+					<button v-if="Research.has('start')" @click="building.meta.charging = !building.meta.charging"
+					:class="{ 'anti-button': building.meta.charging }" style="--c-1: #5fb; --c-h: #5fb; color: #5fb; width: 100%; flex-shrink: 1;">
+						{{format(building.meta.charge)}} Ø charge<br>
+						{{building.meta.charging ? "Stop" : "Start"}} Charging
+						<span v-if="Research.has('acv1')"><br>
+							Time speed: x{{format(tmp.iridite.timespeed)}}
+						</span>
+					</button>
+				</div>
+				<br>
 				<button @click="Building.sell(data.x, data.y)">Sell</button><br>
 				<button @click="Building.level(data.x, data.y)" v-if="player.unlocks.level"
 				:disabled="player.currency.iridite.lt(BD[6].levelCost(building.level))">Upgrade ({{formatTime(BD[6].levelTime(building.level))}})<br>

@@ -33,8 +33,8 @@ button {
 	cursor: default;
 }
 button:hover {
-	border: 2px solid #fb7;
-	box-shadow: 0px 0px 7px 1px #fb7;
+	border: 2px solid var(--c-h);
+	box-shadow: 0px 0px 7px 1px var(--c-h);
 }
 button:active {
 	background: var(--bg-3);
@@ -49,10 +49,10 @@ select {
 .anti-button {
 	border: 2px solid var(--c-1);
 	background: var(--c-1);
-	color: var(--bg-1);
+	color: var(--bg-1) !important;
 }
 .anti-button:hover {
-	background: #fb7;
+	background: var(--c-h);
 }
 
 .small {
@@ -66,6 +66,9 @@ select {
 .col {
 	display: flex;
 	flex-direction: column;
+}
+.stretch {
+	align-items: stretch;
 }
 
 .sub {
@@ -160,6 +163,14 @@ select {
 }
 .research.researching {
 	background-color: #fc36;
+}
+.active {
+	--c-1: #f84;
+	color: #f84;
+}
+.idle {
+	--c-1: #5af;
+	color: #5af;
 }
 
 /* Custom Scrollbar */

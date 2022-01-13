@@ -1,4 +1,4 @@
-function format(num, precision = 2, precisionAfter = 3, small = false) {
+function format(num, precision = 2, precisionAfter = 2, small = false) {
 	num = D(num);
 	let e = num.e, m = num.m;
 	if (m >= 9.995) {
@@ -16,8 +16,8 @@ function formatWhole(num) {
 	if (num.e < 0 || num.e > 5) return format(num);
 	num = num.floor();
 	if (num.e > 1e15) return "Infinity";
-	if (num.e < 5) return num.toString();
-	return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	if (num.e < 5) return num.toFixed(0);
+	return num.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 function formatTime(num) {

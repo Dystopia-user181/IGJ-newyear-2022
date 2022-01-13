@@ -62,7 +62,17 @@ function getStartPlayer() {
 		iridite: {
 			newBuilding: 0,
 			researches: {
-				start: D(0)
+				start: D(0),
+				doublerI: D(0),
+				quintuplerI: D(0),
+				triplerII: D(0),
+				doublerII: D(0),
+				septuplerII: D(0),
+				idl1: D(0),
+				idl2: D(0),
+				acv1: D(0),
+				acv2: D(0),
+				doublerIII: D(0)
 			},
 			researching: ""
 		},
@@ -75,11 +85,13 @@ let saveKey = "IGJnewyear-IGJ2022-Scarlet";
 let player;
 let struct = {
 	buildings: {
-		level: Decimal,
+		level: Number,
 		pos: {x: Number, y: Number},
 		t: Number,
 		meta: {
-			building: Number,
+			charge: Decimal,
+			charging: Boolean,
+			timespeed: Decimal
 		},
 		time: Decimal,
 		upgrading: Boolean

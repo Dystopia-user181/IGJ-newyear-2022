@@ -160,7 +160,7 @@ const BUILDINGS = {
 		<i class="sub">Can only be placed on iridium reserves</i>`,
 		get cost() {
 			if (costAmt(6) <= 0) return D(0);
-			if (costAmt(6) >= 4) return D(Infinity);
+			if (costAmt(6) >= 1) return D(Infinity);
 			return Decimal.pow(30, Math.pow(costAmt(6), 1.5)).mul(4e6);
 		},
 		currencyName: "iridite",
@@ -169,7 +169,8 @@ const BUILDINGS = {
 		},
 		startMeta(x, y) { return {
 			charge: D(0),
-			charging: false
+			charging: false,
+			timespeed: D(0)
 		}},
 		buildTime: D(3456000),
 		levelCost(lvl) {
@@ -209,8 +210,19 @@ const BUILDINGS = {
 			}
 			enhancers = Math.min(enhancers, 1);
 			let base = BD[6].levelScaling(b.level);
-			base = base.mul(1);
-			return [base.mul(5e9).mul(tmp.anti.essenceEffect), base.mul(1e7).mul(tmp.anti.moneyEffect), base.mul(1e-6)];
+			base = base.mul(b.meta.charge.add(1).pow(0.25));
+			base = base.mul(RS.triplerII.effect);
+			let mbase = base.mul(b.meta.charge.add(1).pow(0.15)).mul(tmp.anti.essenceEffect);
+			let ebase = base.mul(b.meta.charge.add(1).pow(0.15)).mul(tmp.anti.moneyEffect);
+			let ibase = base.mul(RS.doublerI.effect);
+			mbase = mbase.mul(RS.quintuplerI.effect);
+			ebase = ebase.mul(RS.quintuplerI.effect);
+			return [mbase.mul(5e9), ebase.mul(1e7), ibase.mul(1e-6)];
+		},
+		timespeed(x, y) {
+			let b = Building.getByPos(x, y);
+			if (!b.meta.timespeed) b.meta.timespeed = D(0);
+			return b.meta.timespeed.pow(RS.acv2.effect).add(1).pow(1/RS.acv2.effect).sub(1);
 		},
 		canBuild: true
 	}

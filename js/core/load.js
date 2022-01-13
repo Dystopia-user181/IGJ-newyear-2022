@@ -1,5 +1,5 @@
 if (!window.indexedDB) {
-	Notifier.notify("Browser does not support indexedDB.");
+	document.body.innerHTML = "Browser does not support indexedDB. Please use a different browser or enable indexedDB permissions.";
 	throw "No indexedDB";
 }
 

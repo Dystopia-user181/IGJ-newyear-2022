@@ -1,6 +1,7 @@
 function getActiveTime() {
 	let base = D(10);
 	base = base.mul(Decimal.pow(1.3, player.obelisk.upgs.active));
+	if (player.obelisk.upgs.active >= 30) return D(Infinity);
 	return base;
 }
 function getCooldownTime() {

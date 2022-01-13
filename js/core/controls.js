@@ -7,7 +7,7 @@ function loadControls() {
 	window.addEventListener("keydown", function (e) {
 		let key = e.key.toLowerCase();
 		if (typeof controls["press" + key.toUpperCase()] == "function") controls["press" + key.toUpperCase()](e);
-		if (controls[key] != undefined && !Modal.showing)
+		if (controls[key] != undefined)
 			controls[key] = true;
 	})
 
@@ -128,6 +128,12 @@ let controls = {
 	pressO() {
 		if (!Modal.showing && player.obelisk.repaired)
 			openMenu(51, 51);
+	},
+	pressQ() {
+		Modal.show({
+			title: 'Quick Access',
+			bind: 'quick-access'
+		})
 	},
 	pressESCAPE() {
 		if (Modal.showing)
