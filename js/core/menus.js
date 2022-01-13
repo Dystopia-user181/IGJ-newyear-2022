@@ -335,6 +335,17 @@ function loadMenus() {
 		methods: {
 			buildingList,
 			buyUpg0() {
+				if (this.mines < 96 || this.collectors < 48) return;
+				let m = buildingList(2), e = buildingList(3);
+				for (let i of m) {
+					Building.sell(i.pos.x, i.pos.y);
+				}
+				for (let i of e) {
+					Building.sell(i.pos.x, i.pos.y);
+				}
+				player.iridite.newBuildings = 1;
+			}, 
+			buyUpg1() {
 				if (Currency.iridite.amt.lt(15)) return;
 				Currency.iridite.use(15);
 				player.unlocks.iridite = true;
@@ -357,7 +368,7 @@ function loadMenus() {
 				<h2>Project Iridium</h2>
 				<span>Welcome aboard, unnamed scientist.<br>Our goal is to find ways to bend time to our will.<br>
 				You have proven worthy of the task so far. Don't disappoint us.<br><br></span>
-				<button @click="buyUpg0" :disabled="player.currency.iridite.lt(15)">Begin the project<br>Cost: <iridite-display amt="15" whole="a" @click="buyUpg0"></iridite-display></button>
+				<button @click="buyUpg1" :disabled="player.currency.iridite.lt(15)">Begin the project<br>Cost: <iridite-display amt="15" whole="a" @click="buyUpg0"></iridite-display></button>
 			</div>
 			<div class="centre col" v-else>
 				<br>
