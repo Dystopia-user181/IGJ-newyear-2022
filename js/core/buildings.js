@@ -174,23 +174,18 @@ const BUILDINGS = {
 		}},
 		buildTime: D(3456000),
 		levelCost(lvl) {
-			return D(Infinity);
+			if (lvl == 0) return D(3e7);
+			else return D(Infinity);
 		},
 		levelScaling(lvl) {
-			return D(1);
-
-
 			if (lvl == 0) return D(1);
-			if (lvl == 1) return D(5);
+			if (lvl == 1) return D(20);
 
-			return Decimal.pow(3 + Math.max(Math.min(lvl - 3, lvl/2 - 1), 0), lvl).mul(2 + 18*(lvl > 4));
+			return Decimal.pow(10, lvl);
 		},
 		levelTime(lvl) {
-			return D(Infinity);
-
-
-			if (lvl == 0) return D(15);
-			if (lvl == 1) return D(35);
+			if (lvl == 0) return D(1.728e9);
+			if (lvl == 1) return D(1e300);
 			if (lvl == 2) return D(60);
 			if (lvl == 3) return D(120);
 			if (lvl == 4) return D(1800);
@@ -221,9 +216,69 @@ const BUILDINGS = {
 		},
 		timespeed(x, y) {
 			let b = Building.getByPos(x, y);
+			if (b.upgrading) return D(0);
 			if (!b.meta.timespeed) b.meta.timespeed = D(0);
 			return b.meta.timespeed.pow(RS.acv2.effect).add(1).pow(1/RS.acv2.effect).sub(1);
 		},
+		canBuild: true
+	},
+	7: {
+		name: "Charger",
+		desc: `Distributes charge to all laterally adjacent iridite drills.`,
+		get cost() {
+			return Decimal.pow(1e6, Math.pow(costAmt(7), 1.5)).mul(6e35);
+		},
+		currencyName: "essence",
+		canPlace(x, y) {
+			return checkTileAccess(x, y);
+		},
+		startMeta(x, y) { return {
+			time: D(0),
+			charging: false,
+			paused: false
+		}},
+		buildTime: D(1.728e10),
+		levelCost(lvl) {
+			if (lvl == 0) return D(3.9e39);
+			else return D(Infinity);
+		},
+		levelTime(lvl) {
+			if (lvl == 0) return D(3.456e11);
+			if (lvl == 1) return D(1e300);
+			if (lvl == 2) return D(60);
+			if (lvl == 3) return D(120);
+			if (lvl == 4) return D(1800);
+			if (lvl == 5) return D(10800);
+			if (lvl == 6) return D(172800);
+			if (lvl == 7) return D(3456000);
+		},
+		getProduction(x, y) {
+			let b = Building.getByPos(x, y);
+			return D(b.level > 0 ? 0.1 : 1/15);
+		},
+		getEffect(x, y) {
+			let b = Building.getByPos(x, y);
+			return D(b.level > 0 ? 5e10 : 2e9);
+		},
+		getEffect2(x, y) {
+			return D(1024);
+		},
+		canBuild: true
+	},
+	8: {
+		name: "Energizer",
+		desc: `Creates ${Currency.orbs.text} when charged by a charger.`,
+		get cost() {
+			return Decimal.pow(1e8, Math.pow(costAmt(8), 1.6)).mul(1e46);
+		},
+		currencyName: "money",
+		canPlace(x, y) {
+			return checkTileAccess(x, y);
+		},
+		startMeta(x, y) { return {
+			charge: D(0)
+		}},
+		buildTime: D(1.728e12),
 		canBuild: true
 	}
 }

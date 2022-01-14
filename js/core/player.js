@@ -45,7 +45,8 @@ function getStartPlayer() {
 		currency: {
 			money: new Decimal(10),
 			essence: new Decimal(0),
-			iridite: new Decimal(0)
+			iridite: new Decimal(0),
+			orbs: new Decimal(0)
 		},
 		base: {
 			newBuildings: 0,
@@ -73,7 +74,8 @@ function getStartPlayer() {
 				acv1: D(0),
 				acv2: D(0),
 				doublerIII: D(0),
-				rep1: D(0)
+				rep1: D(0),
+				rep2: D(0)
 			},
 			researching: ""
 		},
@@ -92,7 +94,10 @@ let struct = {
 		meta: {
 			charge: Decimal,
 			charging: Boolean,
-			timespeed: Decimal
+			timespeed: Decimal,
+			time: Decimal,
+			building: Number,
+			paused: Boolean
 		},
 		time: Decimal,
 		upgrading: Boolean

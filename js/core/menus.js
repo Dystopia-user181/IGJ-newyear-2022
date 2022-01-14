@@ -3,7 +3,8 @@ function loadMenus() {
 
 	Vue.component("construction-menu", {
 		data() { return {
-			player
+			player,
+			Research
 		}},
 		methods: {
 			showQueueMenu() {
@@ -23,8 +24,10 @@ function loadMenus() {
 				<u @click="showQueueMenu" style="cursor: pointer;">Queue</u>: {{queue()}}/{{queueMax()}}
 				<button style="position: absolute; right: 6px; top: 6px;" @click="player.options.buildMultiple = !player.options.buildMultiple">Build Multiple Buildings at a Time: {{player.options.buildMultiple ? "ON" : "OFF"}}</button>
 			</div>
-			<building-ui :bId="2"></building-ui>
-			<building-ui :bId="3"></building-ui>
+			<building-ui :bId="2" v-if="!Research.has('rep2')"></building-ui>
+			<building-ui :bId="8" v-else></building-ui>
+			<building-ui :bId="3" v-if="!Research.has('rep1')"></building-ui>
+			<building-ui :bId="7" v-else></building-ui>
 			<building-ui :bId="4"></building-ui>
 			<building-ui :bId="5" v-if="player.base.newBuildings > 0"></building-ui>
 			<building-ui :bId="6" v-if="player.iridite.newBuildings > 0"></building-ui>
@@ -329,8 +332,11 @@ function loadMenus() {
 			["doublerI", "quintuplerI"],
 			["triplerII", "doublerII", "septuplerII"],
 			["acv1-active", "doublerIII", "idl1-idle"],
-			["acv2-active", "idl2-idle"]
-			]
+			["acv2-active", "idl2-idle"],
+			["rep1"],
+			["rep2"]
+			],
+			RS
 		}},
 		methods: {
 			buildingList,
@@ -349,6 +355,10 @@ function loadMenus() {
 				if (Currency.iridite.amt.lt(15)) return;
 				Currency.iridite.use(15);
 				player.unlocks.iridite = true;
+			},
+			nlsco(a, b) {
+				if (a == null || a == undefined) return b;
+				else return a;
 			}
 		},
 		computed: {
@@ -357,6 +367,11 @@ function loadMenus() {
 			},
 			collectors() {
 				return buildingList(3).filter(i => i.level >= 5).length;
+			}
+		},
+		mounted() {
+			if (this.$refs.researches) {
+				this.$refs.researches.scrollIntoView({block: "end"})
 			}
 		},
 		template: `<div style="padding: 10px" class="centre col">
@@ -370,12 +385,14 @@ function loadMenus() {
 				You have proven worthy of the task so far. Don't disappoint us.<br><br></span>
 				<button @click="buyUpg1" :disabled="player.currency.iridite.lt(15)">Begin the project<br>Cost: <iridite-display amt="15" whole="a" @click="buyUpg0"></iridite-display></button>
 			</div>
-			<div class="centre col" v-else>
+			<div class="centre col" v-else ref="researches">
 				<br>
 				Iridite production channeled to {{player.iridite.researching ? "research" : "storage"}}
 				<br><br>
 				<div class="centre" v-for="r in layout">
-					<research-ui v-for="id in r" :rId="id.split('-')[0]" :class="id.split('-')[1]"></research-ui>
+					<div class="centre" v-if="r.filter(id => nlsco(RS[id.split('-')[0]].unlocked, true)).length > 0">
+						<research-ui v-for="id in r" :rId="id.split('-')[0]" :class="id.split('-')[1]"></research-ui>
+					</div>
 				</div>
 			</div>
 		</div>`
@@ -579,6 +596,151 @@ function loadMenus() {
 			<upgrade-progress :x="data.x" :y="data.y" v-else></upgrade-progress>
 		</div>`
 	})
+	Vue.component("charger-menu", {
+		data() { return {
+			player,
+			BD,
+			dStyle: {
+				width: "25px",
+				height: "25px",
+				margin: "2px",
+				"border-radius": "2px",
+				display: "inline-block"
+			},
+			Building
+		}},
+		methods: {
+			format,
+			formatTime,
+			color(dir) {
+				if (this.b6List.includes(dir)) return "#5fbb";
+				if (this.b8List.includes(dir)) return "#fd8b";
+				return "#fff4";
+			}
+		},
+		computed: {
+			building() {
+				return Building.getByPos(this.data.x, this.data.y);
+			},
+			b6List() {
+				let list = [];
+				for (let j = 0; j < 4; j++) {
+					let pos = getXYfromDir(j, [this.data.x, this.data.y]);
+					if (map[pos[0]][pos[1]].t != 6) continue;
+					let b = Building.getByPos(...pos);
+					if (!b.upgrading && (!this.building.meta.charging || b.level > 0)) {
+						list.push(j);
+					}
+				}
+				return list;
+			},
+			b8List() {
+				let list = [];
+				for (let j = 0; j < 4; j++) {
+					let pos = getXYfromDir(j, [this.data.x, this.data.y]);
+					if (map[pos[0]][pos[1]].t != 8) continue;
+					let b = Building.getByPos(...pos);
+					if (!b.upgrading) {
+						list.push(j);
+					}
+				}
+				return list;
+			},
+			effect() {
+				return this.building.meta.charging ? BD[7].getEffect2(this.data.x, this.data.y) : BD[7].getEffect(this.data.x, this.data.y)
+			}
+		},
+		props: ["data"],
+		template: `<div style="padding: 10px;">
+			<div v-if="!building.upgrading">
+				<div class="centre stretch">
+					<div style="width: 100%; flex-shrink: 1; position: relative; text-align: center">
+						<button @click="building.meta.charging = !building.meta.charging" v-if="building.level > 0">
+							<b>Production Mode:</b> {{building.meta.charging ? "Timespeed" : "Charge"}}
+						</button>
+						<b v-else>Production</b><br>
+						{{format(effect)}} {{building.meta.charging ? "timespeed equiv." : "charge"}}/fill <span v-if="b6List.length > 0">({{format(effect.div(b6List.length))}}/drill)</span><br>
+						{{format(BD[7].getProduction(data.x, data.y).recip())}}s/fill<br>
+						Requirement: Iridite drills level {{building.meta.charging ? 2 : 1}} or above
+
+						<div style="position: absolute; bottom: 35%; right: 50%; transform: translate(50%, 50%);">
+							<div class="centre">
+								<div :style="dStyle"></div>
+								<div :style="{...dStyle, background: color(3)}"></div>
+								<div :style="dStyle"></div>
+							</div>
+							<div class="centre">
+								<div :style="{...dStyle, background: color(2)}"></div>
+								<div :style="{...dStyle, background: '#aaeeff' + ('0' + building.meta.time.mul(127).add(128).round().toNumber().toString(16)).slice(-2)}"></div>
+								<div :style="{...dStyle, background: color(0)}"></div>
+							</div>
+							<div class="centre">
+								<div :style="dStyle"></div>
+								<div :style="{...dStyle, background: color(1)}"></div>
+								<div :style="dStyle"></div>
+							</div>
+						</div>
+					</div>
+					<div style="width: 100%; flex-shrink: 1;" class="centre col">
+						<div style="position: relative; border: 2px solid; width: 50px; height: 250px;">
+							<div style="background: linear-gradient(#ecf, #b3d); width: 100%; position: absolute; bottom: 0;" :style="{
+								height: (250*building.meta.time) + 'px'
+							}"></div>
+						</div>
+						<button @click="building.meta.paused = !building.meta.paused">{{building.meta.paused ? "Unp" : "P"}}ause</button>
+					</div>
+				</div>
+				<button @click="Building.sell(data.x, data.y)">Sell</button><br>
+				<button @click="Building.level(data.x, data.y)" v-if="player.unlocks.level"
+				:disabled="player.currency.essence.lt(BD[7].levelCost(building.level))">Upgrade ({{formatTime(BD[7].levelTime(building.level))}})<br>
+				Cost: <essence-display :amt="BD[7].levelCost(building.level)" whole="a"></essence-display></button>
+			</div>
+			<upgrade-progress :x="data.x" :y="data.y" v-else></upgrade-progress>
+		</div>`
+	})
+
+	Vue.component("energizer-menu", {
+		data() { return {
+			player,
+			BD,
+			Building
+		}},
+		methods: {
+			format,
+			formatTime,
+			collect() {
+				if (this.building.meta.charge.lt(1)) return;
+				this.building.meta.charge = this.building.meta.charge.sub(1);
+				Currency.orbs.add(1);
+				canvas.need0update = true;
+			}
+		},
+		computed: {
+			building() {
+				return Building.getByPos(this.data.x, this.data.y);
+			}
+		},
+		props: ["data"],
+		template: `<div style="padding: 10px;">
+			<div v-if="!building.upgrading">
+				<div class="centre stretch">
+					<div style="width: 100%; flex-shrink: 1; position: relative; text-align: center">
+						<orbs-display whole="a" style="font-size: 20px;"></orbs-display>
+					</div>
+					<div style="width: 100%; flex-shrink: 1;" class="centre col">
+						<div style="position: relative; border: 2px solid; width: 50px; height: 250px;">
+							<div style="background: linear-gradient(#fd8, #db4); width: 100%; position: absolute; bottom: 0;" :style="{
+								height: (250*building.meta.charge) + 'px'
+							}"></div>
+						</div>
+						<button style="color: #fd8;" :disabled="building.meta.charge.lt(1)" @click="collect">Collect Orb</button> 
+					</div>
+				</div>
+				<button @click="Building.sell(data.x, data.y)">Sell</button>
+			</div>
+			<upgrade-progress :x="data.x" :y="data.y" v-else></upgrade-progress>
+		</div>`
+	});
 
 	Vue.component("upgrade-progress", {
 		data() { return {
@@ -646,6 +808,22 @@ const MENU_DATA = {
 	6: {
 		id: "iriditedrill",
 		name: "Iridite Drill"
+	},
+	7: {
+		id: "charger",
+		name: "Charger",
+		style: {
+			width: '750px',
+			height: '500px'
+		}
+	},
+	8: {
+		id: "energizer",
+		name: "Energizer",
+		style: {
+			width: '750px',
+			height: '500px'
+		}
 	},
 	"-2": {
 		id: 'construction',

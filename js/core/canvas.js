@@ -210,14 +210,39 @@ let tileStyle = {
 		ctx.arc(ci, cj, w*0.75, 0, Math.PI*2);
 		ctx.fill();
 	},
-	"6"(i, j, ctx) {
+	"6"(i, j, ctx, x, y) {
+		let b = Building.getByPos(x, y);
 		ctx.fillStyle = Currency.iridite.colour + '3';
+		ctx.shadowBlur = 0;
 		ctx.fillRect(i, j, px, py);
 		
 		ctx.fillStyle = "#444";
 		ctx.fillRect(i + px/8, j + py*0.8, px*0.75, py*0.1);
 		ctx.fillStyle = "#5fa";
 		ctx.fillRect(i + px/6, j + py*0.7, px*2/3, py*0.1);
+		if (b.level > 0)
+			ctx.fillRect(i + px/5, j + py*0.6, px*0.6, py*0.1);
+	},
+	"7"(i, j, ctx, x, y) {
+		let b = Building.getByPos(x, y);
+		ctx.fillStyle = "#444";
+		ctx.shadowBlur = 0;
+		ctx.fillRect(i, j, px, py*0.1);
+		ctx.fillRect(i, j + py*0.9, px, py*0.1);
+		ctx.fillRect(i + px*0.1, j, px*0.1, py);
+		ctx.fillRect(i + px*0.8, j, px*0.1, py);
+	},
+	"8"(i, j, ctx, x, y) {
+		let b = Building.getByPos(x, y);
+		let c = Math.asin(b.meta.charge.sub(0.5).mul(2).toNumber()) + Math.PI*0.5;
+		ctx.strokeStyle = "#444";
+		ctx.shadowBlur = 0;
+		ctx.lineWidth = 3;
+		ctx.strokeRect(i + 2, j + 2, px - 4, py - 4);
+		ctx.fillStyle = "#fd8";
+		ctx.beginPath();
+		ctx.arc(i + px/2, j + py/2, Math.min(px, py)/2 - 2, Math.PI*0.5 - c, Math.PI*0.5 + c);
+		ctx.fill();
 	}
 }
 function antipointFourier(t, x, y, w) {
@@ -262,6 +287,7 @@ let canvas = {
 	objs: {
 		essenceFourier: [],
 		antipointFourier: [],
+		chargers: [],
 		player: {x: 0, y: 0}
 	}
 }
@@ -322,6 +348,7 @@ let pi = Math.PI
 function render() {
 	canvas.objs.antipointFourier = [];
 	canvas.objs.essenceFourier = [];
+	canvas.objs.chargers = [];
 	let testTime = Date.now();
 	c.width = window.innerWidth - 4;
 	c.height = window.innerHeight - 114;
@@ -376,6 +403,9 @@ function render() {
 
 			if (tile == 5)
 				canvas.objs.antipointFourier.push({i: i*px, j: j*py, x, y});
+
+			if (tile == 7 && !Building.getByPos(x, y).upgrading)
+				canvas.objs.chargers.push({i: i*px, j: j*py, x, y});
 
 			tileStyle[tile](i*px, j*py, ctx, x, y);
 			if (BUILDINGS[tile] && Building.getByPos(x, y).upgrading) {
@@ -460,6 +490,25 @@ function renderLayer2() {
 		ctx2.stroke();
 		ctx2.lineTo(...antipointFourier(t - 350, ci, cj, w));
 		ctx2.stroke();
+	}
+	for (let c of canvas.objs.chargers) {
+		let {i, j, x, y} = c;
+		b = Building.getByPos(x, y);
+		ctx2.fillStyle = `#aaeeff${('0' + b.meta.time.clamp(0, 1).mul(128).add(127).round().toNumber().toString(16)).slice(-2)}`;
+		ctx2.fillRect(i + px*0.3, j + py*0.1, px*0.4, py*0.8);
+		if (b.meta.time.lte(0.1)) {
+			ctx2.fillStyle = `#ffff66${('0' + Decimal.sub(0.1, b.meta.time).mul(2550).round().toNumber().toString(16)).slice(-2)}`;
+			ctx2.fillRect(i, j, px, py);
+			ctx2.fillStyle = `#ffff66${('0' + Decimal.sub(0.1, b.meta.time).mul(1275).round().toNumber().toString(16)).slice(-2)}`;
+			if (x > 0)
+				ctx2.fillRect(i - px, j, px, py);
+			if (x < mapWidth - 1)
+				ctx2.fillRect(i + px, j, px, py);
+			if (y > 0)
+				ctx2.fillRect(i, j - py, px, py);
+			if (y < mapHeight - 1)
+				ctx2.fillRect(i, j + py, px, py);
+		}
 	}
 
 	if (player.options.showTilePopups) {

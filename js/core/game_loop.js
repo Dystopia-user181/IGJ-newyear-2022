@@ -137,19 +137,52 @@ function gameLoop(d) {
 				if (i.meta.charging) {
 					i.meta.charge = i.meta.charge.add(prod[2].mul(RS.septuplerII.effect).mul(d));
 					if (Research.has("acv1"))
-						if (i.meta.timespeed.lt(9))
-							i.meta.timespeed = i.meta.timespeed.pow(RS.acv2.effect).add(d.mul(2e-7)).pow(1/RS.acv2.effect).min(10);
+						if (i.meta.timespeed.lt(9) || i.level > 0)
+							i.meta.timespeed = i.meta.timespeed.pow(RS.acv2.effect).add(d.mul(2e-7)).pow(1/RS.acv2.effect).min(i.level > 0 ? 250 : 10);
 						else
-							i.meta.timespeed = i.meta.timespeed.pow(i.meta.timespeed.mul(RS.acv2.effect/9)).add(d.mul(2e-7)).pow(i.meta.timespeed.mul(RS.acv2.effect/9).recip());
+							i.meta.timespeed = i.meta.timespeed.pow(i.meta.timespeed.mul(RS.acv2.effect/9)).add(d.mul(2e-7)).pow(i.meta.timespeed.mul(RS.acv2.effect/9).recip()).min(100);
 				} else {
 					prodMoney = prodMoney.add(prod[0]);
 					prodEssence = prodEssence.add(prod[1]);
 					prodIridite = prodIridite.add(prod[2]);
 					if (Research.has("acv1"))
 						if (i.meta.timespeed.gte(10))
-							i.meta.timespeed = i.meta.timespeed.pow(Decimal.pow(Research.has("acv2") ? 0.7 : 0.85, trueDiff)).max(0);
+							i.meta.timespeed = i.meta.timespeed.pow(Decimal.pow(Research.has("acv2") ? 0.85 : 0.9, trueDiff)).max(0);
 						else
 							i.meta.timespeed = i.meta.timespeed.sub(trueDiff*(0.4 + 0.2*Research.has("acv2"))).max(0);
+				}
+			}
+		}
+		for (let i of buildingList(7)) {
+			if (!(i.upgrading || i.meta.paused)) {
+				let b6List = [];
+				i.meta.time = i.meta.time.add(BD[7].getProduction(i.pos.x, i.pos.y).mul(trueDiff));
+				if (i.meta.time.gte(1)) {
+					for (let j = 0; j < 4; j++) {
+						let pos = getXYfromDir(j, [i.pos.x, i.pos.y]);
+						if (map[pos[0]][pos[1]].t != 6) continue;
+						let b = Building.getByPos(...pos);
+						if (!b.upgrading && (!i.meta.charging || b.level > 0)) {
+							b6List.push(Building.getByPos(...pos));
+						}
+					}
+					for (let j = 0; j < 4; j++) {
+						let pos = getXYfromDir(j, [i.pos.x, i.pos.y]);
+						if (map[pos[0]][pos[1]].t != 8) continue;
+						let b = Building.getByPos(...pos);
+						if (!b.upgrading) {
+							if (b.meta.charge.lt(1))
+								canvas.need0update = true;
+							b.meta.charge = b.meta.charge.add(i.meta.time.floor().mul(0.2)).min(1);
+						}
+					}
+					for (let ir of b6List) {
+						if (i.meta.charging)
+							ir.meta.timespeed = ir.meta.timespeed.pow(2).add(BD[7].getEffect2(i.pos.x, i.pos.y).div(b6List.length).mul(i.meta.time.floor())).pow(0.5).min(250);
+						else
+							ir.meta.charge = ir.meta.charge.add(BD[7].getEffect(i.pos.x, i.pos.y).div(b6List.length).mul(i.meta.time.floor()));
+					}
+					i.meta.time = i.meta.time.sub(i.meta.time.floor());
 				}
 			}
 		}

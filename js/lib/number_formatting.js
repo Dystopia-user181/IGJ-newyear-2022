@@ -24,13 +24,13 @@ function formatTime(num) {
 	num = D(num);
 	if (num.e > 1e15) return "Infinite time";
 	if (num >= 86400000000) {
-		return `${format(num.div(86400))}d`
+		return `${format(num.div(86400))} d`
 	}
 	let d = Math.floor(num/86400), h = Math.floor(num/3600)%24, m = Math.floor(num/60)%60, s = num%60;
 	let timeString = "";
 	if (d > 0) timeString += `${d}d `;
-	if (d > 0 || h > 0) timeString += `${h}h `;
-	if (d > 0 || h > 0 || m > 0) timeString += `${m}m `;
-	timeString += `${num.gte(10) ? format(Math.floor(s), 0) : format(s, 2)}s`;
+	if (d > 0 || h > 0) timeString += `${d > 0 ? ('0' + h).slice(-2) : h}h `;
+	if (d > 0 || h > 0 || m > 0) timeString += `${(h > 0 || d > 0) ? ('0' + m).slice(-2) : m}m `;
+	timeString += `${num.gte(10) ? ((h > 0 || d > 0 || m > 0) ? ('0' + format(Math.floor(s), 0)).slice(-2) : format(Math.floor(s), 0)) : format(s, 2)}s`;
 	return timeString;
 }

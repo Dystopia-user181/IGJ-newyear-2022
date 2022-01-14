@@ -125,6 +125,9 @@ function loadVue() {
 			})" v-if="buildingAmt(5) > 0" class="quickaccess">
 				Antipoint
 			</button>
+			<button onclick="openMenu(65, 65)" v-if="player.unlocks.iridite" class="quickaccess">
+				Project Iridium
+			</button>
 		</div>`
 	})
 	Vue.component('controls-menu', {

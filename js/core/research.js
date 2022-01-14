@@ -95,10 +95,17 @@ const RESEARCHES = {
 		}
 	},
 	rep1: {
-		cost: D(1e7),
+		cost: D(1.5e7),
 		desc: `Repurpose <span class="essence">essence collectors</span>.`,
 		get unlocked() {
-			return false
+			return Research.has("idl2") && Research.has("acv2");
+		}
+	},
+	rep2: {
+		cost: D(5e10),
+		desc: `Repurpose <span class="money">gold mines</span>.`,
+		get unlocked() {
+			return Research.has("rep1");
 		}
 	}
 }

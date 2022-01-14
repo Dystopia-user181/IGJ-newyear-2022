@@ -57,6 +57,10 @@ addCurrencyState("iridite", {
 	colour: "#5fb",
 	display: "Ø"
 })
+addCurrencyState("orbs", {
+	colour: "#fd8",
+	display: "Ω"
+})
 
 function loadCurrency() {
 	root = document.documentElement;

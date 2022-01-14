@@ -109,6 +109,8 @@ let controls = {
 	pressE() {
 		if (!Modal.showing)
 			openMenu(3, 3);
+		else if (!paused)
+			Modal.closeFunc();
 	},
 	pressS(e) {
 		e.preventDefault();
@@ -159,8 +161,12 @@ let controls = {
 
 
 let walkable = [0];
-function getXYfromDir(dir) {
+function getXYfromDir(dir, t) {
 	let {x, y} = player.pos;
+	if (t) {
+		x = t[0];
+		y = t[1];
+	}
 	dir = Number(dir);
 	switch (dir) {
 		case 0: return [x + 1, y];
