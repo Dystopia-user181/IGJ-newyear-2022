@@ -72,7 +72,8 @@ function getStartPlayer() {
 				idl2: D(0),
 				acv1: D(0),
 				acv2: D(0),
-				doublerIII: D(0)
+				doublerIII: D(0),
+				rep1: D(0)
 			},
 			researching: ""
 		},
