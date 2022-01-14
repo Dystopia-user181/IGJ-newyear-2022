@@ -61,7 +61,7 @@ const RESEARCHES = {
 		}
 	},
 	acv2: {
-		cost: D(4e6),
+		cost: D(2e6),
 		desc: `Increase time speed gained from charging, but make it decay faster.`,
 		get unlocked() {
 			return Research.has("doublerIII")
@@ -88,21 +88,21 @@ const RESEARCHES = {
 		}
 	},
 	idl2: {
-		cost: D(4e6),
+		cost: D(2e6),
 		desc: `Passively gain <span class="anti">^$</span> and <span class="anti">^*</span>.`,
 		get unlocked() {
 			return Research.has("doublerIII")
 		}
 	},
 	rep1: {
-		cost: D(1.5e7),
+		cost: D(3.2e6),
 		desc: `Repurpose <span class="essence">essence collectors</span>.`,
 		get unlocked() {
 			return Research.has("idl2") && Research.has("acv2");
 		}
 	},
 	rep2: {
-		cost: D(5e10),
+		cost: D(2e10),
 		desc: `Repurpose <span class="money">gold mines</span>.`,
 		get unlocked() {
 			return Research.has("rep1");

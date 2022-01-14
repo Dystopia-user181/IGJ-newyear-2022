@@ -258,7 +258,7 @@ const BUILDINGS = {
 		},
 		getEffect(x, y) {
 			let b = Building.getByPos(x, y);
-			return D(b.level > 0 ? 5e10 : 2e9);
+			return D(b.level > 0 ? 1e11 : 5e9);
 		},
 		getEffect2(x, y) {
 			return D(1024);
