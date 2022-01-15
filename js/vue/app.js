@@ -180,7 +180,7 @@ function loadVue() {
 		Q: Open quick access<br>
 		E: Open construction menu<br>
 		<span v-if="player.unlocks.specializer">O: Open orb specializer<br></span>
-		<span v-else-if="player.obelisk.repaired">O: Open obelisk menu<<br>/span>
+		<span v-else-if="player.obelisk.repaired">O: Open obelisk menu<br></span>
 		Esc: Close window/Stop placing building/Pause game<br>
 		Ctrl+S: Save game
 		<br>
