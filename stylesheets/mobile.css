@@ -10,4 +10,7 @@
 	.mobile-controls {
 		display: block;
 	}
+	.currency-text {
+		font-size: 17px !important;
+	}
 }

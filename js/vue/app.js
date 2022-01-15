@@ -18,9 +18,9 @@ function loadVue() {
 		}},
 		template: `<div style="position: relative; height: 100%;">
 			<div style="position: absolute;">
-				<span style="font-size: 20px"><money-display></money-display> ({{format(tmp.moneyGain, 2, 2, 1)}}/s)</span>
-				<span style="font-size: 20px" v-if="player.base.newBuildings > 0"> | <essence-display></essence-display> ({{format(tmp.essenceGain, 2, 2, 1)}}/s)</span>
-				<span style="font-size: 20px" v-if="player.iridite.newBuildings > 0"> | <iridite-display></iridite-display> ({{format(tmp.iriditeGain, 2, 2, 1)}}/s)</span>
+				<span style="font-size: 20px" class="currency-text"><money-display></money-display> ({{format(tmp.moneyGain, 2, 2, 1)}}/s)</span>
+				<span style="font-size: 20px" class="currency-text" v-if="player.base.newBuildings > 0"> | <essence-display></essence-display> ({{format(tmp.essenceGain, 2, 2, 1)}}/s)</span>
+				<span style="font-size: 20px" class="currency-text" v-if="player.iridite.newBuildings > 0"> | <iridite-display></iridite-display> ({{format(tmp.iriditeGain, 2, 2, 1)}}/s)</span>
 				<br>
 				Welcome to Project Iridium. Press WASD to navigate.
 			</div>
@@ -49,12 +49,6 @@ function loadVue() {
 					Yhvr\`,
 					buttons: [{text: 'Close', onClick() {Modal.close()}}]
 				})">Credits</button>
-				<button onclick="Modal.show({
-					title: 'Controls',
-					bind: 'controls-menu'
-				})">
-					Controls
-				</button>
 			</div>
 			<div style="position: absolute; right: 0; bottom: 0;">
 				<button v-if="Research.has('core')" onclick="Modal.show({
@@ -66,6 +60,12 @@ function loadVue() {
 					bind: 'quick-access',
 					style: {width: '750px', height: '500px'}
 				})">Quick Access</button>
+				<button onclick="Modal.show({
+					title: 'Controls',
+					bind: 'controls-menu'
+				})">
+					Controls
+				</button>
 			</div>
 		</div>`
 	});
