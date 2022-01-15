@@ -703,7 +703,8 @@ function loadMenus() {
 		data() { return {
 			player,
 			BD,
-			Building
+			Building,
+			tab: 'a'
 		}},
 		methods: {
 			format,
@@ -713,6 +714,11 @@ function loadMenus() {
 				this.building.meta.charge = this.building.meta.charge.sub(1);
 				Currency.orbs.add(1);
 				canvas.need0update = true;
+			},
+			buyUpg0() {
+				if (Currency.orbs.amt.lt(1)) return;
+				Currency.orbs.use(1);
+				player.unlocks.specializer = true;
 			}
 		},
 		computed: {
@@ -723,9 +729,17 @@ function loadMenus() {
 		props: ["data"],
 		template: `<div style="padding: 10px;">
 			<div v-if="!building.upgrading">
-				<div class="centre stretch">
+				<div class="centre" v-if="player.unlocks.specializer">
+					<button @click="tab = 'a'" :disabled="tab == 'a'" style="width: 30%; padding: 6px; margin: 4px;">Orb Gen</button>
+					<button @click="tab = 'b'" :disabled="tab == 'b'" style="width: 30%; padding: 6px; margin: 4px;">Specializer</button>
+				</div>
+				<div class="centre stretch" v-if="tab == 'a'">
 					<div style="width: 100%; flex-shrink: 1; position: relative; text-align: center">
-						<orbs-display whole="a" style="font-size: 20px;"></orbs-display>
+						<orbs-display whole="a" style="font-size: 40px;"></orbs-display><br>
+						<button @click="buyUpg0" class="upg-button" :class="{ bought: player.unlocks.specializer }" v-if="false">
+							Unlock the orb specializer.<br>
+							Cost: <orbs-display amt="1" whole="a"></orbs-display>
+						</button>
 					</div>
 					<div style="width: 100%; flex-shrink: 1;" class="centre col">
 						<div style="position: relative; border: 2px solid; width: 50px; height: 250px;">
@@ -741,6 +755,14 @@ function loadMenus() {
 			<upgrade-progress :x="data.x" :y="data.y" v-else></upgrade-progress>
 		</div>`
 	});
+	Vue.component("specializer-menu", {
+		data() { return {
+			player
+		}},
+		template: `<div>
+			s
+		</div>`
+	})
 
 	Vue.component("upgrade-progress", {
 		data() { return {

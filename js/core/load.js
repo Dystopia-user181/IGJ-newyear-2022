@@ -34,6 +34,31 @@ function loadDBdata(testTime) {
 		let transaction = db.transaction("data");
 		transaction.objectStore("data").get("1").onsuccess = function(event) {
 			let data = event.target.result;
+			if (!data) {
+				loadVue();
+				Building.load();
+				Research.load();
+
+				let lastTick = Date.now();
+				interval = setInterval(() => {
+					thisTick = Date.now();
+					gameLoop((Date.now() - lastTick)/1000);
+					lastTick = Date.now();
+				}, 25);
+				renderInterval = setInterval(() => {
+					if (paused) return;
+					renderLoop();
+				}, 50);
+				setInterval(() => {if (player.options.autosave && !paused) save()}, 20000);
+				loadCanvas();
+				loadControls();
+				need0update = true;
+				need1update = true;
+				need2update = true;
+				renderAll();
+				console.log((Date.now() - testTime) + "ms to load game");
+				return;
+			}
 			map = deepcopy(data.map);
 			decimaliseArray(map, struct.map);
 			if (map.length < mapWidth) {
@@ -96,23 +121,6 @@ function loadDBdata(testTime) {
 			need2update = true;
 			renderAll();
 			console.log((Date.now() - testTime) + "ms to load game");
-
-			if (!player.unlocks.start) {
-				Modal.show({
-					title: "Time Game",
-					text: `<div style="margin: 30px;">I'm too lazy to make lore</div>`,
-					buttons: [{
-						text: "Next",
-						onClick() {
-							Modal.closeFunc();
-						}
-					}],
-					close() {
-						player.unlocks.start = true;
-						Modal.close();
-					}
-				})
-			}
 		}
 		
 		db.onerror = function(event) {

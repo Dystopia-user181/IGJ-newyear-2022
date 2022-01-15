@@ -6,7 +6,8 @@ function getStartPlayer() {
 			place: false,
 			base: false,
 			level: false,
-			iridite: false
+			iridite: false,
+			sacrifice: false
 		},
 		options: {
 			autosave: true,
@@ -77,7 +78,14 @@ function getStartPlayer() {
 				rep1: D(0),
 				rep2: D(0)
 			},
-			researching: ""
+			researching: "",
+			orbEffects: {
+				money: D(0),
+				essence: D(0),
+				iridite: D(0),
+				time: D(0),
+				energy: D(0)
+			}
 		},
 		builders: 0,
 		buildings: [],
@@ -146,6 +154,7 @@ function deepDecimalise(data) {
 }
 
 function decimaliseArray(data, struct) {
+	if (!struct) return;
 	for (let i in data) {
 		let prop = data[i];
 		if (struct.constructor !== Object) {
