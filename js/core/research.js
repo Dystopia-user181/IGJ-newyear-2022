@@ -213,7 +213,7 @@ const Research = {
 function softcap(value, cap, power = 0.5) {
 	if (value.lte(cap)) return value
 	else
-		return value.pow(power).times(cap.pow(decimalOne.sub(power)))
+		return value.pow(power).times(cap.pow(D(1).sub(power)))
 }
 
 const Orbs = {
