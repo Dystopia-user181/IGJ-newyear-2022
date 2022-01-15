@@ -172,7 +172,21 @@ function gameLoop(d) {
 					if (!b.upgrading) {
 						if (b.meta.charge.lt(1))
 							canvas.need0update = true;
-						b.meta.charge = b.meta.charge.add(i.meta.time.floor().mul(0.2)).min(Research.has("orb1") ? 4 : 1);
+						b.meta.charge = b.meta.charge.add(i.meta.time.floor().mul(0.2)).min(Research.has("orb1") ? 5 : 1);
+						if (b.meta.charge.gte(1) && Research.has("auto1")) {
+							let enhancers = 0;
+							let {x, y} = b.pos;
+							for (let i = Math.max(x - 1, 0); i <= Math.min(x + 1, mapWidth - 1); i++) {
+								for (let j = Math.max(y - 1, 0); j <= Math.min(y + 1, mapHeight - 1); j++) {
+									if (map[i][j].t == 4) {
+										enhancers++;
+									}
+								}
+							}
+							enhancers = Math.min(enhancers, 0 + Research.has("rep3"));
+							Currency.orbs.add(b.meta.charge.floor().mul(1 + 3*enhancers));
+							b.meta.charge = b.meta.charge.sub(b.meta.charge.floor());
+						}
 					}
 				}
 				for (let ir of b6List) {

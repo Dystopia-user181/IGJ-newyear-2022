@@ -234,7 +234,7 @@ let tileStyle = {
 	},
 	"8"(i, j, ctx, x, y) {
 		let b = Building.getByPos(x, y);
-		let c = Math.asin(b.meta.charge.sub(0.5).mul(2).toNumber()) + Math.PI*0.5;
+		let c = Math.asin(b.meta.charge.min(1).sub(0.5).mul(2).toNumber()) + Math.PI*0.5;
 		ctx.strokeStyle = "#444";
 		ctx.shadowBlur = 0;
 		ctx.lineWidth = 3;
@@ -425,7 +425,7 @@ function renderLayer1() {
 		let [x, y] = getXYfromDir(placeData.facing);
 		let [px, py] = getPosInCanvas(x, y);
 
-		if (!b.canPlace(x, y) || Currency[b.currencyName].amt.lt(b.cost) || queue() > queueMax() - 1) {
+		if (!b.canPlace(x, y) || Currency[b.currencyName].amt.lt(b.cost) || queue() > queueMax() - 1 || !b.canBuild) {
 			ctx1.fillStyle = "#f00";
 			ctx1.shadowColor = "#f00"
 		} else {

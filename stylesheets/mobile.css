@@ -1,6 +1,6 @@
 .mobile-controls {
 	display: none;
-	position: absolute;
+	position: fixed;
 	border: 2px solid;
 	background-color: var(--bg-2);
 	bottom: 0;

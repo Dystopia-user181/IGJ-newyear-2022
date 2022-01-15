@@ -155,13 +155,17 @@ const BUILDINGS = {
 		}
 	},
 	6: {
-		name: "Iridite drill",
-		desc: `Produces <span class='money'>$</span> 5.00e9, <span class='essence'>*</span> 1.00e7, <span class='iridite'>Ø</span> 1.00e-6/s.<br>
-		<i class="sub">Can only be placed on iridium reserves</i>`,
+		get name() {
+			return `Iridite drill${(costAmt(6) <= 0 || Modal.data.bind != "construction-menu") ? "" : `<i class="sub" style="font-size: 16px;"> &nbsp; Next requires ${Currency.orbs.text} ${formatWhole(BD[6].cost.log10().floor())}</i>`}`
+		},
+		get desc() {
+			return `Produces <span class='money'>$</span> 5.00e9, <span class='essence'>*</span> 1.00e7, <span class='iridite'>Ø</span> 1.00e-6/s.<br>
+			<i class="sub">Can only be placed on iridium reserves</i>`
+		},
 		get cost() {
 			if (costAmt(6) <= 0) return D(0);
-			if (costAmt(6) >= 1) return D(Infinity);
-			return Decimal.pow(30, Math.pow(costAmt(6), 1.5)).mul(4e6);
+			if (costAmt(6) == 1) return D(1e18);
+			return D(Infinity);
 		},
 		currencyName: "iridite",
 		canPlace(x, y) {
@@ -175,23 +179,19 @@ const BUILDINGS = {
 		buildTime: D(3456000),
 		levelCost(lvl) {
 			if (lvl == 0) return D(3e7);
-			else return D(Infinity);
+			if (lvl == 1) return D(1e56);
+			return D(Infinity);
 		},
 		levelScaling(lvl) {
 			if (lvl == 0) return D(1);
 			if (lvl == 1) return D(20);
 
-			return Decimal.pow(10, lvl);
+			return Decimal.pow(300, lvl);
 		},
 		levelTime(lvl) {
 			if (lvl == 0) return D(1.728e9);
-			if (lvl == 1) return D(1e300);
-			if (lvl == 2) return D(60);
-			if (lvl == 3) return D(120);
-			if (lvl == 4) return D(1800);
-			if (lvl == 5) return D(10800);
-			if (lvl == 6) return D(172800);
-			if (lvl == 7) return D(3456000);
+			if (lvl == 1) return D(1.728e20);
+			if (lvl == 2) return D(Infinity);
 		},
 		getProduction(x, y) {
 			let b = Building.getByPos(x, y);
@@ -207,6 +207,7 @@ const BUILDINGS = {
 			let base = BD[6].levelScaling(b.level);
 			base = base.mul(b.meta.charge.add(1).pow(0.25));
 			base = base.mul(RS.triplerII.effect);
+			if (Research.has("rep4")) base = base.mul(1 + 3*enhancers);
 			let mbase = base.mul(b.meta.charge.add(1).pow(0.15)).mul(tmp.anti.essenceEffect);
 			let ebase = base.mul(b.meta.charge.add(1).pow(0.15)).mul(tmp.anti.moneyEffect);
 			let ibase = base.mul(RS.doublerI.effect).mul(Orbs.iriditeEffect());
@@ -220,13 +221,15 @@ const BUILDINGS = {
 			if (!b.meta.timespeed) b.meta.timespeed = D(0);
 			return b.meta.timespeed.pow(RS.acv2.effect).add(1).pow(1/RS.acv2.effect).sub(1);
 		},
-		canBuild: true
+		get canBuild() {
+			return costAmt(6) < 1 || Currency.orbs.amt.gte(BD[6].cost.log10().floor());
+		}
 	},
 	7: {
 		name: "Charger",
 		desc: `Distributes charge to all laterally adjacent iridite drills.`,
 		get cost() {
-			return Decimal.pow(1e5, Math.pow(costAmt(7), 1.2)).mul(6e35);
+			return Decimal.pow(1e5, Math.pow(costAmt(7), 1.3)).mul(6e35);
 		},
 		currencyName: "essence",
 		canPlace(x, y) {
@@ -274,7 +277,7 @@ const BUILDINGS = {
 		name: "Energizer",
 		desc: `Creates ${Currency.orbs.text} when charged by a charger.`,
 		get cost() {
-			return Decimal.pow(1e8, Math.pow(costAmt(8), 1.6)).mul(1e46);
+			return Decimal.pow(1e8, Math.pow(costAmt(8), 1.8)).mul(1e46);
 		},
 		currencyName: "money",
 		canPlace(x, y) {
@@ -346,6 +349,7 @@ const Building = {
 		if (!b.canPlace(x, y)) return;
 		if (b.cost.gt(player.currency[b.currencyName])) return;
 		if (queue() > queueMax() - 1) return;
+		if (!b.canBuild) return;
 
 		if (b.onPlace) b.onPlace(x, y);
 
@@ -353,7 +357,7 @@ const Building = {
 
 		player.buildings.push({level: 0, pos: {x, y}, meta: {building: placeData.node}, time: D(0), t: 1, upgrading: false});
 		map[x][y] = {t: 1};
-		if (!player.options.buildMultiple) placeData.node = "";
+		if (!player.options.buildMultiple && !controls.shift) placeData.node = "";
 		render();
 		renderLayer1();
 		updateTileUsage();

@@ -109,17 +109,51 @@ const RESEARCHES = {
 		}
 	},
 	orb1: {
-		cost: D(5e14),
-		desc: `You can hold up to 4 uncollected orbs per energizer.`,
+		cost: D(2.5e14),
+		desc: `You can hold up to 5 uncollected orbs per energizer.`,
 		get unlocked() {
-			return Research.has("rep2")
+			return Research.has("rep2");
 		}
 	},
 	orb2: {
-		cost: D(5e14),
+		cost: D(2.5e14),
 		desc: `Each orb gives two specializations.`,
 		get unlocked() {
-			return Research.has("rep2")
+			return Research.has("rep2");
+		}
+	},
+	rep3: {
+		cost: D(2.3e23),
+		desc: `Repurpose enhancers to increase orb gain.`,
+		get unlocked() {
+			return Research.has("orb1") || Research.has("orb2");
+		}
+	},
+	rep4: {
+		cost: D(2.3e23),
+		desc: `Repurpose enhancers to increase <span class="iridite">iridite drill</span> efficiency.`,
+		get unlocked() {
+			return Research.has("orb1") || Research.has("orb2");
+		}
+	},
+	auto1: {
+		cost: D(4.4e44),
+		desc: `Automatically collect orbs from energizers.`,
+		get unlocked() {
+			return Research.has("rep3") && Research.has("rep4");
+		}
+	},
+	core: {
+		cost: D(Math.PI*1e69),
+		desc: `Rebuild the iridium core.`,
+		get unlocked() {
+			return Research.has("auto1");
+		},
+		onComplete() {
+			Modal.show({
+				title: "⥟ᘊ5⪊Ыᳪៗⱕ␥ዘᑧ⍗ਘᬃ〔ĉ",
+				bind: "end-menu"
+			})
 		}
 	}
 }
@@ -144,6 +178,7 @@ const Research = {
 		player.iridite.researches[x] = player.iridite.researches[x].add(g.mul(d));
 		if (player.iridite.researches[x].gte(RS[x].cost)) {
 			Research.stop();
+			if (RS[x].onComplete) RS[x].onComplete();
 		}
 	},
 	load() {
@@ -175,16 +210,21 @@ const Research = {
 	}
 }
 
+function softcap(value, cap, power = 0.5) {
+	if (value.lte(cap)) return value
+	else
+		return value.pow(power).times(cap.pow(decimalOne.sub(power)))
+}
 
 const Orbs = {
 	moneyEffect() {
-		return Decimal.pow(20, player.iridite.orbEffects.money.pow(0.7));
+		return Decimal.pow(20, softcap(player.iridite.orbEffects.money, D(1100), 0.2).pow(0.7));
 	},
 	essenceEffect() {
-		return Decimal.pow(10, player.iridite.orbEffects.essence.pow(0.65));
+		return Decimal.pow(10,  softcap(player.iridite.orbEffects.essence, D(1100), 0.2).pow(0.65));
 	},
 	iriditeEffect() {
-		return Decimal.pow(3, player.iridite.orbEffects.iridite.pow(0.6));
+		return Decimal.pow(3, softcap(player.iridite.orbEffects.iridite, D(1100), 0.2).pow(0.6));
 	},
 	timeEffect() {
 		return player.iridite.orbEffects.time.add(0.5).pow(2).add(0.75);

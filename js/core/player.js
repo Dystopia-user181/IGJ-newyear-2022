@@ -78,7 +78,11 @@ function getStartPlayer() {
 				rep1: D(0),
 				rep2: D(0),
 				orb1: D(0),
-				orb2: D(0)
+				orb2: D(0),
+				rep3: D(0),
+				rep4: D(0),
+				auto1: D(0),
+				core: D(0)
 			},
 			researching: "",
 			orbEffects: {

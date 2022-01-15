@@ -150,4 +150,64 @@ function save() {
 	}
 }
 
+const separator = "||||||||||-||||||||||";
+function exportSave() {
+	request = indexedDB.open(saveKey, 1);
+	request.onerror = function(event) {
+		Notifier.error("Error in exporting.");
+	};
+	let expdata = "";
+	request.onsuccess = function(event) {
+		db = request.result;
+
+		let transaction = db.transaction("data");
+		transaction.objectStore("data").get("1").onsuccess = function(event) {
+			let data = event.target.result;
+			if (!data) {
+				Notifier.error("Error in exporting.");
+				return;
+			}
+			expdata = JSON.stringify(data.player);
+			expdata += separator;
+			expdata += JSON.stringify(data.map);
+			expdata = btoa(expdata);
+			let file = new Blob([expdata], {type: "text/plain"});
+			if (window.navigator.msSaveOrOpenBlob) // IE10+
+				window.navigator.msSaveOrOpenBlob(file, "Project_Iridium_Save_ScarletIGJ2022.txt");
+			else { // Others
+				let a = document.createElement("a"),
+					url = URL.createObjectURL(file);
+				a.href = url;
+				a.download = "Project_Iridium_Save_ScarletIGJ2022.txt";
+				document.body.appendChild(a);
+				a.click();
+				setTimeout(function() {
+					document.body.removeChild(a);
+					window.URL.revokeObjectURL(url);  
+				}, 0); 
+			}
+		}
+		
+		db.onerror = function(event) {
+			Notifier.error("Error in exporting.");
+			console.error("Database error: " + event.target.errorCode);
+		};
+	};
+}
+function importSave(data) {
+	data = atob(data);
+	data = data.split(separator).map(_ => JSON.parse(_));
+	let transaction = db.transaction(["data"], "readwrite");
+	transaction.objectStore("data").delete("1");
+	transaction = db.transaction(["data"], "readwrite");
+	transaction.onerror = function() {
+		Notifier.error("Could Not Save.");
+	};
+	let objectStore = transaction.objectStore("data");
+	let objectStoreRequest = objectStore.add({player: data[0], map: data[1], id: "1"});
+	objectStoreRequest.onsuccess = function(event) {
+		location.reload();
+	}
+}
+
 let paused = false;

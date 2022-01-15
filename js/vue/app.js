@@ -13,7 +13,8 @@ function loadVue() {
 			formatWhole,
 			Decimal,
 			Modal,
-			tmp
+			tmp,
+			Research
 		}},
 		template: `<div style="position: relative; height: 100%;">
 			<div style="position: absolute;">
@@ -21,7 +22,7 @@ function loadVue() {
 				<span style="font-size: 20px" v-if="player.base.newBuildings > 0"> | <essence-display></essence-display> ({{format(tmp.essenceGain, 2, 2, 1)}}/s)</span>
 				<span style="font-size: 20px" v-if="player.iridite.newBuildings > 0"> | <iridite-display></iridite-display> ({{format(tmp.iriditeGain, 2, 2, 1)}}/s)</span>
 				<br>
-				Welcome to Time Game. Press WASD to navigate.
+				Welcome to Project Iridium. Press WASD to navigate.
 			</div>
 			<a href="https://discord.gg/DVy4XjB" target="newtab" style="position: absolute; left: 0; bottom: 0;">Discord</a>
 			<div style="position: absolute; right: 0">
@@ -55,16 +56,32 @@ function loadVue() {
 					Controls
 				</button>
 			</div>
-			<button style="position: absolute; right: 0; bottom: 0;" onclick="Modal.show({
-				title: 'Quick Access',
-				bind: 'quick-access'
-			})">Quick Access</button>
+			<div style="position: absolute; right: 0; bottom: 0;">
+				<button v-if="Research.has('core')" onclick="Modal.show({
+					title: '⥟ᘊ5⪊Ыᳪៗⱕ␥ዘᑧ⍗ਘᬃ〔ĉ',
+					bind: 'end-menu'
+				})">End</button>
+				<button onclick="Modal.show({
+					title: 'Quick Access',
+					bind: 'quick-access',
+					style: {width: '750px', height: '500px'}
+				})">Quick Access</button>
+			</div>
 		</div>`
 	});
 	Vue.component('options-menu', {
 		data: () => { return {
 			player
 		}},
+		methods: {
+			importAsFile(e) {
+				const reader = new FileReader();
+				reader.onload = function() {
+					importSave(reader.result);
+				};
+				reader.readAsText(event.target.files[0]);
+			}
+		},
 		template: `<div style="text-align: center">
 			<span style="font-size: 18px">Saving:</span>
 			<br>
@@ -85,6 +102,18 @@ function loadVue() {
 					}
 				}]
 			})">HARD RESET</button>
+			<button class="option" onclick="exportSave()">
+				Export save
+			</button>
+			<button class="option">
+				<input
+					class="c-file-import"
+					type="file"
+					accept=".txt"
+					@change="importAsFile"
+				>
+				<label for="file">Import save</label>
+			</button>
 			<br>
 			<span style="font-size: 18px">Visuals:</span>
 			<br>
@@ -130,7 +159,8 @@ function loadVue() {
 			</button>
 			<button onclick="Modal.show({
 				title: 'Orb Specializer',
-				bind: 'specializer-menu'
+				bind: 'specializer-menu',
+				style: {width: '750px', height: '500px'}
 			})" v-if="player.unlocks.specializer" class="quickaccess">
 				Orb Specializer
 			</button>
@@ -144,11 +174,13 @@ function loadVue() {
 		WASD/arrow keys: Move/Access building<br>
 		Shift+WASD/arrow keys: Rotate building when placing<br>
 		Space: Place building<br>
+		Shift+Space: Place multiple buildings<br>
 		I: Sell building<br>
 		<span v-if="player.unlocks.level">U: Upgrade building<br></span>
 		Q: Open quick access<br>
 		E: Open construction menu<br>
-		<span v-if="player.obelisk.repaired">O: Open obelisk menu</span><br>
+		<span v-if="player.unlocks.specializer">O: Open orb specializer<br></span>
+		<span v-else-if="player.obelisk.repaired">O: Open obelisk menu<<br>/span>
 		Esc: Close window/Stop placing building/Pause game<br>
 		Ctrl+S: Save game
 		<br>
@@ -169,6 +201,19 @@ function loadVue() {
 			:style="{width: time.mul(200).div(max).min(200) + 'px'}"></div>
 		</div>`
 	});
+
+	Vue.component('end-menu', {
+		template: `<div class="centre col" style="padding: 10px;">
+			<div>
+				<span>And thus, our scientist has reactivated the iridium core.</span><br><br>
+				<span>The core is a mystical object, first built by an ancient civilisation which has since then vanished.</span><br><br>
+				<span>The core holds immeasurable time-bending powers, but the actual details are vague. The civilisation did not leave any notes or messages
+				that tell of the core's power.</span><br><br>
+				<span>It is your job to find out what it does.</span><br><br>
+			</div>
+			<h2>You have beaten the game... For now.</h2>
+		</div>`
+	})
 
 	loadMobile();
 

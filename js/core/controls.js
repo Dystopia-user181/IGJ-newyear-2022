@@ -128,13 +128,21 @@ let controls = {
 			Building.sell(Modal.data.bindData.x, Modal.data.bindData.y);
 	},
 	pressO() {
-		if (!Modal.showing && player.obelisk.repaired)
-			openMenu(51, 51);
+		if (!Modal.showing)
+			if (player.unlocks.specializer)
+				Modal.show({
+					title: 'Orb Specializer',
+					bind: 'specializer-menu',
+					style: {width: '750px', height: '500px'}
+				})
+			else if (player.obelisk.repaired)
+				openMenu(51, 51);
 	},
 	pressQ() {
 		Modal.show({
 			title: 'Quick Access',
-			bind: 'quick-access'
+			bind: 'quick-access',
+			style: {width: '750px', height: '500px'}
 		})
 	},
 	pressESCAPE() {
