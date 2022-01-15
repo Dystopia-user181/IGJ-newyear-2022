@@ -7,7 +7,7 @@ function getStartPlayer() {
 			base: false,
 			level: false,
 			iridite: false,
-			sacrifice: false
+			specializer: false
 		},
 		options: {
 			autosave: true,
@@ -76,7 +76,9 @@ function getStartPlayer() {
 				acv2: D(0),
 				doublerIII: D(0),
 				rep1: D(0),
-				rep2: D(0)
+				rep2: D(0),
+				orb1: D(0),
+				orb2: D(0)
 			},
 			researching: "",
 			orbEffects: {

@@ -659,7 +659,7 @@ function loadMenus() {
 							<b>Production Mode:</b> {{building.meta.charging ? "Timespeed" : "Charge"}}
 						</button>
 						<b v-else>Production</b><br>
-						{{format(effect)}} {{building.meta.charging ? "timespeed equiv." : "charge"}}/fill <span v-if="b6List.length > 0">({{format(effect.div(b6List.length))}}/drill)</span><br>
+						{{format(effect)}} {{building.meta.charging ? (building.level > 1 ? "s of timespeed" : "timespeed equiv.") : "charge"}}/fill <span v-if="b6List.length > 0">({{format(effect.div(b6List.length))}}/drill)</span><br>
 						{{format(BD[7].getProduction(data.x, data.y).recip())}}s/fill<br>
 						Requirement: Iridite drills level {{building.meta.charging ? 2 : 1}} or above
 
@@ -730,7 +730,7 @@ function loadMenus() {
 		template: `<div style="padding: 10px;">
 			<div v-if="!building.upgrading">
 				<div class="centre" v-if="player.unlocks.specializer">
-					<button @click="tab = 'a'" :disabled="tab == 'a'" style="width: 30%; padding: 6px; margin: 4px;">Orb Gen</button>
+					<button @click="tab = 'a'" :disabled="tab == 'a'" :class="{notify: building.meta.charge.gte(1)}" style="width: 30%; padding: 6px; margin: 4px;">Orb Gen</button>
 					<button @click="tab = 'b'" :disabled="tab == 'b'" style="width: 30%; padding: 6px; margin: 4px;">Specializer</button>
 				</div>
 				<div class="centre stretch" v-if="tab == 'a'">
@@ -742,14 +742,32 @@ function loadMenus() {
 						</button>
 					</div>
 					<div style="width: 100%; flex-shrink: 1;" class="centre col">
-						<div style="position: relative; border: 2px solid; width: 50px; height: 250px;">
-							<div style="background: linear-gradient(#fd8, #db4); width: 100%; position: absolute; bottom: 0;" :style="{
-								height: (250*building.meta.charge) + 'px'
-							}"></div>
+						<div class="centre">
+							<div style="position: relative; border: 2px solid; width: 50px; height: 250px;">
+								<div style="background: linear-gradient(#fd8, #db4); width: 100%; position: absolute; bottom: 0;" :style="{
+									height: (250*building.meta.charge.clamp(0, 1)) + 'px'
+								}"></div>
+							</div>
+							<div style="position: relative; border: 2px solid; width: 50px; height: 250px;" v-if="Research.has('orb1')">
+								<div style="background: linear-gradient(#fd8, #db4); width: 100%; position: absolute; bottom: 0;" :style="{
+									height: (250*building.meta.charge.sub(1).clamp(0, 1)) + 'px'
+								}"></div>
+							</div>
+							<div style="position: relative; border: 2px solid; width: 50px; height: 250px;" v-if="Research.has('orb1')">
+								<div style="background: linear-gradient(#fd8, #db4); width: 100%; position: absolute; bottom: 0;" :style="{
+									height: (250*building.meta.charge.sub(2).clamp(0, 1)) + 'px'
+								}"></div>
+							</div>
+							<div style="position: relative; border: 2px solid; width: 50px; height: 250px;" v-if="Research.has('orb1')">
+								<div style="background: linear-gradient(#fd8, #db4); width: 100%; position: absolute; bottom: 0;" :style="{
+									height: (250*building.meta.charge.sub(3).clamp(0, 1)) + 'px'
+								}"></div>
+							</div>
 						</div>
 						<button style="color: #fd8;" :disabled="building.meta.charge.lt(1)" @click="collect">Collect Orb</button> 
 					</div>
 				</div>
+				<specializer-menu v-else></specializer-menu>
 				<button @click="Building.sell(data.x, data.y)">Sell</button>
 			</div>
 			<upgrade-progress :x="data.x" :y="data.y" v-else></upgrade-progress>
@@ -757,10 +775,50 @@ function loadMenus() {
 	});
 	Vue.component("specializer-menu", {
 		data() { return {
-			player
+			player,
+			Orbs
 		}},
-		template: `<div>
-			s
+		methods: {
+			format,
+			insert() {
+				if (Currency.orbs.amt.lt(1)) return;
+				Currency.orbs.use(1);
+				let random = Object.keys(player.iridite.orbEffects)[Math.floor(Math.random()*Object.keys(player.iridite.orbEffects).length)];
+				player.iridite.orbEffects[random] = player.iridite.orbEffects[random].add(1);
+			}
+		},
+		template: `<div class="centre col" style="padding: 10px">
+			<orbs-display whole="a" style="font-size: 30px;"></orbs-display><br>
+			<button style="color: #fd8;" :disabled="player.currency.orbs.lt(1)" @click="insert">Specialize an Orb</button><br>
+			<div class="centre">
+				<div class="specializer">
+					<span style="font-size: 20px;">${Currency.money.text}<orbs-display :amt="player.iridite.orbEffects.money" whole="a"></orbs-display></span>
+					<br>
+					<span>Effect: x{{format(Orbs.moneyEffect())}} ${Currency.money.text} gain</span>
+				</div>
+				<div class="specializer">
+					<span style="font-size: 20px;">${Currency.essence.text}<orbs-display :amt="player.iridite.orbEffects.essence" whole="a"></orbs-display></span>
+					<br>
+					<span>Effect: x{{format(Orbs.essenceEffect())}} ${Currency.essence.text} gain</span>
+				</div>
+				<div class="specializer">
+					<span style="font-size: 20px;">${Currency.iridite.text}<orbs-display :amt="player.iridite.orbEffects.iridite" whole="a"></orbs-display></span>
+					<br>
+					<span>Effect: x{{format(Orbs.iriditeEffect())}} ${Currency.iridite.text} gain</span>
+				</div>
+			</div>
+			<div class="centre">
+				<div class="specializer">
+					<span style="font-size: 20px;">Δ<orbs-display :amt="player.iridite.orbEffects.time" whole="a"></orbs-display></span>
+					<br>
+					<span>Effect: x{{format(Orbs.timeEffect())}} time rate</span>
+				</div>
+				<div class="specializer">
+					<span style="font-size: 20px;"><span style="color: #aef">Ϟ</span><orbs-display :amt="player.iridite.orbEffects.energy" whole="a"></orbs-display></span>
+					<br>
+					<span>Effect: x{{format(Orbs.energyEffect())}} charge speed</span>
+				</div>
+			</div>
 		</div>`
 	})
 

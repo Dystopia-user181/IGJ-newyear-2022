@@ -54,6 +54,9 @@ select {
 .anti-button:hover {
 	background: var(--c-h);
 }
+.notify {
+	background-color: #ff04;
+}
 
 .small {
 	font-size: 0.95em;
@@ -171,6 +174,19 @@ select {
 .idle {
 	--c-1: #5af;
 	color: #5af;
+}
+
+.specializer {
+	border: 2px solid;
+	width: 200px;
+	height: 150px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+.specializer * {
+	text-align: center;
 }
 
 /* Custom Scrollbar */

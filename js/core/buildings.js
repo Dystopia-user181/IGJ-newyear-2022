@@ -209,9 +209,9 @@ const BUILDINGS = {
 			base = base.mul(RS.triplerII.effect);
 			let mbase = base.mul(b.meta.charge.add(1).pow(0.15)).mul(tmp.anti.essenceEffect);
 			let ebase = base.mul(b.meta.charge.add(1).pow(0.15)).mul(tmp.anti.moneyEffect);
-			let ibase = base.mul(RS.doublerI.effect);
-			mbase = mbase.mul(RS.quintuplerI.effect);
-			ebase = ebase.mul(RS.quintuplerI.effect);
+			let ibase = base.mul(RS.doublerI.effect).mul(Orbs.iriditeEffect());
+			mbase = mbase.mul(RS.quintuplerI.effect).mul(Orbs.moneyEffect());
+			ebase = ebase.mul(RS.quintuplerI.effect).mul(Orbs.essenceEffect());
 			return [mbase.mul(5e9), ebase.mul(1e7), ibase.mul(1e-6)];
 		},
 		timespeed(x, y) {
@@ -226,7 +226,7 @@ const BUILDINGS = {
 		name: "Charger",
 		desc: `Distributes charge to all laterally adjacent iridite drills.`,
 		get cost() {
-			return Decimal.pow(1e6, Math.pow(costAmt(7), 1.5)).mul(6e35);
+			return Decimal.pow(1e5, Math.pow(costAmt(7), 1.2)).mul(6e35);
 		},
 		currencyName: "essence",
 		canPlace(x, y) {
@@ -240,12 +240,16 @@ const BUILDINGS = {
 		buildTime: D(1.728e10),
 		levelCost(lvl) {
 			if (lvl == 0) return D(3.9e39);
+			if (lvl == 1) return D(4.9e49)
 			else return D(Infinity);
+		},
+		levelScaling(lvl) {
+			return Decimal.pow(100, Math.pow(lvl, 0.95));
 		},
 		levelTime(lvl) {
 			if (lvl == 0) return D(3.456e11);
-			if (lvl == 1) return D(1e300);
-			if (lvl == 2) return D(60);
+			if (lvl == 1) return D(1.728e13);
+			if (lvl == 2) return D(1e1000);
 			if (lvl == 3) return D(120);
 			if (lvl == 4) return D(1800);
 			if (lvl == 5) return D(10800);
@@ -254,14 +258,15 @@ const BUILDINGS = {
 		},
 		getProduction(x, y) {
 			let b = Building.getByPos(x, y);
-			return D(b.level > 0 ? 0.1 : 1/15);
+			return D(b.level > 0 ? 0.1 : 1/15).mul(Orbs.energyEffect());
 		},
 		getEffect(x, y) {
 			let b = Building.getByPos(x, y);
-			return D(b.level > 0 ? 1e11 : 5e9);
+			return BD[7].levelScaling(b.level).mul(5e9);
 		},
 		getEffect2(x, y) {
-			return D(1024);
+			let b = Building.getByPos(x, y);
+			return b.level > 1 ? D(5) : D(1024);
 		},
 		canBuild: true
 	},

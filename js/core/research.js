@@ -107,6 +107,20 @@ const RESEARCHES = {
 		get unlocked() {
 			return Research.has("rep1");
 		}
+	},
+	orb1: {
+		cost: D(5e14),
+		desc: `You can hold up to 4 uncollected orbs per energizer.`,
+		get unlocked() {
+			return Research.has("rep2")
+		}
+	},
+	orb2: {
+		cost: D(5e14),
+		desc: `Each orb gives two specializations.`,
+		get unlocked() {
+			return Research.has("rep2")
+		}
 	}
 }
 const RS = RESEARCHES
@@ -158,5 +172,24 @@ const Research = {
 				<iridite-display :amt="research.cost.sub(player.iridite.researches[rId]).max(0)" whole="a"></iridite-display>
 			</button>`
 		})
+	}
+}
+
+
+const Orbs = {
+	moneyEffect() {
+		return Decimal.pow(20, player.iridite.orbEffects.money.pow(0.7));
+	},
+	essenceEffect() {
+		return Decimal.pow(10, player.iridite.orbEffects.essence.pow(0.65));
+	},
+	iriditeEffect() {
+		return Decimal.pow(3, player.iridite.orbEffects.iridite.pow(0.6));
+	},
+	timeEffect() {
+		return player.iridite.orbEffects.time.add(0.5).pow(2).add(0.75);
+	},
+	energyEffect() {
+		return player.iridite.orbEffects.energy.pow(1.2).add(5).log10().add(0.30102999566398114);
 	}
 }

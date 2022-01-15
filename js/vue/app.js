@@ -128,6 +128,12 @@ function loadVue() {
 			<button onclick="openMenu(65, 65)" v-if="player.unlocks.iridite" class="quickaccess">
 				Project Iridium
 			</button>
+			<button onclick="Modal.show({
+				title: 'Orb Specializer',
+				bind: 'specializer-menu'
+			})" v-if="player.unlocks.specializer" class="quickaccess">
+				Orb Specializer
+			</button>
 		</div>`
 	})
 	Vue.component('controls-menu', {
