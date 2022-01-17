@@ -731,7 +731,7 @@ function loadMenus() {
 				canvas.need0update = true;
 			},
 			buyUpg0() {
-				if (Currency.orbs.amt.lt(1)) return;
+				if (Currency.orbs.amt.lt(1) || player.unlocks.specializer) return;
 				Currency.orbs.use(1);
 				player.unlocks.specializer = true;
 			}
@@ -818,7 +818,8 @@ function loadMenus() {
 			<div>
 				<button style="color: #fd8;" :disabled="player.currency.orbs.lt(1)" @click="insert">Specialize an Orb</button>
 				<button style="color: #fd8;" :disabled="player.currency.orbs.lt(1)" @click="insertAll">Specialize all Orbs</button>
-			</div><br>
+			</div>
+			<i class="sub">Choices are random</i><br>
 			<div class="centre">
 				<div class="specializer">
 					<span style="font-size: 20px;">${Currency.money.text}<orbs-display :amt="player.iridite.orbEffects.money" whole="a"></orbs-display></span>
