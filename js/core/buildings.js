@@ -156,7 +156,7 @@ const BUILDINGS = {
 	},
 	6: {
 		get name() {
-			return `Iridite drill${(costAmt(6) <= 0 || Modal.data.bind != "construction-menu") ? "" : `<i class="sub" style="font-size: 16px;"> &nbsp; Next requires ${Currency.orbs.text} ${formatWhole(BD[6].cost.log10().floor())}</i>`}`
+			return `Iridite drill${(costAmt(6) <= 0 || Modal.data.bind != "construction-menu" || !Modal.showing) ? "" : `<i class="sub" style="font-size: 16px;"> &nbsp; Next requires ${Currency.orbs.text} ${formatWhole(BD[6].cost.log10().floor())}</i>`}`
 		},
 		get desc() {
 			return `Produces <span class='money'>$</span> 5.00e9, <span class='essence'>*</span> 1.00e7, <span class='iridite'>Ø</span> 1.00e-6/s.<br>

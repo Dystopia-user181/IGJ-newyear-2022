@@ -39,7 +39,7 @@
 			<span v-if="false">Loading game... (May take a while)</span>
 			<top-text></top-text>
 		</div>
-		<div id="c-container">
+		<div id="c-container" onmousemove="updateBuildingTooltip(event)">
 			<canvas id="c" class="c" :style="{
 				filter: 'grayscale(' + (controls.nightvision ? 0.8 : 0) +')'
 			}"></canvas>

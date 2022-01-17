@@ -234,15 +234,22 @@ let tileStyle = {
 	},
 	"8"(i, j, ctx, x, y) {
 		let b = Building.getByPos(x, y);
-		let c = Math.asin(b.meta.charge.min(1).sub(0.5).mul(2).toNumber()) + Math.PI*0.5;
+		let c = Math.asin(b.meta.charge.min(1).sub(0.5).mul(2).toNumber()) + pi*0.5;
 		ctx.strokeStyle = "#444";
 		ctx.shadowBlur = 0;
 		ctx.lineWidth = 3;
 		ctx.strokeRect(i + 2, j + 2, px - 4, py - 4);
 		ctx.fillStyle = "#fd8";
 		ctx.beginPath();
-		ctx.arc(i + px/2, j + py/2, Math.min(px, py)/2 - 2, Math.PI*0.5 - c, Math.PI*0.5 + c);
+		ctx.arc(i + px/2, j + py/2, Math.min(px, py)/2 - 2, pi*0.5 - c, pi*0.5 + c);
 		ctx.fill();
+		if (Research.has("orb1") && b.meta.charge.gte(2)) {
+			ctx.font = py*18/25 + 'px Iosevka Term SS08 Web';
+			ctx.textAlign = 'center';
+			ctx.shadowBlur = 0;
+			ctx.fillStyle = "#000";
+			ctx.fillText(formatWhole(b.meta.charge.floor()), i + px/2, j + py*19/25);
+		}
 	}
 }
 function antipointFourier(t, x, y, w) {
@@ -288,7 +295,8 @@ let canvas = {
 		essenceFourier: [],
 		antipointFourier: [],
 		chargers: [],
-		player: {x: 0, y: 0}
+		player: {x: 0, y: 0},
+		buildingTooltip: []
 	}
 }
 
@@ -344,7 +352,7 @@ function tooltipText(context, x, y, text, arrowDir = "top") {
 
 	context.fillText(text, x, y + yDiff + py*19/25);
 }
-let pi = Math.PI
+let pi = Math.PI;
 function render() {
 	canvas.objs.antipointFourier = [];
 	canvas.objs.essenceFourier = [];
@@ -473,7 +481,7 @@ function renderLayer2() {
 		let ci = i + px/2, cj = j + py/2
 		ctx2.strokeStyle = "#fff4";
 		ctx2.lineWidth = 2;
-		let t = player.time.thisTick;
+		let t = Math.floor(player.time.thisTick/50)*50;
 		ctx2.beginPath();
 		ctx2.moveTo(...antipointFourier(t, ci, cj, w));
 		ctx2.lineTo(...antipointFourier(t - 50, ci, cj, w));
@@ -512,9 +520,6 @@ function renderLayer2() {
 	}
 
 	if (player.options.showTilePopups) {
-		ctx2.font = '18px Iosevka Term SS08 Web';
-		ctx2.textAlign = "center";
-	
 		for (let i of accessData.tiles) {
 			let [x, y] = getPosInCanvas(...getXYfromDir(i));
 			let text = "Use [" + ["D", "S", "A", "W"][i] + "]";
@@ -523,6 +528,20 @@ function renderLayer2() {
 			} else {
 				tooltipText(ctx2, x + px/2, y, text, "top");
 			}
+		}
+	}
+	if (canvas.objs.buildingTooltip.length) {
+		let t = canvas.objs.buildingTooltip;
+		let [x, y] = t;
+		let [i, j] = getPosInCanvas(...t);
+		if (BD[map[x][y].t]) {
+			let b = BD[map[x][y].t], bd = Building.getByPos(x, y);
+			let txt = `${b.levelCost ? `Level ${bd.level + 1 + bd.upgrading} ` : ""}${b.name}${bd.upgrading ? " (Upgrading)" : ""}`
+			tooltipText(ctx2, i + px/2, j, txt, "top");
+		} else if (map[x][y].t == 1) {
+			let bd = Building.getByPos(x, y), b = BD[b.meta.building];
+			let txt = `${b.name} (Constructing)`
+			tooltipText(ctx2, i + px/2, j, txt, "top");
 		}
 	}
 	if (player.obelisk.repairing) {
@@ -534,5 +553,18 @@ function renderLayer2() {
 function renderAll() {
 	render();
 	renderLayer1();
+	renderLayer2();
+}
+
+
+function updateBuildingTooltip(event) {
+	let [x, y] = getMapByCanvas(event.offsetX, event.offsetY);
+	canvas.objs.buildingTooltip = [];
+	if (x < 0 || x > mapWidth || y < 0 || y > mapHeight) return;
+
+	let tile = map[x][y].t;
+	if (!BD[tile] && tile != 1) return;
+
+	canvas.objs.buildingTooltip = [x, y];
 	renderLayer2();
 }
