@@ -106,7 +106,9 @@ const BUILDINGS = {
 	4: {
 		name: "Enhancer",
 		get desc() {
-			return `Increases efficiency of gold mines${player.base.enhanceCollectors ? " and essence collectors" : ""} in a 3x3 area.<br>Does not stack.`;
+			return `Increases efficiency of
+			${(Research.has("rep3") || Research.has("rep4")) ? `${Research.has("rep4") ? "iridite drills " : ""}${(Research.has("rep3") && Research.has("rep4")) ? "and " : ""}${Research.has("rep3") ? "energizers " : ""}`
+			: `gold mines${player.base.enhanceCollectors ? " and essence collectors" : ""}`} in a 3x3 area.<br>Does not stack.`;
 		},
 		get cost() {
 			return D(Math.pow(costAmt(4)*0.6 + 1, 3)).mul(3).floor();
