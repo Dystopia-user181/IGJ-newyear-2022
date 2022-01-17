@@ -95,7 +95,7 @@ function getStartPlayer() {
 		},
 		builders: 0,
 		buildings: [],
-		version: "0.2"
+		version: "0.3"
 	};
 }
 let saveKey = "IGJnewyear-IGJ2022-Scarlet";
@@ -191,6 +191,10 @@ function decimaliseProperties(data, struct) {
 
 function fixOldSave(version) {
 	console.log(version);
+	if (version == "0.2") {
+		player.anti.money = player.anti.money.max(0);
+		player.anti.essence = player.anti.essence.max(0);
+	}
 	if (version == "0.1") {
 		player.obelisk.upgs.active = Math.min(player.obelisk.upgs.active, 30);
 		player.obelisk.upgs.cooldown = Math.min(player.obelisk.upgs.cooldown, 30);

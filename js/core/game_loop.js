@@ -135,11 +135,19 @@ function gameLoop(d) {
 			let prod = BD[6].getProduction(i.pos.x, i.pos.y);
 			if (i.meta.charging) {
 				i.meta.charge = i.meta.charge.add(prod[2].mul(RS.septuplerII.effect).mul(d));
-				if (Research.has("acv1"))
+				if (i.meta.charge.lt(0)) {
+					i.meta.charge = D(0);
+					player.anti.drain = "none";
+				}
+				if (Research.has("acv1")) {
+					let prevSpeed = i.meta.timespeed;
 					if (i.meta.timespeed.lt(9) || i.level > 0)
-						i.meta.timespeed = i.meta.timespeed.pow(RS.acv2.effect).add(d.mul(2e-7)).pow(1/RS.acv2.effect).min(i.level > 0 ? 250 : 10);
+						i.meta.timespeed = i.meta.timespeed.pow(RS.acv2.effect).add(d.mul(2e-7)).max(0).pow(1/RS.acv2.effect).min(i.level > 0 ? 250 : 10);
 					else
-						i.meta.timespeed = i.meta.timespeed.pow(i.meta.timespeed.mul(RS.acv2.effect/9)).add(d.mul(2e-7)).pow(i.meta.timespeed.mul(RS.acv2.effect/9).recip()).min(100);
+						i.meta.timespeed = i.meta.timespeed.pow(i.meta.timespeed.mul(RS.acv2.effect/9)).add(d.mul(2e-7)).max(0).pow(i.meta.timespeed.mul(RS.acv2.effect/9).recip()).min(100);
+					if (prevSpeed.gt(0) && i.meta.timespeed.lte(0))
+						player.anti.drain = "none";
+				}
 			} else {
 				prodMoney = prodMoney.add(prod[0]);
 				prodEssence = prodEssence.add(prod[1]);
@@ -208,8 +216,13 @@ function gameLoop(d) {
 		Currency.money.add(amt);
 		player.anti.money = player.anti.money.add(prodMoney.mul(d).sub(amt));
 	} else  {
-		if (Research.has("idl2"))
+		if (Research.has("idl2")) {
 			player.anti.money = player.anti.money.add(Currency.money.amt.mul(d).mul(1 - 1/drainConst));
+			if (player.anti.money.lt(0)) {
+				player.anti.money = D(0);
+				player.anti.drain = "none";
+			}
+		}
 		Currency.money.add(prodMoney.mul(d));
 	}
 	if (tmp.anti.drainEssence) {
@@ -221,8 +234,13 @@ function gameLoop(d) {
 		Currency.essence.add(amt);
 		player.anti.essence = player.anti.essence.add(prodEssence.mul(d).sub(amt));
 	} else {
-		if (Research.has("idl2"))
+		if (Research.has("idl2")) {
 			player.anti.essence = player.anti.essence.add(Currency.essence.amt.mul(d).mul(1 - 1/drainConst));
+			if (player.anti.essence.lt(0)) {
+				player.anti.essence = D(0);
+				player.anti.drain = "none";
+			}
+		}
 		Currency.essence.add(prodEssence.mul(d));
 	}
 	if (player.iridite.researching)
@@ -231,8 +249,11 @@ function gameLoop(d) {
 		Currency.iridite.add(prodIridite.mul(d));
 	if (tmp.anti.drainTime) {
 		if (Currency.essence.amt.lt(0) || Currency.money.amt.lt(0) || Currency.iridite.amt.lt(0)) {
+			Currency.money.amt = Currency.money.amt.max(0);
+			Currency.essence.amt = Currency.essence.amt.max(0);
+			Currency.iridite.amt = Currency.iridite.amt.max(0);
 			player.anti.drain = "none";
-		} else {
+		} else if (player.anti.drain == "none") {
 			player.anti.time = player.anti.time.add(d.mul(-1));
 		}
 	} else if (Research.has("idl1")) {

@@ -207,7 +207,7 @@ const BUILDINGS = {
 			}
 			enhancers = Math.min(enhancers, 1);
 			let base = BD[6].levelScaling(b.level);
-			base = base.mul(b.meta.charge.add(1).pow(0.25));
+			base = base.mul(b.meta.charge.max(0).add(1).pow(0.25));
 			base = base.mul(RS.triplerII.effect);
 			if (Research.has("rep4")) base = base.mul(1 + 3*enhancers);
 			let mbase = base.mul(b.meta.charge.add(1).pow(0.15)).mul(tmp.anti.essenceEffect);
