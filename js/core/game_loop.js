@@ -253,7 +253,7 @@ function gameLoop(d) {
 			Currency.essence.amt = Currency.essence.amt.max(0);
 			Currency.iridite.amt = Currency.iridite.amt.max(0);
 			player.anti.drain = "none";
-		} else if (player.anti.drain == "none") {
+		} else if (player.anti.drain == "time") {
 			player.anti.time = player.anti.time.add(d.mul(-1));
 		}
 	} else if (Research.has("idl1")) {
