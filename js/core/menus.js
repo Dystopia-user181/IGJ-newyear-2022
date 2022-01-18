@@ -78,7 +78,7 @@ function loadMenus() {
 		}},
 		methods: {
 			buyUpg0() {
-				if (Currency.money.amt.gte(250)) {
+				if (Currency.money.amt.gte(250) && !player.unlocks.base) {
 					player.unlocks.base = true;
 					Currency.money.amt = Currency.money.amt.sub(250);
 				}
@@ -97,13 +97,13 @@ function loadMenus() {
 				player.base.newBuildings++;
 			},
 			buyUpg3() {
-				if (Currency.money.amt.lt(2e5) || buildingAmt(2) < 16) return;
+				if (Currency.money.amt.lt(2e5) || buildingAmt(2) < 16 || player.base.lowerMineCost) return;
 
 				Currency.money.use(2e5);
 				player.base.lowerMineCost = 1;
 			},
 			buyUpg4() {
-				if (Currency.money.amt.lt(2e7)) return;
+				if (Currency.money.amt.lt(2e7) || player.base.enhanceCollectors) return;
 
 				Currency.money.use(2e7);
 				player.base.enhanceCollectors = 1;
