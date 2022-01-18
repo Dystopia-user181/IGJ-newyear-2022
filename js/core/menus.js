@@ -659,8 +659,9 @@ function loadMenus() {
 			<div v-if="!building.upgrading">
 				<div class="centre stretch">
 					<div style="width: 100%; flex-shrink: 1; position: relative; text-align: center">
-						<button @click="building.meta.charging = !building.meta.charging" v-if="building.level > 0">
-							<b>Production Mode:</b> {{building.meta.charging ? "Timespeed" : "Charge"}}
+						<button @click="building.meta.charging = !building.meta.charging" v-if="building.level > 0" style="font-size: 18px"
+						:style="{ color: building.meta.charging ? 'var(--c-1)' : 'var(--iridite-colour)' }">
+							<b>Charge Mode:</b> {{building.meta.charging ? "Timespeed" : "${Currency.iridite.display} Charge"}}
 						</button>
 						<b v-else>Production</b><br>
 						{{format(effect)}} {{building.meta.charging ? (building.level > 1 ? "s of timespeed" : "timespeed equiv.") : "charge"}}/fill <span v-if="b6List.length > 0">({{format(effect.div(b6List.length))}}/drill)</span><br>

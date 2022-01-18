@@ -277,7 +277,7 @@ const BUILDINGS = {
 	},
 	8: {
 		name: "Energizer",
-		desc: `Creates ${Currency.orbs.text} when charged by a charger.`,
+		desc: `Creates ${Currency.orbs.text} when activated by a charger.`,
 		get cost() {
 			return Decimal.pow(1e8, Math.pow(costAmt(8), 1.8)).mul(1e46);
 		},

@@ -51,6 +51,7 @@ function gameLoop(d) {
 			if (Modal.data.bind == "constructing-menu")
 				Modal.close();
 			canvas.need0update = true;
+			canvas.need1update = true;
 			updateTileUsage();
 		}
 	}
@@ -62,6 +63,7 @@ function gameLoop(d) {
 			i.level++;
 			i.upgrading = false;
 			canvas.need0update = true;
+			canvas.need1update = true;
 		}
 	}
 	if (player.timewall.one.destroying) {
