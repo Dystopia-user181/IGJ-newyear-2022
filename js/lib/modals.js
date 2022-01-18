@@ -11,7 +11,7 @@ const Modal = {
 						<div style="position: absolute; width: 30px; transform: translate(5px, 17.5px) rotate(45deg); height: 5px; background-color: var(--c-1)"></div>
 						<div style="position: absolute; width: 30px; transform: translate(5px, 17.5px) rotate(-45deg); height: 5px; background-color: var(--c-1)"></div>
 					</div>
-					<span v-html="Modal.data.title" style="padding-left: 7px; font-size: 20px"></span>
+					<span v-html="Modal.data.title" style="padding-left: 7px;"></span>
 				</div>
 				<div class="modal-body">
 					<div v-if="Modal.data.bind" :is="Modal.data.bind" :data="Modal.data.bindData"></div>

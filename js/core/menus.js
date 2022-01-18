@@ -883,7 +883,7 @@ function openMenu(x, y) {
 	let tileName = map[x][y].t;
 	let name = MENU_DATA[tileName].name;
 	Modal.show({
-		title: '<span style="font-size: 35px;">' + name + '</span>',
+		title: name,
 		bind: MENU_DATA[tileName].id + '-menu',
 		bindData: {x, y, tile: map[x][y], isBuilding: (tileName in BD), canUpg: (tileName in BD) && ("levelCost" in BD[tileName])},
 		style: MENU_DATA[tileName].style || {}
