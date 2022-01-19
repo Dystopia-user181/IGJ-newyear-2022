@@ -495,7 +495,8 @@ function loadMenus() {
 						Production<br>
 						<money-display :amt="prod[0].mul(player.options.gameTimeProd ? 1 : timerate())"></money-display>/s<br>
 						<essence-display :amt="prod[1].mul(player.options.gameTimeProd ? 1 : timerate())"></essence-display>/s<br>
-						<iridite-display :amt="prod[2].mul(player.options.gameTimeProd ? 1 : timerate())"></iridite-display>/s
+						{{building.meta.charging ? (format(prod[2].mul(player.options.gameTimeProd ? 1 : timerate())) + " ") : ""}}${Currency.iridite.text}
+						{{building.meta.charging ? "charge" : ""}}{{building.meta.charging ? "" : format(prod[2].mul(player.options.gameTimeProd ? 1 : timerate()))}}/s
 					</div>
 					<button v-if="Research.has('start')" @click="building.meta.charging = !building.meta.charging"
 					:class="{ 'anti-button': building.meta.charging }" style="--c-1: #5fb; --c-h: #5fb; color: #5fb; width: 100%; flex-shrink: 1;">

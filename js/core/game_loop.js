@@ -47,6 +47,8 @@ function gameLoop(d) {
 			i.time = D(0);
 			i.t = i.meta.building;
 			mfb(i).t = i.meta.building;
+			buildingListList.get(i.meta.building).push(i);
+			buildingListList.delete(1);
 			i.meta = BUILDINGS[i.meta.building].startMeta(i.pos.x, i.pos.y);
 			if (Modal.data.bind == "constructing-menu")
 				Modal.close();

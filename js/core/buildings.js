@@ -300,14 +300,20 @@ let placeData = {
 }
 
 function buildingList(id) {
-	return player.buildings.filter(_ => _.t == id);
+	let v = buildingListList.get(id);
+	if (v)
+		return v;
+
+	buildingListList.set(id, player.buildings.filter(_ => _.t == id))
+	return buildingListList.get(id);
 }
+let buildingListList = new Map();
 function buildingAmt(id) {
 	return buildingList(id).length;
 }
 function costAmt(id) {
 	id = Number(id);
-	return buildingAmt(id) + player.buildings.filter(_ => _.t == 1 && _.meta.building == id).length;
+	return buildingAmt(id) + buildingList(1).filter(b => b.meta.building == id).length;
 }
 
 const Building = {
@@ -357,7 +363,12 @@ const Building = {
 
 		player.currency[b.currencyName] = player.currency[b.currencyName].sub(b.cost);
 
-		player.buildings.push({level: 0, pos: {x, y}, meta: {building: placeData.node}, time: D(0), t: 1, upgrading: false});
+		let pushedB = {level: 0, pos: {x, y}, meta: {building: placeData.node}, time: D(0), t: 1, upgrading: false};
+
+		player.buildings.push(pushedB);
+		if (buildingListList.get(1)) {
+			buildingListList.get(1).push(pushedB);
+		}
 		map[x][y] = {t: 1};
 		if (!player.options.buildMultiple && !controls.shift) placeData.node = "";
 		render();
@@ -373,9 +384,11 @@ const Building = {
 
 		player.buildings.splice(Building.getByPos(x, y, true), 1);
 		player.currency[b.currencyName] = player.currency[b.currencyName].add(b.cost.mul(0.8));
+		buildingListList.delete(building.t);
 		map[x][y] = {t: 0};
 		buildings.delete(x*10000 + y);
 		canvas.need0update = true;
+		canvas.need1update = true;
 		updateTileUsage();
 	},
 	level(x, y) {
@@ -406,6 +419,7 @@ const Building = {
 		Currency[cBD.currencyName].amt = Currency[cBD.currencyName].amt.sub(cBD.levelCost(b.level));
 		b.upgrading = true;
 		canvas.need0update = true;
+		canvas.need1update = true;
 	},
 	stopConstruction(x, y) {
 		Modal.close();
