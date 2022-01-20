@@ -383,10 +383,10 @@ const Building = {
 		if (b.onSell) b.onSell(x, y);
 
 		player.buildings.splice(Building.getByPos(x, y, true), 1);
-		player.currency[b.currencyName] = player.currency[b.currencyName].add(b.cost.mul(0.8));
-		buildingListList.delete(building.t);
-		map[x][y] = {t: 0};
 		buildings.delete(x*10000 + y);
+		buildingListList.delete(building.t);
+		player.currency[b.currencyName] = player.currency[b.currencyName].add(b.cost.mul(0.8));
+		map[x][y] = {t: 0};
 		canvas.need0update = true;
 		canvas.need1update = true;
 		updateTileUsage();
