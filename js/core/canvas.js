@@ -402,6 +402,10 @@ function render() {
 			let y = j + player.pos.y - Math.floor(height/2);
 			if (y < 0 || y > mapHeight - 1) continue;
 			let tile = map[x][y].t;
+			if (BD[tile] && !Building.getByPos(tile)) {
+				map[x][y] = {t: 0};
+				continue;
+			}
 
 			if (x == player.pos.x && y == player.pos.y)
 				canvas.objs.player = {i: i*px, j: j*py};
@@ -539,7 +543,7 @@ function renderLayer2() {
 			let txt = `${b.levelCost ? `Level ${bd.level + 1 + bd.upgrading} ` : ""}${b.name}${bd.upgrading ? " (Upgrading)" : ""}`
 			tooltipText(ctx2, i + px/2, j, txt, "top");
 		} else if (map[x][y].t == 1) {
-			let bd = Building.getByPos(x, y), b = BD[b.meta.building];
+			let bd = Building.getByPos(x, y), b = BD[bd.meta.building];
 			let txt = `${b.name} (Constructing)`
 			tooltipText(ctx2, i + px/2, j, txt, "top");
 		}

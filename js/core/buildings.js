@@ -432,6 +432,7 @@ const Building = {
 		buildings.delete(x*10000 + y);
 		canvas.need0update = true;
 		updateTileUsage();
+		buildingListList.delete(1);
 	},
 	stopLevel(x, y) {
 		let currentModal = deepcopy(Modal.data);
