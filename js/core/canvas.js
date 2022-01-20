@@ -402,7 +402,7 @@ function render() {
 			let y = j + player.pos.y - Math.floor(height/2);
 			if (y < 0 || y > mapHeight - 1) continue;
 			let tile = map[x][y].t;
-			if (BD[tile] && !Building.getByPos(tile)) {
+			if (BD[tile] && !Building.getByPos(x, y)) {
 				map[x][y] = {t: 0};
 				continue;
 			}

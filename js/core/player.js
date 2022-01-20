@@ -17,7 +17,8 @@ function getStartPlayer() {
 		},
 		time: {
 			timeStat: 0,
-			lastTick: Date.now()
+			lastTick: Date.now(),
+			lastSave: 0
 		},
 		timewall: {
 			one: {

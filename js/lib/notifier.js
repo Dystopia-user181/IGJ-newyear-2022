@@ -41,6 +41,7 @@ let Notifier = {
 	update() {
 		let tick = Date.now();
 		let iter = 0;
+		if (Notifier.notifiers.length > 1000) Notifier.notifiers.splice(0, Notifier.notifiers.length)
 		while (iter < Notifier.notifiers.length && (!Notifier.notifiers[iter] || tick - Notifier.notifiers[iter].time > 3000)) {
 			Vue.set(Notifier.notifiers, iter, false);
 			iter++;

@@ -136,6 +136,8 @@ function reset() {
 
 
 function save() {
+	if (player.time.lastSave + 1000 > Date.now()) return;
+	player.time.lastSave = Date.now();
 	Notifier.notify("Saving...");
 	let transaction = db.transaction(["data"], "readwrite");
 	transaction.objectStore("data").delete("1");

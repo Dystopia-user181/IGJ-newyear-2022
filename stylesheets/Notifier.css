@@ -17,7 +17,7 @@
 }
 .notifier-container {
 	position: fixed;
-	top: 5px;
+	top: 110px;
 	right: 5px;
 	z-index: 20;
 }
