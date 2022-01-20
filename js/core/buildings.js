@@ -55,7 +55,7 @@ const BUILDINGS = {
 		canBuild: true
 	},
 	3: {
-		name: "Essence Collector",
+		get name() { return player.base.newBuildings > 0 ? "Essence Collector" : "???" },
 		desc: "Produces <span class='essence'>*</span> 0.05/s.",
 		get cost() {
 			if (costAmt(3) >= 48 || player.iridite.newBuildings || player.base.newBuildings < 1) return D(Infinity);
@@ -104,7 +104,7 @@ const BUILDINGS = {
 		}
 	},
 	4: {
-		name: "Enhancer",
+		get name() { return player.base.newBuildings > 0 ? "Enhancer" : "???" },
 		get desc() {
 			return `Increases efficiency of
 			${(Research.has("rep3") || Research.has("rep4")) ? `${Research.has("rep4") ? "iridite drills " : ""}${(Research.has("rep3") && Research.has("rep4")) ? "and " : ""}${Research.has("rep3") ? "energizers " : ""}`
