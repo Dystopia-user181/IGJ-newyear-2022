@@ -63,7 +63,7 @@ function getStartPlayer() {
 			drain: "none"
 		},
 		iridite: {
-			newBuilding: 0,
+			newBuildings: 0,
 			researches: {
 				start: D(0),
 				doublerI: D(0),

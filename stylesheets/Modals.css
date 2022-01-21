@@ -10,7 +10,7 @@
 	z-index: 13;
 	background-color: var(--bg-1);
 	border: 2px solid;
-	transition: all 0s;
+	transition: all 0s, opacity 0.6s;
 }
 .modal-bg {
 	height: 100%;
@@ -20,6 +20,7 @@
 	top: 0;
 	left: 0;
 	background: #0009;
+	transition: all 0s, opacity 0.6s;
 }
 .modal-top {
 	text-align: left;
@@ -49,4 +50,8 @@
 	width: 30px; 
 	height: 5px;
 	background-color: var(--c-1);
+}
+
+.modal-enter, .modal-leave-active {
+	opacity: 0;
 }

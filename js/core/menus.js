@@ -379,10 +379,12 @@ function loadMenus() {
 			}
 		},
 		template: `<div style="padding: 10px" class="centre col">
-			<button class="upg-button" :disabled="mines < 96 || collectors < 48" v-if="!player.iridite.newBuildings" @click="buyUpg0">
-				<b>Remove <span class="money">gold mines</span> and <span class="essence">essence collectors</span>, but unlock a new building.</b><br><br>
-				Req: {{mines}}/96 level 9 gold mines, {{collectors}}/48 level 6 essence collectors
-			</button>
+			<div class="centre" v-if="!player.iridite.newBuildings">
+				<button class="upg-button" :disabled="mines < 96 || collectors < 48" @click="buyUpg0">
+					<b>Remove <span class="money">gold mines</span> and <span class="essence">essence collectors</span>, but unlock a new building.</b><br><br>
+					Req: {{mines}}/96 level 9 gold mines, {{collectors}}/48 level 6 essence collectors
+				</button>
+			</div>
 			<div class="centre col" v-else-if="!player.unlocks.iridite">
 				<h2>Project Iridium</h2>
 				<span>Welcome aboard, unnamed scientist.<br>Our goal is to find ways to bend time to our will.<br>

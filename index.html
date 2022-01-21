@@ -46,8 +46,12 @@
 			<canvas id="c1" class="c"></canvas>
 			<canvas id="c2" class="c"></canvas>
 		</div>
-		<modal></modal>
-		<div v-if="Modal.showing" class="modal-bg" onclick="if (window.innerWidth > 1000) {Modal.closeFunc();}"></div>
+		<transition name="modal">
+			<modal></modal>
+		</transition>
+		<transition name="modal">
+			<div v-if="Modal.showing" class="modal-bg" onclick="if (window.innerWidth > 1000) {Modal.closeFunc();}"></div>
+		</transition>
 		<mobile-controls></mobile-controls>
 	</div>
 </body>
