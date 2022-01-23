@@ -11,7 +11,7 @@ Updater.updates = [];
 const drainConst = D(1/0.997);
 function gameLoop(d) {
 	if (paused) return;
-	d = Math.min(d, (player.obelisk.repairing || player.timewall.two.destroying) ? 0.1 : 10);
+	d = Math.min(d, (player.obelisk.repairing || player.timewall.two.destroying) ? 0.1 : 100);
 	player.time.timeStat += d;
 	player.time.thisTick = Date.now();
 	let trueDiff = d;
