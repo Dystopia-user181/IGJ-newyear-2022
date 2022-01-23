@@ -1,16 +1,16 @@
-.mobile-controls {
+#mobile-controls {
 	display: none;
 	position: fixed;
 	border: 2px solid;
 	background-color: var(--bg-2);
 	bottom: 0;
 }
-.mobile-controls * {
+#mobile-controls * {
 	user-select: none;
 }
 
 @media only screen and (hover: none) and (pointer: coarse) {
-	.mobile-controls {
+	#mobile-controls {
 		display: block;
 	}
 	.currency-text {

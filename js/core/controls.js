@@ -95,7 +95,6 @@ let controls = {
 	d: false,
 	q: false,
 	n: false,
-	compass: false,
 	shift: false,
 	control: false,
 	"press "() {
@@ -215,5 +214,6 @@ window.onblur = function() {
 	clearControls();
 }
 window.oncontextmenu = function () {
-	clearControls();
-} 
+	if (!isMobile)
+		clearControls();
+}
