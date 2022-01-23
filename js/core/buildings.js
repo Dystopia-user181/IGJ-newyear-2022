@@ -374,6 +374,7 @@ const Building = {
 		render();
 		renderLayer1();
 		updateTileUsage();
+		player.unlocks.built = true;
 	},
 	sell(x, y) {
 		if (Modal.showing && Modal.data.bindData.isBuilding)

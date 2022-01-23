@@ -428,7 +428,6 @@ function render() {
 }
 
 function renderLayer1() {
-	c1.style.opacity = 0.8;
 	c1.width = window.innerWidth - 4;
 	c1.height = window.innerHeight - 114;
 
@@ -547,6 +546,10 @@ function renderLayer2() {
 			let txt = `${b.name} (Constructing)`
 			tooltipText(ctx2, i + px/2, j, txt, "top");
 		}
+	}
+	if (!player.unlocks.built && placeData.node) {
+		let pos = getPosInCanvas(...getXYfromDir(placeData.facing));
+		tooltipText(ctx2, pos[0] + px/2, pos[1], "Press Space to build", "top")
 	}
 	if (player.obelisk.repairing) {
 		ctx2.fillStyle = "#000000" + ("0" + Math.floor(Math.pow(player.obelisk.time.toNumber(), 2)*4).toString(16)).slice(-2);

@@ -191,6 +191,16 @@ select {
 }
 
 
+#c1 {
+	animation: c1 1s infinite;
+}
+@keyframes c1 {
+	0% {opacity: 0.5}
+	50% {opacity: 0.9}
+	100% {opacity: 0.5}
+}
+
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
 	width: 10px;

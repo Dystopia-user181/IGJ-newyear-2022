@@ -4,6 +4,7 @@ function getStartPlayer() {
 		unlocks: {
 			start: false,
 			place: false,
+			built: false,
 			base: false,
 			level: false,
 			iridite: false,

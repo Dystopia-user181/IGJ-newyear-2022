@@ -941,7 +941,7 @@ const MENU_DATA = {
 	},
 	"-2": {
 		id: 'construction',
-		name: 'Construction firm',
+		name: 'Construction Firm',
 		style: {
 			width: '750px',
 			height: '500px'
@@ -961,7 +961,7 @@ const MENU_DATA = {
 	},
 	"-5": {
 		id: "wall1",
-		name: "Time Wall (Literal)"
+		name: "Time Wall 1 (Literal)"
 	},
 	"-6": {
 		id: "obelisk",
