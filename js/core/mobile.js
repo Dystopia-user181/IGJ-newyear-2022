@@ -25,15 +25,15 @@ function loadMobile() {
 			<div style="display: flex">
 				<button class="mobile" style="visibility: hidden"></button>
 				<button class="mobile"
-				@touchstart="simulateKeypress('w', 'down')" @touchend="simulateKeypress('w', 'up')" @blur="simulateKeypress('w', 'up')">W</button>
+				@touchstart="simulateKeypress('w', 'down')" @touchend="simulateKeypress('w', 'up')">W</button>
 			</div>
 			<div style="display: flex">
 				<button class="mobile"
-				@touchstart="simulateKeypress('a', 'down')" @touchend="simulateKeypress('a', 'up')" @blur="simulateKeypress('a', 'up')">A</button>
+				@touchstart="simulateKeypress('a', 'down')" @touchend="simulateKeypress('a', 'up')">A</button>
 				<button class="mobile"
-				@touchstart="simulateKeypress('s', 'down')" @touchend="simulateKeypress('s', 'up')" @blur="simulateKeypress('s', 'up')">S</button>
+				@touchstart="simulateKeypress('s', 'down')" @touchend="simulateKeypress('s', 'up')">S</button>
 				<button class="mobile"
-				@touchstart="simulateKeypress('d', 'down')" @touchend="simulateKeypress('d', 'up')" @blur="simulateKeypress('d', 'up')">D</button>
+				@touchstart="simulateKeypress('d', 'down')" @touchend="simulateKeypress('d', 'up')">D</button>
 			</div>
 		</div>`
 	})
