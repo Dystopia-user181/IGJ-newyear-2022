@@ -11,7 +11,7 @@ Updater.updates = [];
 const drainConst = D(1/0.997);
 function gameLoop(d) {
 	if (paused) return;
-	d = Math.min(d, (player.obelisk.repairing || player.timewall.two.destroying) ? 0.1 : 100);
+	d = Math.min(d, (player.obelisk.repairing || player.timewall.two.destroying) ? 0.1 : 10);
 	player.time.timeStat += d;
 	player.time.thisTick = Date.now();
 	let trueDiff = d;
@@ -42,7 +42,7 @@ function gameLoop(d) {
 	d = timerate().mul(d);
 
 	for (let i of buildingList(1)) {
-		i.time = i.time.add(d);
+		i.time = i.time.add(d).max(0);
 		if (i.time.gte(BUILDINGS[i.meta.building].buildTime)) {
 			i.time = D(0);
 			i.t = i.meta.building;
@@ -59,7 +59,7 @@ function gameLoop(d) {
 	}
 	for (let i of player.buildings) {
 		if (!i.upgrading) continue;
-		i.time = i.time.add(d);
+		i.time = i.time.add(d).max(0);
 		if (i.time.gte(BUILDINGS[i.t].levelTime(i.level))) {
 			i.time = D(0);
 			i.level++;
@@ -69,7 +69,7 @@ function gameLoop(d) {
 		}
 	}
 	if (player.timewall.one.destroying) {
-		player.timewall.one.time = player.timewall.one.time.add(d);
+		player.timewall.one.time = player.timewall.one.time.add(d).max(0);
 		if (player.timewall.one.time.gte(80)) {
 			player.timewall.one.destroyed = true;
 			player.timewall.one.destroying = false;
@@ -85,7 +85,7 @@ function gameLoop(d) {
 		}
 	}
 	if (player.timewall.two.destroying) {
-		player.timewall.two.time = player.timewall.two.time.add(d);
+		player.timewall.two.time = player.timewall.two.time.add(d).max(0);
 		if (player.timewall.two.time.gte(2592000)) {
 			player.timewall.two.destroyed = true;
 			player.timewall.two.destroying = false;

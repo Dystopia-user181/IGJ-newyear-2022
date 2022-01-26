@@ -42,7 +42,9 @@ function loadDBdata(testTime) {
 				let lastTick = Date.now();
 				interval = setInterval(() => {
 					thisTick = Date.now();
-					gameLoop((Date.now() - lastTick)/1000);
+					let tickDiff = (thisTick - lastTick)/1000;
+					for (let i = 0; i < Math.min(Math.ceil(tickDiff), 200); i++)
+						gameLoop(tickDiff/Math.min(Math.ceil(tickDiff), 200));
 					lastTick = Date.now();
 				}, 25);
 				renderInterval = setInterval(() => {
