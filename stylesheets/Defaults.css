@@ -3,6 +3,7 @@
 	color: inherit;
 	font-family: var(--font);
 	touch-action: manipulation;
+	user-select: none;
 }
 input {
 	background: var(--b-1);
@@ -91,6 +92,11 @@ select {
 	margin: 5px 0;
 	position: relative;
 }
+.subtab-button {
+	width: 30%;
+	padding: 6px;
+	margin: 4px;
+}
 
 #other-text {
 	border: 2px solid;
@@ -125,10 +131,64 @@ select {
 	height: 100px;
 	padding: 0 5px;
 }
+.depth-segment {
+	background-color: #85400088;
+	border: 2px solid #0000;
+	height: 40px;
+	width: 80%;
+	margin: 2px;
+}
+.depth-segment:hover, .depth-segment.chosen {
+	background-color: #854000;
+}
+.depth-segment.chosen {
+	border: 2px solid var(--c-h);
+}
+.depth-segment.locked {
+	background-color: #8884;
+}
+.depth-segment.locked.chosen, .depth-segment.locked:hover {
+	background-color: #8888;
+}
 .bought, .disabled.bought, button:disabled.bought {
 	opacity: 1 !important;
 	cursor: default !important;
 	background-color: #040;
+}
+.inventory-slot {
+	background-color: #fff2;
+	box-shadow: inset 0 0 20px 1px #fff6;
+	height: 50px;
+	width: 50px;
+	position: relative;
+	margin: 3px;
+}
+.inventory-tooltip { 
+	pointer-events: none;
+	text-align: center;
+	width: 75px;
+	font-size: 16px;
+	line-height: 1.2;
+	bottom: 100%;
+	left: 50%;
+	margin-bottom: 5px;
+	transform: translateX(-50%);
+	padding: 7px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	display: none;
+	
+	position: absolute;
+	z-index: 20000;
+	
+	background-color: var(--bg-1);
+	color: var(--c-1);
+	border: 2px solid;
+
+}
+.inventory-slot:hover .inventory-tooltip {
+	display: block;
 }
 
 .upg-button {
@@ -152,7 +212,7 @@ select {
 }
 
 .anti {
-	color: #000;
+	color: var(--bg-1);
 	text-shadow: 0 0px 4px var(--c-1), 0px 0px 4px var(--c-1), 0px 0px 4px var(--c-1);
 }
 

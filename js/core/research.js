@@ -1,6 +1,6 @@
 const RESEARCHES = {
 	start: {
-		cost: D(30),
+		cost: D(20),
 		desc: "You can charge <span class='iridite'>iridite drills</span>."
 	},
 	doublerI: {
@@ -34,7 +34,7 @@ const RESEARCHES = {
 		}
 	},
 	doublerII: {
-		cost: D(40000),
+		cost: D(4e4),
 		desc: `Double time speed.`,
 		get unlocked() {
 			return Research.has("doublerI") || Research.has("quintuplerI");
@@ -71,7 +71,7 @@ const RESEARCHES = {
 		}
 	},
 	doublerIII: {
-		cost: D(4e5),
+		cost: D(8e5),
 		desc: `Double time speed.`,
 		get unlocked() {
 			return Research.has("doublerII")
@@ -88,14 +88,14 @@ const RESEARCHES = {
 		}
 	},
 	idl2: {
-		cost: D(2e6),
+		cost: D(9e6),
 		desc: `Passively gain <span class="anti">^$</span> and <span class="anti">^*</span>.`,
 		get unlocked() {
 			return Research.has("doublerIII")
 		}
 	},
 	rep1: {
-		cost: D(3.2e6),
+		cost: D(9e6),
 		desc: `Repurpose <span class="essence">essence collectors</span>.`,
 		get unlocked() {
 			return Research.has("idl2") && Research.has("acv2");
@@ -207,29 +207,10 @@ const Research = {
 				<iridite-display :amt="research.cost.sub(player.iridite.researches[rId]).max(0)" whole="a"></iridite-display>
 			</button>`
 		})
-	}
-}
-
-function softcap(value, cap, power = 0.5) {
-	if (value.lte(cap)) return value
-	else
-		return value.pow(power).times(cap.pow(D(1).sub(power)))
-}
-
-const Orbs = {
-	moneyEffect() {
-		return Decimal.pow(20, softcap(player.iridite.orbEffects.money, D(1100), 0.2).pow(0.7));
 	},
-	essenceEffect() {
-		return Decimal.pow(10,  softcap(player.iridite.orbEffects.essence, D(1100), 0.2).pow(0.65));
-	},
-	iriditeEffect() {
-		return Decimal.pow(3, softcap(player.iridite.orbEffects.iridite, D(1100), 0.2).pow(0.6));
-	},
-	timeEffect() {
-		return player.iridite.orbEffects.time.add(0.5).pow(2).add(0.75);
-	},
-	energyEffect() {
-		return player.iridite.orbEffects.energy.pow(1.2).add(5).log10().add(0.30102999566398114);
+	get speed() {
+		let base = D(1);
+		base = base.mul(BD[7].researchBoost);
+		return base;
 	}
 }

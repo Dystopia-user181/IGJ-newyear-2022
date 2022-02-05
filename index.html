@@ -5,7 +5,6 @@
 	<script src="js/lib/vue.js"></script>
 	<script src="js/lib/break_infinity.js"></script>
 	<script src="js/lib/useful_funcs.js"></script>
-	<script src="js/lib/noise.js"></script>
 	<script src="js/core/mobile.js"></script>
 	<script src="js/core/player.js"></script>
 	<script src="js/core/map.js"></script>
@@ -13,14 +12,39 @@
 	<script src="js/core/game_loop.js"></script>
 	<script src="js/lib/notifier.js"></script>
 	<script src="js/lib/modals.js"></script>
+	<script src="js/database/buildings/goldmine.js"></script>
+	<script src="js/database/buildings/essencecollector.js"></script>
+	<script src="js/database/buildings/enhancer.js"></script>
+	<script src="js/database/buildings/antipoint.js"></script>
+	<script src="js/database/buildings/iriditedrill.js"></script>
+	<script src="js/database/buildings/lab.js"></script>
+	<script src="js/database/buildings/charger.js"></script>
+	<script src="js/database/buildings/energizer.js"></script>
 	<script src="js/core/buildings.js"></script>
 	<script src="js/core/obelisk.js"></script>
 	<script src="js/core/research.js"></script>
-	<script src="js/core/menus.js"></script>
+	<script src="js/core/alchemy/depths.js"></script>
+	<script src="js/core/alchemy/items.js"></script>
+	<script src="js/lib/number_formatting.js"></script>
+	<script src="js/vue/buildings/construction.js"></script>
+	<script src="js/vue/buildings/goldmine.js"></script>
+	<script src="js/vue/buildings/essencecollector.js"></script>
+	<script src="js/vue/buildings/enhancer.js"></script>
+	<script src="js/vue/buildings/antipoint.js"></script>
+	<script src="js/vue/buildings/iriditedrill.js"></script>
+	<script src="js/vue/buildings/lab.js"></script>
+	<script src="js/vue/buildings/charger.js"></script>
+	<script src="js/vue/buildings/energizer.js"></script>
+	<script src="js/vue/gamestructures/constructionfirm.js"></script>
+	<script src="js/vue/gamestructures/base.js"></script>
+	<script src="js/vue/gamestructures/walls.js"></script>
+	<script src="js/vue/gamestructures/builder.js"></script>
+	<script src="js/vue/gamestructures/obelisk.js"></script>
+	<script src="js/vue/gamestructures/iridium.js"></script>
+	<script src="js/vue/menus.js"></script>
+	<script src="js/vue/app.js"></script>
 	<script src="js/core/canvas.js"></script>
 	<script src="js/core/controls.js"></script>
-	<script src="js/lib/number_formatting.js"></script>
-	<script src="js/vue/app.js"></script>
 	<script src="js/core/load.js"></script>
 
 	<link rel="stylesheet" type="text/css" href="stylesheets/Defaults.css"/>
@@ -50,7 +74,7 @@
 			<modal></modal>
 		</transition>
 		<transition name="modal">
-			<div v-if="Modal.showing" class="modal-bg" onclick="if (window.innerWidth > 1000) {Modal.closeFunc();}"></div>
+			<div v-if="Modal.showing" class="modal-bg" onclick="if (!isMobile) {Modal.closeFunc();}"></div>
 		</transition>
 		<mobile-controls></mobile-controls>
 	</div>

@@ -1,6 +1,6 @@
 let c, c1, c2, ctx, ctx1, ctx2;
 
-const px = 25, py = 30;
+const px = 30, py = 36;
 let tileStyle = {
 	"-8"(i, j, ctx) {
 		ctx.fillStyle = "#6fd";
@@ -17,31 +17,32 @@ let tileStyle = {
 		if (!map[x][y].data.forceWalkable) {
 			ctx.fillStyle = "#435";
 			ctx.shadowBlur = 0;
-			if (y == 64) ctx.fillRect(i, j + py/2 - 2.5, px, 5);
-			if (x == 64) ctx.fillRect(i + px/2 - 2.5, j, 5, py);
+			if (y == 16) ctx.fillRect(i, j + py/2 - 2.5, px, 5);
+			if (x == 16) ctx.fillRect(i + px/2 - 2.5, j, 5, py);
 			ctx.fillRect(i + px/4, j + py/2 - px/4, px/2, px/2);
 		}
 	},
 	"-6"(i, j, ctx) {
 		let w = Math.min(px, py);
-		ctx.strokeStyle = "#fff";
+		let acv = player.obelisk.activeTime.gt(0);
+		ctx.strokeStyle = acv ? "#fb7" : "#fff";
+		ctx.fillStyle = "#000";
 		ctx.lineWidth = 2;
-		ctx.shadowBlur = 0;
+		ctx.shadowColor = "#fb7";
+		ctx.shadowBlur = acv ? 5 : 0;
 		ctx.lineCap = "round";
 		ctx.beginPath();
 		ctx.arc(i + px/2, j + py/2, w/2 - 2, 0, Math.PI*2);
-		ctx.moveTo(i + px/2, j + py/2);
-		ctx.lineTo(i + px/2, j + py/2 - w/3);
-		ctx.moveTo(i + px/2, j + py/2);
-		ctx.lineTo(i + px/2 + w/8, j + py/2 + w*0.216);
+		ctx.fill();
 		ctx.stroke();
+		canvas.objs.obelisk = {i, j};
 	},
 	"-5"(i, j, ctx, x, y) {
 		if (!map[x][y].data.forceWalkable) {
 			ctx.fillStyle = "#245";
 			ctx.shadowBlur = 0;
-			if (y == 48) ctx.fillRect(i, j + py/2 - 2.5, px, 5);
-			if (x == 48) ctx.fillRect(i + px/2 - 2.5, j, 5, py);
+			if (y == 8) ctx.fillRect(i, j + py/2 - 2.5, px, 5);
+			if (x == 8) ctx.fillRect(i + px/2 - 2.5, j, 5, py);
 			ctx.fillRect(i + px/4, j + py/2 - px/4, px/2, px/2);
 		}
 	},
@@ -87,14 +88,14 @@ let tileStyle = {
 		ctx.fillText("@", x + px/2, y + py*0.85);
 	},
 	"0"(i, j, ctx, x, y) {
-		if (distance([x, y], [70, 70]) < 3.5) {
+		if (distance([x, y], [20, 20]) < 3.5) {
+			ctx.shadowBlur = 0;
 			ctx.fillStyle = Currency.iridite.colour + '3';
 
 			ctx.fillRect(i, j, px, py);
 			ctx.fillStyle = Currency.iridite.colour;
 			ctx.strokeStyle = "#333";
 			ctx.lineWidth = 1;
-			ctx.shadowBlur = 0;
 			if (player.pos.x != x || player.pos.y != y) {
 				ctx.beginPath();
 				ctx.arc(i + px/2, j + py/2, Math.min(px, py)*0.3, 0, Math.PI*2);
@@ -103,18 +104,20 @@ let tileStyle = {
 			}
 		}
 	},
-	"1"(x, y, cctx) {
-		if (cctx != ctx1)
+	"1"(x, y, cctx, x1, y1) {
+		if (cctx != ctx1) {
 			cctx.fillStyle = "#b84";
+		}
 		cctx.shadowBlur = 0;
-		let w = py/5
-		cctx.fillRect(x + 1, y + w, px - 2, w);
-		cctx.fillRect(x + 1, y + w*3, px - 2, w);
-		cctx.fillRect(x + px/5, y + 1, w, py - 2);
-		cctx.fillRect(x + px*3/5, y + 1, w, py - 2);
+		let h = py*0.2, w = px*0.2;
+		cctx.fillRect(x + 1, y + h, px - 2, h);
+		cctx.fillRect(x + 1, y + h*3, px - 2, h);
+		cctx.fillRect(x + w, y + 1, w, py - 2);
+		cctx.fillRect(x + w*3, y + 1, w, py - 2);
 	},
 	"2"(x, y, ctx, x1, y1) {
 		let level = Building.getByPos(x1, y1).level;
+		ctx.lineCap = "butt";
 		ctx.strokeStyle = level > 7 ? "#c24" : (level < 4 ? "#aae" : "#db6");
 		ctx.shadowBlur = 0;
 		let w = px/5;
@@ -177,7 +180,7 @@ let tileStyle = {
 		ctx.fillRect(i + 1, j + py - px/8, px - 2, px/8);
 
 		if (level > 0) {
-			ctx.fillStyle = "#a3f";
+			ctx.fillStyle = "#b7f";
 			ctx.fillRect(i + px/6, j + py*0.4, px*2/3, py*0.2);
 			ctx.fillRect(i + px*0.4, j + py/6, px*0.2, py*2/3);
 		}
@@ -225,6 +228,31 @@ let tileStyle = {
 	},
 	"7"(i, j, ctx, x, y) {
 		let b = Building.getByPos(x, y);
+		ctx.strokeStyle = "#fff";
+		ctx.fillStyle = "#f5d8";
+		ctx.lineCap = "round";
+		ctx.shadowBlur = 0;
+		ctx.lineWidth = Math.min(px, py)/10;
+		ctx.beginPath();
+		ctx.moveTo(i + px*0.25, j + py*0.1);
+		ctx.lineTo(i + px*0.35, j + py*0.1);
+		ctx.lineTo(i + px*0.35, j + py*0.5);
+		ctx.stroke();
+		ctx.beginPath();
+		ctx.moveTo(i + px*0.35, j + py*0.5);
+		ctx.lineTo(i + px*0.1, j + py*0.9);
+		ctx.lineTo(i + px*0.9, j + py*0.9);
+		ctx.lineTo(i + px*0.65, j + py*0.5);
+		ctx.fill();
+		ctx.stroke();
+		ctx.beginPath();
+		ctx.moveTo(i + px*0.65, j + py*0.5);
+		ctx.lineTo(i + px*0.65, j + py*0.1);
+		ctx.lineTo(i + px*0.75, j + py*0.1);
+		ctx.stroke();
+	},
+	"8"(i, j, ctx, x, y) {
+		let b = Building.getByPos(x, y);
 		ctx.fillStyle = "#444";
 		ctx.shadowBlur = 0;
 		ctx.fillRect(i, j, px, py*0.1);
@@ -232,8 +260,9 @@ let tileStyle = {
 		ctx.fillRect(i + px*0.1, j, px*0.1, py);
 		ctx.fillRect(i + px*0.8, j, px*0.1, py);
 	},
-	"8"(i, j, ctx, x, y) {
+	"9"(i, j, ctx, x, y) {
 		let b = Building.getByPos(x, y);
+		if (!b.meta.charge) b.meta.charge = D(0);
 		let c = Math.asin(b.meta.charge.min(1).sub(0.5).mul(2).toNumber()) + pi*0.5;
 		ctx.strokeStyle = "#444";
 		ctx.shadowBlur = 0;
@@ -292,6 +321,7 @@ let canvas = {
 	need1update: false,
 	need2update: false,
 	objs: {
+		obelisk: {i: -1, j: -1},
 		essenceFourier: [],
 		antipointFourier: [],
 		chargers: [],
@@ -357,6 +387,7 @@ function render() {
 	canvas.objs.antipointFourier = [];
 	canvas.objs.essenceFourier = [];
 	canvas.objs.chargers = [];
+	canvas.objs.obelisk = {i: -1, j: -1}
 	let testTime = Date.now();
 	c.width = window.innerWidth - 4;
 	c.height = window.innerHeight - 114;
@@ -364,19 +395,21 @@ function render() {
 	let width = Math.floor(c.width/px),
 		height = Math.floor(c.height/py);
 
+	let dWidth = displayWidth(), dHeight = displayHeight();
+
 	for (let i = 0; i <= width; i++) {
 		let x = i + player.pos.x - Math.floor(width/2);
-		if (x < 0 || x > mapWidth - 1) continue;
+		if (x < 0 || x > dWidth - 1) continue;
 		for (let j = 0; j <= height; j++) {
 			let y = j + player.pos.y - Math.floor(height/2);
-			if (y < 0 || y > mapHeight - 1) continue;
+			if (y < 0 || y > dHeight - 1) continue;
 			ctx.fillStyle = `#33${"7" + ((Math.floor(x/4) + Math.floor(y/4))%2)*9}88`;
 			ctx.shadowBlur = 0;
 			ctx.fillRect(i*px, j*py, px, py);
 
 			ctx.fillStyle = "#b4c6";
-			for (let k = Math.max(x - 1, 0); k <= Math.min(x + 1, mapWidth - 1); k++) {
-				for (let l = Math.max(y - 1, 0); l <= Math.min(y + 1, mapHeight - 1); l++) {
+			for (let k = Math.max(x - 1, 0); k <= Math.min(x + 1, dWidth - 1); k++) {
+				for (let l = Math.max(y - 1, 0); l <= Math.min(y + 1, dHeight - 1); l++) {
 					if (map[k][l].t == 4) {
 						ctx.fillRect(i*px, j*py, px, py);
 					}
@@ -397,10 +430,10 @@ function render() {
 	}
 	for (let i = 0; i <= width; i++) {
 		let x = i + player.pos.x - Math.floor(width/2);
-		if (x < 0 || x > mapWidth - 1) continue;
+		if (x < 0 || x > dWidth - 1) continue;
 		for (let j = 0; j <= height; j++) {
 			let y = j + player.pos.y - Math.floor(height/2);
-			if (y < 0 || y > mapHeight - 1) continue;
+			if (y < 0 || y > dHeight - 1) continue;
 			let tile = map[x][y].t;
 			if (BD[tile] && !Building.getByPos(x, y)) {
 				map[x][y] = {t: 0};
@@ -416,7 +449,7 @@ function render() {
 			if (tile == 5)
 				canvas.objs.antipointFourier.push({i: i*px, j: j*py, x, y});
 
-			if (tile == 7 && !Building.getByPos(x, y).upgrading)
+			if (tile == 8 && !Building.getByPos(x, y).upgrading)
 				canvas.objs.chargers.push({i: i*px, j: j*py, x, y});
 
 			tileStyle[tile](i*px, j*py, ctx, x, y);
@@ -487,26 +520,17 @@ function renderLayer2() {
 		let t = Math.floor(player.time.thisTick/50)*50;
 		ctx2.beginPath();
 		ctx2.moveTo(...antipointFourier(t, ci, cj, w));
-		ctx2.lineTo(...antipointFourier(t - 50, ci, cj, w));
-		ctx2.stroke();
-		ctx2.lineTo(...antipointFourier(t - 100, ci, cj, w));
-		ctx2.stroke();
-		ctx2.lineTo(...antipointFourier(t - 150, ci, cj, w));
-		ctx2.stroke();
-		ctx2.lineTo(...antipointFourier(t - 200, ci, cj, w));
-		ctx2.stroke();
-		ctx2.lineTo(...antipointFourier(t - 250, ci, cj, w));
-		ctx2.stroke();
-		ctx2.lineTo(...antipointFourier(t - 300, ci, cj, w));
-		ctx2.stroke();
-		ctx2.lineTo(...antipointFourier(t - 350, ci, cj, w));
-		ctx2.stroke();
+		for (let i = 1; i < 8; i++) {
+			ctx2.lineTo(...antipointFourier(t - 50*i, ci, cj, w));
+			ctx2.stroke();
+		}
 	}
 	for (let c of canvas.objs.chargers) {
 		let {i, j, x, y} = c;
 		b = Building.getByPos(x, y);
-		ctx2.fillStyle = `#aaeeff${('0' + b.meta.time.clamp(0, 1).mul(128).add(127).round().toNumber().toString(16)).slice(-2)}`;
-		ctx2.fillRect(i + px*0.3, j + py*0.1, px*0.4, py*0.8);
+		let t = b.meta.time.clamp(0, 1).toNumber();
+		ctx2.fillStyle = `#aaeeff${('0' + Math.round(t*128 + 127).toString(16)).slice(-2)}`;
+		ctx2.fillRect(i + px*0.3, j + py*0.1 + py*(1 - t)*0.8, px*0.4, py*t*0.8);
 		if (b.meta.time.lte(0.1)) {
 			ctx2.fillStyle = `#ffff66${('0' + Decimal.sub(0.1, b.meta.time).mul(2550).round().toNumber().toString(16)).slice(-2)}`;
 			ctx2.fillRect(i, j, px, py);
@@ -520,6 +544,28 @@ function renderLayer2() {
 			if (y < mapHeight - 1)
 				ctx2.fillRect(i, j + py, px, py);
 		}
+	}
+	if (canvas.objs.obelisk.i + 1) {
+		let {i, j} = canvas.objs.obelisk;
+		let w = Math.min(px, py),
+			cMag = w*0.2,
+			aMag = w*0.35;
+		let a = player.obelisk.activeTime.div(tmp.obelisk.activeTime)*Math.PI*2,
+			c = player.obelisk.cooldownTime.div(tmp.obelisk.cooldownTime)*Math.PI*2;
+		ctx2.strokeStyle = "#fff";
+		ctx2.lineWidth = 2;
+		ctx2.shadowBlur = 0;
+		ctx2.lineCap = "round";
+
+		ctx2.beginPath();
+		ctx2.moveTo(i + px/2, j + py/2);
+		ctx2.lineTo(i + px/2 + Math.sin(c)*cMag, j + py/2 - Math.cos(c)*cMag);
+		ctx2.stroke();
+		ctx2.strokeStyle = "#d0f";
+		ctx2.beginPath();
+		ctx2.moveTo(i + px/2, j + py/2);
+		ctx2.lineTo(i + px/2 + Math.sin(a)*aMag, j + py/2 - Math.cos(a)*aMag);
+		ctx2.stroke();
 	}
 
 	if (player.options.showTilePopups) {
@@ -552,7 +598,7 @@ function renderLayer2() {
 		tooltipText(ctx2, pos[0] + px/2, pos[1], "Press Space to build", "top")
 	}
 	if (player.obelisk.repairing) {
-		ctx2.fillStyle = "#000000" + ("0" + Math.floor(Math.pow(player.obelisk.time.toNumber(), 2)*4).toString(16)).slice(-2);
+		ctx2.fillStyle = "#000000" + trail(Math.floor(Math.pow(player.obelisk.time.toNumber(), 2)*7), 2, 16);
 		ctx2.fillRect(0, 0, c2.width, c2.height);
 	}
 }
@@ -567,7 +613,7 @@ function renderAll() {
 function updateBuildingTooltip(event) {
 	let [x, y] = getMapByCanvas(event.offsetX, event.offsetY);
 	canvas.objs.buildingTooltip = [];
-	if (x < 0 || x > mapWidth || y < 0 || y > mapHeight) return;
+	if (x < 0 || x > displayWidth() - 1 || y < 0 || y > displayHeight() - 1) return;
 
 	let tile = map[x][y].t;
 	if (!BD[tile] && tile != 1) return;

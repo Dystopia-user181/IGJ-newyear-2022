@@ -18,8 +18,11 @@ function getStartPlayer() {
 		},
 		time: {
 			timeStat: 0,
-			lastTick: Date.now(),
-			lastSave: 0
+			thisTick: Date.now(),
+			lastSave: 0,
+			offline: 0,
+			drainOffline: false,
+			velocity: 1
 		},
 		timewall: {
 			one: {
@@ -41,20 +44,31 @@ function getStartPlayer() {
 			cooldownTime: D(200),
 			upgs: {
 				power: 0,
-				active: 0,
-				cooldown: 0
+				timepercent: 0
 			}
 		},
 		currency: {
 			money: new Decimal(10),
 			essence: new Decimal(0),
 			iridite: new Decimal(0),
+			science: new Decimal(0),
 			orbs: new Decimal(0)
+		},
+		alchemy: {
+			inventory: newObjGrid(4, 8, () => { return {
+				type: "coal",
+				amt: D(0)
+			}}),
+			holding: {
+				type: "coal",
+				amt: D(0)
+			}
 		},
 		base: {
 			newBuildings: 0,
 			lowerMineCost: 0,
-			enhanceCollectors: 0
+			enhanceCollectors: 0,
+			alchemy: 0
 		},
 		anti: {
 			money: D(0),
@@ -62,6 +76,12 @@ function getStartPlayer() {
 			time: D(0),
 			constTime: 0,
 			drain: "none"
+		},
+		auto: {
+			obelisk: {
+				unl: false,
+				on: false
+			}
 		},
 		iridite: {
 			newBuildings: 0,
@@ -86,23 +106,42 @@ function getStartPlayer() {
 				auto1: D(0),
 				core: D(0)
 			},
-			researching: "",
-			orbEffects: {
-				money: D(0),
-				essence: D(0),
-				iridite: D(0),
-				time: D(0),
-				energy: D(0)
-			}
+			researching: ""
 		},
 		builders: 0,
 		buildings: [],
-		version: "0.3"
+		version: "0.1",
+		saveKey
 	};
 }
-let saveKey = "IGJnewyear-IGJ2022-Scarlet";
+function newGrid(x, y, init) {
+	let grid = [];
+	for (let i = 0; i < x; i++) {
+		grid.push([]);
+		for (let j = 0; j < y; j++) {
+			grid[i][j] = init(x, y);
+		}
+	}
+	return grid;
+}
+function newObjGrid(x, y, init) {
+	let grid = {};
+	for (let i = 0; i < x; i++) {
+		grid[i] = {};
+		for (let j = 0; j < y; j++) {
+			grid[i][j] = init(x, y);
+		}
+	}
+	return grid;
+}
+
+let saveKey = "IGJnewyear-IGJ2022-Scarlet-postjam";
 let player;
 let struct = {
+	inventory: {
+		type: String,
+		amt: Decimal
+	},
 	buildings: {
 		level: Number,
 		pos: {x: Number, y: Number},
@@ -113,7 +152,9 @@ let struct = {
 			timespeed: Decimal,
 			time: Decimal,
 			building: Number,
-			paused: Boolean
+			paused: Boolean,
+			depth: Number,
+			inventory: Array
 		},
 		time: Decimal,
 		upgrading: Boolean
@@ -148,6 +189,11 @@ function deepSaveParse(data, initData) {
 			Object.setPrototypeOf(data[i], initProp.constructor.prototype);
 	}
 }
+function fixBuildings() {
+	for (let b of player.buildings) {
+		deepSaveParse(b.meta, BD[b.t].startMeta(b.pos.x, b.pos.y));
+	}
+}
 
 function deepDecimalise(data) {
 	for (let i in data) {
@@ -156,6 +202,7 @@ function deepDecimalise(data) {
 		if (prop.constructor == Object) {
 			deepDecimalise(prop);
 		} else if (Array.isArray(prop)) {
+			if (i == "buildings") continue;
 			decimaliseArray(prop, struct[i]);
 		}
 	}
@@ -193,25 +240,24 @@ function decimaliseProperties(data, struct) {
 
 function fixOldSave(version) {
 	console.log(version);
-	if (version == "0.2") {
-		player.anti.money = player.anti.money.max(0);
-		player.anti.essence = player.anti.essence.max(0);
-	}
-	if (version == "0.1") {
-		player.obelisk.upgs.active = Math.min(player.obelisk.upgs.active, 30);
-		player.obelisk.upgs.cooldown = Math.min(player.obelisk.upgs.cooldown, 30);
-		player.obelisk.upgs.power = Math.min(player.obelisk.upgs.power, 30);
-		for (let i of buildingList(6)) {
-			i.meta = BD[6].startMeta(i.pos.x, i.pos.y);
-		}
-	}
-	if (version == undefined) {
-		for (let i = 49; i < 96; i++) {
-			if (map[48][i].t == 5)
-				map[48][i] = {t: 0};
-
-			if (map[i][48].t == 5)
-				map[i][48] = {t: 0};
+	if (version == "0.0") {
+		if (Research.has("doublerII")) {
+			setTimeout(() => {
+				Modal.show({
+					title: "Oops",
+					text: `Unfortunately, because the dev (irreversibly) broke everything after the
+					first "double time speed" research in the previous update,
+					your save needs to be reset. Sorry!<br><br>Contact the discord to retrieve a non-broken save, or
+					visit <a href="https://github.com/Dystopia-user181/Project-Iridium-Save-Bank/" target="newtab">this link</a>.`,
+					close() {
+						reset();
+					}
+				})
+			}, 20);
+			save = function() {
+				reset();
+			}
+			player.options.autosave = false;
 		}
 	}
 }

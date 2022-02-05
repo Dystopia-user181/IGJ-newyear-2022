@@ -10,11 +10,22 @@ Updater.updates = [];
 
 const drainConst = D(1/0.997);
 function gameLoop(d) {
+	player.time.thisTick = Date.now();
 	if (paused) return;
 	d = Math.min(d, (player.obelisk.repairing || player.timewall.two.destroying) ? 0.1 : 10);
 	player.time.timeStat += d;
-	player.time.thisTick = Date.now();
 	let trueDiff = d;
+
+	if (player.time.drainOffline && player.time.offline > 0) {
+		player.time.velocity = Math.min(player.time.velocity + 0.025, 8);
+		player.time.offline -= player.time.velocity*2.5*d;
+		if (player.time.offline < 0) {
+			player.time.offline = 0;
+			player.time.drainOffline = false;
+		}
+	} else {
+		player.time.velocity = Math.max(player.time.velocity - 0.025, 1);
+	}
 
 	tmp.hasAnti = buildingAmt(5) > 0;
 	tmp.anti.drainMoney = tmp.hasAnti && player.anti.drain == "money";
@@ -47,7 +58,7 @@ function gameLoop(d) {
 			i.time = D(0);
 			i.t = i.meta.building;
 			mfb(i).t = i.meta.building;
-			buildingListList.get(i.meta.building).push(i);
+			buildingListList.get(i.meta.building)?.push(i);
 			buildingListList.delete(1);
 			i.meta = BUILDINGS[i.meta.building].startMeta(i.pos.x, i.pos.y);
 			if (Modal.data.bind == "constructing-menu")
@@ -73,11 +84,11 @@ function gameLoop(d) {
 		if (player.timewall.one.time.gte(80)) {
 			player.timewall.one.destroyed = true;
 			player.timewall.one.destroying = false;
-			for (let i = 0; i < 49; i++) {
-				map[48][i].data.forceWalkable = true;
-				map[i][48].data.forceWalkable = true;
+			for (let i = 0; i < 9; i++) {
+				map[8][i].data.forceWalkable = true;
+				map[i][8].data.forceWalkable = true;
 			}
-			if (Modal.data.bind = "wall1-menu") {
+			if (Modal.data.bind == "wall1-menu") {
 				Modal.close();
 			}
 			canvas.need0update = true;
@@ -89,11 +100,11 @@ function gameLoop(d) {
 		if (player.timewall.two.time.gte(2592000)) {
 			player.timewall.two.destroyed = true;
 			player.timewall.two.destroying = false;
-			for (let i = 0; i < 65; i++) {
-				map[64][i].data.forceWalkable = true;
-				map[i][64].data.forceWalkable = true;
+			for (let i = 0; i < 17; i++) {
+				map[16][i].data.forceWalkable = true;
+				map[i][16].data.forceWalkable = true;
 			}
-			if (Modal.data.bind = "wall2-menu") {
+			if (Modal.data.bind == "wall2-menu") {
 				Modal.close();
 			}
 			canvas.need0update = true;
@@ -109,22 +120,27 @@ function gameLoop(d) {
 		}
 	}
 	if (player.obelisk.repaired) {
-		tmp.obelisk.activeTime = getActiveTime();
-		tmp.obelisk.cooldownTime = getCooldownTime();
-		tmp.obelisk.effect = getObeliskEffect();
+		tmp.obelisk.activeTime = Obelisk.activeTime;
+		tmp.obelisk.cooldownTime = Obelisk.cooldownTime;
+		tmp.obelisk.effect = Obelisk.power;
 		if (!player.obelisk.activeTime.gt(0)) {
 			player.obelisk.cooldownTime = player.obelisk.cooldownTime.add(trueDiff).min(tmp.obelisk.cooldownTime);
+			if (player.auto.obelisk.on && player.obelisk.cooldownTime.gte(tmp.obelisk.cooldownTime)) {
+				Obelisk.activate();
+			}
 		} else {
 			player.obelisk.activeTime = player.obelisk.activeTime.add(trueDiff);
 			if (player.obelisk.activeTime.gte(tmp.obelisk.activeTime)) {
 				player.obelisk.activeTime = D(0);
 				player.obelisk.cooldownTime = D(0);
+				canvas.need0update = true;
 			}
 		}
 	}
 	let prevMoney = Currency.money.amt;
 	let prevEssence = Currency.essence.amt;
 	let prevIridite = player.iridite.researching ? player.iridite.researches[player.iridite.researching] : Currency.iridite.amt;
+	let prevScience = Currency.science.amt;
 	let prodMoney = D(0), prodEssence = D(0), prodIridite = D(0);
 	for (let i of buildingList(2)) {
 		if (!i.upgrading)
@@ -165,9 +181,15 @@ function gameLoop(d) {
 		}
 	}
 	for (let i of buildingList(7)) {
+		if (!i.upgrading) {
+			let prod = BD[7].getProduction(i.pos.x, i.pos.y);
+			Currency.science.add(prod.mul(trueDiff));
+		}
+	}
+	for (let i of buildingList(8)) {
 		if (!(i.upgrading || i.meta.paused)) {
 			let b6List = [];
-			i.meta.time = i.meta.time.add(BD[7].getProduction(i.pos.x, i.pos.y).mul(trueDiff));
+			i.meta.time = i.meta.time.add(BD[8].getProduction(i.pos.x, i.pos.y).mul(trueDiff));
 			if (i.meta.time.gte(1)) {
 				for (let j = 0; j < 4; j++) {
 					let pos = getXYfromDir(j, [i.pos.x, i.pos.y]);
@@ -179,9 +201,10 @@ function gameLoop(d) {
 				}
 				for (let j = 0; j < 4; j++) {
 					let pos = getXYfromDir(j, [i.pos.x, i.pos.y]);
-					if (map[pos[0]][pos[1]].t != 8) continue;
+					if (map[pos[0]][pos[1]].t != 9) continue;
 					let b = Building.getByPos(...pos);
 					if (!b.upgrading) {
+						if (!b.meta.charge) b.meta.charge = D(0);
 						if (b.meta.charge.lt(1))
 							canvas.need0update = true;
 						b.meta.charge = b.meta.charge.add(i.meta.time.floor().mul(0.2)).min(Research.has("orb1") ? 5 : 1);
@@ -203,9 +226,9 @@ function gameLoop(d) {
 				}
 				for (let ir of b6List) {
 					if (i.meta.charging)
-						ir.meta.timespeed = ir.meta.timespeed.pow(2).add(BD[7].getEffect2(i.pos.x, i.pos.y).mul(i.level > 1 ? d.mul(2e-7) : 1).div(b6List.length).mul(i.meta.time.floor())).pow(0.5).min(250);
+						ir.meta.timespeed = ir.meta.timespeed.pow(2).add(BD[8].getEffect2(i.pos.x, i.pos.y).mul(i.level > 1 ? d.mul(2e-7) : 1).div(b6List.length).mul(i.meta.time.floor())).pow(0.5).min(250);
 					else
-						ir.meta.charge = ir.meta.charge.add(BD[7].getEffect(i.pos.x, i.pos.y).div(b6List.length).mul(i.meta.time.floor()));
+						ir.meta.charge = ir.meta.charge.add(BD[8].getEffect(i.pos.x, i.pos.y).div(b6List.length).mul(i.meta.time.floor()));
 				}
 				i.meta.time = i.meta.time.sub(i.meta.time.floor());
 			}
@@ -266,6 +289,7 @@ function gameLoop(d) {
 	tmp.moneyGain = Currency.money.amt.sub(prevMoney).div(player.options.gameTimeProd ? d : trueDiff);
 	tmp.essenceGain = Currency.essence.amt.sub(prevEssence).div(player.options.gameTimeProd ? d : trueDiff);
 	tmp.iriditeGain = (player.iridite.researching ? player.iridite.researches[player.iridite.researching] : Currency.iridite.amt).sub(prevIridite).div(player.options.gameTimeProd ? d : trueDiff);
+	tmp.scienceGain = Currency.science.amt.sub(prevScience).div(trueDiff);
 
 	for (let i in Updater.updates) {
 		let obj = Updater.updates[i];
@@ -290,6 +314,8 @@ let tmp = {
 	hasAnti: false,
 	moneyGain: D(0),
 	essenceGain: D(0),
+	iriditeGain: D(0),
+	scienceGain: D(0),
 	obelisk: {
 		activeTime: D(0),
 		cooldownTime: D(0),
@@ -321,11 +347,14 @@ function timerate() {
 	base = base.mul(RS.doublerII.effect).mul(RS.doublerIII.effect);
 
 	base = base.mul(tmp.iridite.timespeed);
-	base = base.mul(Orbs.timeEffect());
 
 	if (player.timewall.two.destroying) {
 		base = base.sub(player.timewall.two.time.mul(0.15)).max(0);
 	}
+	if (player.time.drainOffline && player.time.offline > 0) base = base.mul(player.time.velocity);
 	if (tmp.anti.drainTime) base = base.mul(-10);
 	return base;
+}
+function scaleTimeDisp(x) {
+	return x.mul(player.options.gameTimeProd ? 1 : timerate());
 }

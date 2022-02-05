@@ -31,9 +31,12 @@ class CurrencyState {
 
 	add(x) {
 		this.amt = this.amt.add(x);
+		return this.amt;
 	}
 	use(x) {
+		if (this.amt.lt(x)) return false;
 		this.amt = this.amt.sub(x);
+		return this.amt;
 	}
 }
 function addCurrencyState(id, data) {
@@ -56,6 +59,10 @@ addCurrencyState("essence", {
 addCurrencyState("iridite", {
 	colour: "#5fb",
 	display: "Ø"
+})
+addCurrencyState("science", {
+	colour: "#aef",
+	display: "Ϙ"
 })
 addCurrencyState("orbs", {
 	colour: "#fd8",

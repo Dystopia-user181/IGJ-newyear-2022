@@ -129,16 +129,16 @@ function loadVue() {
 			buildingAmt
 		},
 		template: `<div style="padding: 10px" class="centre col">
-			<button onclick="openMenu(3, 3)" class="quickaccess">
+			<button onclick="openMenu(2, 2)" class="quickaccess">
 				Construction
 			</button>
-			<button onclick="openMenu(20, 20)" v-if="player.unlocks.base" class="quickaccess">
+			<button onclick="openMenu(3, 3)" v-if="player.unlocks.base" class="quickaccess">
 				Base
 			</button>
-			<button onclick="openMenu(49, 49)" v-if="player.builders > 0" class="quickaccess">
-				Builders
+			<button onclick="openMenu(9, 9)" v-if="player.builders > 0" class="quickaccess">
+				Queue Expansion
 			</button>
-			<button onclick="openMenu(51, 51)" v-if="player.obelisk.repaired" class="quickaccess">
+			<button onclick="openMenu(10, 10)" v-if="player.obelisk.repaired" class="quickaccess">
 				Obelisk
 			</button>
 			<button onclick="Modal.show({
@@ -154,15 +154,8 @@ function loadVue() {
 			})" v-if="buildingAmt(5) > 0" class="quickaccess">
 				Antipoint
 			</button>
-			<button onclick="openMenu(65, 65)" v-if="player.unlocks.iridite" class="quickaccess">
+			<button onclick="openMenu(20, 20)" v-if="player.unlocks.iridite" class="quickaccess">
 				Project Iridium
-			</button>
-			<button onclick="Modal.show({
-				title: 'Orb Specializer',
-				bind: 'specializer-menu',
-				style: {width: '750px', height: '500px'}
-			})" v-if="player.unlocks.specializer" class="quickaccess">
-				Orb Specializer
 			</button>
 		</div>`
 	})

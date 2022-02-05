@@ -20,10 +20,10 @@ function formatWhole(num) {
 	return num.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-function trail(num, digits) {
+function trail(num, digits, base) {
 	num = Number(num);
-	let s = Math.sign(num);
-	return (s == -1 ? "-" : "") + ('00000000000000000000000000000000000' + Math.round(Math.abs(num))).slice(-digits);
+	let neg = Math.sign(num) == -1;
+	return (neg ? "-" : "") + (('0').repeat(digits) + Math.trunc(Math.abs(num)).toString(base)).slice(-digits);
 }
 function formatTime(num) {
 	num = D(num);
@@ -34,8 +34,8 @@ function formatTime(num) {
 	let d = Math.trunc(num/86400), h = Math.trunc(num/3600)%24, m = Math.trunc(num/60)%60, s = num%60;
 	let timeString = "";
 	if (d) timeString += `${d}d `;
-	if (d || h) timeString += `${d ? trail(h, 2) : h}h `;
-	if (d || h || m) timeString += `${(h || d) ? trail(m, 2) : m}m `;
-	timeString += `${num.gte(10) ? ((h || d || m) ? trail(s, 2) : Math.trunc(s)) : format(s, 2)}s`;
+	if (d || h) timeString += `${trail(h, 2)}:`;
+	if (d || h || m) timeString += `${trail(m, 2)}:`;
+	timeString += `${num.gte(10) ? ((h || d || m) ? trail(s, 2) : Math.trunc(s)) : format(s, 2)}${num < 60 ? "s" : ""}`;
 	return timeString;
 }

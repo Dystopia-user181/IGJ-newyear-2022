@@ -107,7 +107,7 @@ let controls = {
 	arrowright: false,
 	pressE() {
 		if (!Modal.showing)
-			openMenu(3, 3);
+			openMenu(2, 2);
 		else if (!paused)
 			Modal.closeFunc();
 	},
@@ -128,14 +128,8 @@ let controls = {
 	},
 	pressO() {
 		if (!Modal.showing)
-			if (player.unlocks.specializer)
-				Modal.show({
-					title: 'Orb Specializer',
-					bind: 'specializer-menu',
-					style: {width: '750px', height: '500px'}
-				})
-			else if (player.obelisk.repaired)
-				openMenu(51, 51);
+			if (player.obelisk.repaired)
+				openMenu(10, 10);
 	},
 	pressQ() {
 		Modal.show({
