@@ -77,10 +77,6 @@ const Items = {
 			}
 		}
 		return false;
-	}
-	clickToInventory() {
-		Items.insertToInventory(this.slot.type, this.slot.amt.floor());
-		this.slot.amt = this.slot.amt.sub(this.slot.amt.floor());
 	},
 	load() {
 		Items.loadVue();

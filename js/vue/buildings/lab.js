@@ -13,7 +13,7 @@ LAB.menuData = {
 				BD,
 				Research,
 				tmp,
-				tab: "a",
+				tab: player.base.alchemy ? "b" : "a",
 				mouseX: 0,
 				mouseY: 0
 			}},
@@ -35,7 +35,12 @@ LAB.menuData = {
 				}
 			},
 			props: ["data"],
-			template: `<div style="padding: 10px; padding-top: 0px; height: calc(100% - 20px); position: relative;" ref="tab" @click="handleAlchemyHeld" @mousemove="handleAlchemyHeld">
+			template: `<div
+				style="padding: 10px; padding-top: 0px; height: calc(100% - 20px); position: relative; overflow-x: hidden;"
+				ref="tab"
+				@click="handleAlchemyHeld"
+				@mousemove="handleAlchemyHeld"
+			>
 				<div v-if="!b.upgrading" style="margin-top: -5px;">
 					<div class="centre" v-if="player.base.alchemy" style="margin-top: 5px;">
 						<button :disabled="tab == 'a'" @click="tab = 'a'" class="subtab-button">Main Production</button>

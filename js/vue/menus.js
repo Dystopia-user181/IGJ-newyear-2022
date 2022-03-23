@@ -1,6 +1,6 @@
 function loadMenus() {
-	for (let i in MENU_DATA) {
-		MENU_DATA[i].load();
+	for (const i of Object.values(MENU_DATA)) {
+		i.load();
 	}
 }
 

@@ -15,10 +15,7 @@ function polysoft(v, s, m=0.5) {
 }
 
 function deepcopy(thing) {
-	return JSON.parse(JSON.stringify(thing));
-
-
-	val = new thing.constructor();
+	let val = new thing.constructor();
 	for (let i in thing) {
 		if (pureObjRef(thing[i]))
 			val[i] = deepcopy(thing[i]);
@@ -51,10 +48,10 @@ Array.prototype.mapToObject = function(keyFun, valueFun) {
   return out;
 }
 
-Object.prototype.map = function(valueFun) {
-	let out = {};
-  for (let idx in this) {
-    out[idx] = valueFun(this[idx], idx);
-  }
-  return out;
-}
+//Object.prototype.map = function(valueFun) {
+//	let out = {};
+//	for (let idx in this) {
+//		out[idx] = valueFun(this[idx], idx);
+//	}
+//	return out;
+//}

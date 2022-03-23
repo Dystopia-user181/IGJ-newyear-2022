@@ -834,10 +834,6 @@
       return this.toString();
     };
 
-    Decimal.prototype.toJSON = function () {
-      return this.toString();
-    };
-
     Decimal.prototype.toStringWithDecimalPlaces = function (places) {
       return this.toExponential(places);
     };
