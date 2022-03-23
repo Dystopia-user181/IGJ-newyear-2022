@@ -1,6 +1,13 @@
 let app;
 
 function loadVue() {
+	Vue.mixin({
+		methods: {
+			format,
+			formatWhole,
+			formatTime
+		}
+	})
 	Notifier.load();
 	Modal.load();
 	loadCurrency();
@@ -9,8 +16,6 @@ function loadVue() {
 	Vue.component('top-text', {
 		data: () => { return {
 			player,
-			format,
-			formatWhole,
 			Decimal,
 			Modal,
 			tmp,
@@ -182,9 +187,6 @@ function loadVue() {
 
 	Vue.component('bar', {
 		props: ["time", "max"],
-		methods: {
-			formatTime
-		},
 		template: `
 		<div style="width: 200px; height: 25px; border: 2px solid; position: relative; display: inline-block">
 			<div style="width: 200px; height: 25px;" class="centre">
@@ -216,8 +218,6 @@ function loadVue() {
 		el: "#app",
 		data: {
 			player,
-			format,
-			formatWhole,
 			Decimal,
 			Notifier,
 			Modal,

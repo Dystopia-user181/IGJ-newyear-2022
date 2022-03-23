@@ -135,7 +135,7 @@ function newObjGrid(x, y, init) {
 	return grid;
 }
 
-let saveKey = "IGJnewyear-IGJ2022-Scarlet-postjam";
+const saveKey = "IGJnewyear-IGJ2022-Scarlet-postjam";
 let player;
 let struct = {
 	inventory: {
@@ -146,16 +146,6 @@ let struct = {
 		level: Number,
 		pos: {x: Number, y: Number},
 		t: Number,
-		meta: {
-			charge: Decimal,
-			charging: Boolean,
-			timespeed: Decimal,
-			time: Decimal,
-			building: Number,
-			paused: Boolean,
-			depth: Number,
-			inventory: Array
-		},
 		time: Decimal,
 		upgrading: Boolean
 	},
@@ -167,6 +157,7 @@ let struct = {
 		}
 	}
 }
+let structure = struct;
 
 function loadPlayer() {
 	player = getStartPlayer();
@@ -202,7 +193,6 @@ function deepDecimalise(data) {
 		if (prop.constructor == Object) {
 			deepDecimalise(prop);
 		} else if (Array.isArray(prop)) {
-			if (i == "buildings") continue;
 			decimaliseArray(prop, struct[i]);
 		}
 	}
@@ -227,6 +217,7 @@ function decimaliseArray(data, struct) {
 
 function decimaliseProperties(data, struct) {
 	for (let i in data) {
+		if (i == "meta" && struct == structure.buildings) continue;
 		if (struct[i].constructor == Object) {
 			decimaliseProperties(data[i], struct[i]);
 		} else if (struct[i] == Array) {

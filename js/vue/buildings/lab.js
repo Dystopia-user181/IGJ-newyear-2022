@@ -29,6 +29,9 @@ LAB.menuData = {
 			computed: {
 				b() {
 					return Building.getByPos(this.data.x, this.data.y);
+				},
+				furnace() {
+					return this.b.meta.smelting;
 				}
 			},
 			props: ["data"],
@@ -51,6 +54,8 @@ LAB.menuData = {
 					</div>
 					
 					<div v-else-if="tab == 'b'">
+						<furnace-ui :furnace="furnace"/>
+						<br>
 						<div class="centre">
 							<inventory-display style="width: 100%; flex-shrink: 1;" :inv="player.alchemy.inventory" :data="{}"/>
 						</div>

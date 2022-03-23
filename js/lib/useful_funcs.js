@@ -40,3 +40,21 @@ function deepcopyto(obj1, obj2) {
 function pureObjRef(x) {
 	return x && (x.constructor == Object || Array.isArray(x));
 }
+
+Array.prototype.mapToObject = function(keyFun, valueFun) {
+  if (typeof keyFun !== "function" || typeof valueFun !== "function")
+    throw "keyFun and valueFun must be functions";
+  let out = {}
+  for (let idx = 0; idx < this.length; ++idx) {
+    out[keyFun(this[idx], idx)] = valueFun(this[idx], idx);
+  }
+  return out;
+}
+
+Object.prototype.map = function(valueFun) {
+	let out = {};
+  for (let idx in this) {
+    out[idx] = valueFun(this[idx], idx);
+  }
+  return out;
+}

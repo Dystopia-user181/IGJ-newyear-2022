@@ -150,22 +150,29 @@ function gameLoop(d) {
 		if (!i.upgrading)
 			prodEssence = prodEssence.add(BD[3].getProduction(i.pos.x, i.pos.y))
 	}
-	for (let i of buildingList(6)) {
-		if (!i.upgrading) {
-			let prod = BD[6].getProduction(i.pos.x, i.pos.y);
-			if (i.meta.charging) {
-				i.meta.charge = i.meta.charge.add(prod[2].mul(RS.septuplerII.effect).mul(d));
-				if (i.meta.charge.lt(0)) {
-					i.meta.charge = D(0);
+	for (let b of buildingList(6)) {
+		for (let i in DEPTHS.slice(0, b.meta.depth + 1)) {
+			let d = DEPTHS[i];
+			if (Depth.canAccess(b, i))
+				for (let o in d.ores) {
+					Items.insertToInventory(o, d.ores[o].mul(trueDiff), b.meta.inventory);
+				}
+		}
+		if (!b.upgrading) {
+			let prod = BD[6].getProduction(b.pos.x, b.pos.y);
+			if (b.meta.charging) {
+				b.meta.charge = b.meta.charge.add(prod[2].mul(RS.septuplerII.effect).mul(d));
+				if (b.meta.charge.lt(0)) {
+					b.meta.charge = D(0);
 					player.anti.drain = "none";
 				}
 				if (Research.has("acv1")) {
-					let prevSpeed = i.meta.timespeed;
-					if (i.meta.timespeed.lt(9) || i.level > 0)
-						i.meta.timespeed = i.meta.timespeed.pow(RS.acv2.effect).add(d.mul(2e-7)).max(0).pow(1/RS.acv2.effect).min(i.level > 0 ? 250 : 10);
+					let prevSpeed = b.meta.timespeed;
+					if (b.meta.timespeed.lt(9) || b.level > 0)
+						b.meta.timespeed = b.meta.timespeed.pow(RS.acv2.effect).add(d.mul(2e-7)).max(0).pow(1/RS.acv2.effect).min(i.level > 0 ? 250 : 10);
 					else
-						i.meta.timespeed = i.meta.timespeed.pow(i.meta.timespeed.mul(RS.acv2.effect/9)).add(d.mul(2e-7)).max(0).pow(i.meta.timespeed.mul(RS.acv2.effect/9).recip()).min(100);
-					if (prevSpeed.gt(0) && i.meta.timespeed.lte(0))
+						b.meta.timespeed = b.meta.timespeed.pow(b.meta.timespeed.mul(RS.acv2.effect/9)).add(d.mul(2e-7)).max(0).pow(i.meta.timespeed.mul(RS.acv2.effect/9).recip()).min(100);
+					if (prevSpeed.gt(0) && b.meta.timespeed.lte(0))
 						player.anti.drain = "none";
 				}
 			} else {
@@ -173,10 +180,10 @@ function gameLoop(d) {
 				prodEssence = prodEssence.add(prod[1]);
 				prodIridite = prodIridite.add(prod[2]);
 				if (Research.has("acv1"))
-					if (i.meta.timespeed.gte(10))
-						i.meta.timespeed = i.meta.timespeed.pow(Decimal.pow(Research.has("acv2") ? 0.85 : 0.9, trueDiff)).max(0);
+					if (b.meta.timespeed.gte(10))
+						b.meta.timespeed = b.meta.timespeed.pow(Decimal.pow(Research.has("acv2") ? 0.85 : 0.9, trueDiff)).max(0);
 					else
-						i.meta.timespeed = i.meta.timespeed.sub(trueDiff*(0.4 + 0.2*Research.has("acv2"))).max(0);
+						b.meta.timespeed = b.meta.timespeed.sub(trueDiff*(0.4 + 0.2*Research.has("acv2"))).max(0);
 			}
 		}
 	}
@@ -184,6 +191,7 @@ function gameLoop(d) {
 		if (!i.upgrading) {
 			let prod = BD[7].getProduction(i.pos.x, i.pos.y);
 			Currency.science.add(prod.mul(trueDiff));
+			SmeltHandler.smelt(i.meta.smelting, trueDiff);
 		}
 	}
 	for (let i of buildingList(8)) {

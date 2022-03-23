@@ -121,6 +121,8 @@ let controls = {
 			Building.level(Modal.data.bindData.x, Modal.data.bindData.y);
 	},
 	pressI() {
+		if (controls.shift)
+			return;
 		if (Modal.showing && Modal.data.bindData.isBuilding && !(
 			Modal.data.bind == "goldmine-menu" && buildingAmt(2) < 2
 		))
@@ -185,7 +187,7 @@ function updateTileUsage() {
 	accessData.tiles = [];
 
 	let dirList = [0, 1, 2, 3];
-	for (let i in dirList) {
+	for (let i of dirList) {
 		let [x, y] = getXYfromDir(i);
 		if (x < 0 || x > mapWidth - 1 || y < 0 || y > mapHeight - 1) continue;
 		if (MENU_DATA[map[x][y].t] && !map[x][y].data?.forceWalkable) accessData.tiles.push(Number(i));

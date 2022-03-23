@@ -159,12 +159,12 @@ function exportSave() {
 			expdata = btoa(expdata);
 			let file = new Blob([expdata], {type: "text/plain"});
 			if (window.navigator.msSaveOrOpenBlob) // IE10+
-				window.navigator.msSaveOrOpenBlob(file, "Project_Iridium_Save_ScarletIGJ2022.txt");
+				window.navigator.msSaveOrOpenBlob(file, `Project Iridium Save (${new Date().toUTCString()}).txt`);
 			else { // Others
 				let a = document.createElement("a"),
 					url = URL.createObjectURL(file);
 				a.href = url;
-				a.download = `Project Iridium Save (${new Date().toDateString()}).txt`;
+				a.download = `Project Iridium Save (${new Date().toUTCString()}).txt`;
 				document.body.appendChild(a);
 				a.click();
 				setTimeout(function() {

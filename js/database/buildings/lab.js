@@ -16,7 +16,9 @@ const LAB = {
 		get canBuild() {
 			return player.base.newBuildings > 2;
 		},
-		startMeta(x, y) { return {}},
+		startMeta(x, y) { return {
+			smelting: SmeltHandler.getDefaultInventory()
+		}},
 		
 		getProduction(x, y) {
 			let b = Building.getByPos(x, y);

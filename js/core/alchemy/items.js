@@ -1,152 +1,89 @@
-const ITEMS = {
-	coal: {
-		displayName: "Coal",
-		texture: "images/alchemy/coal.png"
-	},
-	copperOre: {
-		displayName: "Copper Ore",
-		texture: "images/alchemy/copperore.png"
-	},
-	copperIngot: {
-		displayName: "Copper Ingot",
-		texture: "images/alchemy/copperingot.png"
-	},
-	tinOre: {
-		displayName: "Tin Ore",
-		texture: "images/alchemy/tinore.png"
-	},
-	tinIngot: {
-		displayName: "Tin Ingot",
-		texture: "images/alchemy/tiningot.png"
+class ItemState {
+	constructor(data) {
+		this._config = data;
+		this.texture = "images/alchemy/" + data.name + ".png";
+		this.canSmelt = false;
+		this.isFuel = false;
+		this.unstackable = Boolean(data.unstackable);
+	}
+
+	get displayName() {
+		return this._config.displayName instanceof Function ? this._config.displayName() : this._config.displayName;
+	}
+
+	addSmeltingRecipe(data) {
+		this.smeltingRecipe = new SmeltingRecipeState(data);
+		this.canSmelt = true;
+		return this.smeltingRecipe;
+	}
+
+	makeFuel(data) {
+		this.isFuel = true;
+		this.fuelData = new FuelState(data);
 	}
 }
+
 const Items = {
 	insertToInventory(type, x, inventory = player.alchemy.inventory) {
 		x = D(x);
 		if (x.lte(0)) return;
-		// Has same item
+
+		let p = Items.freeSpaceInInventory(type, inventory);
+		if (!p) return;
+		inventory[p[0]][p[1]].type = type;
+		inventory[p[0]][p[1]].amt = inventory[p[0]][p[1]].amt.add(x);
+	},
+	freeSpaceInInventory(type, inventory = player.alchemy.inventory) {
+		let standby = false;
+		let unstackable = Item(type).unstackable;
+		for (let row in inventory) {
+			for (let col in inventory[row]) {
+				cell = inventory[row][col];
+				// Has same item
+				if (cell.type == type && cell.amt.gt(0) && !unstackable) {
+					return [row, col];
+				}
+				// Doesn't have same item
+				if (cell.amt.lte(0)) {
+					standby = standby || [row, col];
+					if (standby && unstackable)
+						return standby;
+				}
+			}
+		}
+		return standby;
+	},
+	spendFromInventory(type, x, inventory = player.alchemy.inventory, rowsCols) {
+		x = D(x);
+		if (rowsCols == undefined) rowsCols = Items.hasInInventory(type, x, inventory);
+
+		for (let spendData of rowsCols) {
+			inventory[spendData.row][spendData.col] = inventory[spendData.row][spendData.col].sub(spendData.amt);
+		}
+	}, 
+	hasInInventory(type, x, inventory = player.alchemy.inventory) {
+		x = D(x);
+		if (x.lte(0)) return true;
+		let rowsCols = [];
+
 		for (let row in inventory) {
 			for (let col in inventory[row]) {
 				cell = inventory[row][col];
 				if (cell.type == type && cell.amt.gt(0)) {
-					cell.amt = cell.amt.add(x);
-					return;
+					rowsCols.push({row, col, amt: x.min(cell.amt)});
+					x = x.sub(cell.amt);
+					if (x.lte(0)) return rowsCols;
 				}
 			}
 		}
-		// Doesn't have any of the same item
-		for (let row in inventory) {
-			for (let col in inventory[row]) {
-				cell = inventory[row][col];
-				if (cell.amt.lte(0)) {
-					cell.amt = x;
-					cell.type = type;
-					return;
-				}
-			}
-		}
-	},
+		return false;
+	}
 	clickToInventory() {
 		Items.insertToInventory(this.slot.type, this.slot.amt.floor());
 		this.slot.amt = this.slot.amt.sub(this.slot.amt.floor());
 	},
 	load() {
-		Vue.component("inventory-display", {
-			props: ["inv", "data"],
-			template: `
-			<div class="col centre" style="display: inline-block;">
-				<div class="centre" v-for="row in inv">
-					<item-slot v-for="cell in row" :invSlot="cell" :data="data"/>
-				</div>
-			</div>`
-		})
-		Vue.component("item-slot", {
-			props: ["data", "invSlot"],
-			data() { return {
-				ITEMS
-			}},
-			methods: {
-				formatWhole,
-				clickHandler() {
-					if (this.data.readOnly) return;
-					if (this.data.clickHandler) {
-						this.data.clickHandler.bind(this)(); return
-					}
-					let hold = player.alchemy.holding;
-					if (hold.amt.gt(0))
-						if (hold.type == this.slot.type)
-							this.allToSlot();
-						else
-							this.switchWithSlot();
-					else
-						this.allToHand();
-				},
-				rClickHandler(e) {
-					e.preventDefault();
-					if (this.data.readOnly) return;
-					if (this.data.rClickHandler) {
-						this.data.rClickHandler.bind(this)(); return
-					}
-					let hold = player.alchemy.holding;
-					if (hold.amt.gt(0))
-						if (hold.type == this.slot.type)
-							this.oneToSlot();
-						else
-							this.switchWithSlot();
-					else
-						this.halfToHand();
-				},
-				allToSlot() {
-					let hold = player.alchemy.holding;
-					this.slot.amt = this.slot.amt.add(hold.amt);
-					hold.amt = D(0);
-				},
-				allToHand() {
-					let hold = player.alchemy.holding;
-					({type: hold.type, amt: hold.amt} = this.slot);
-					this.slot.amt = D(0);
-				},
-				halfToHand() {
-					let hold = player.alchemy.holding;
-					hold.type = this.slot.type;
-					hold.amt = this.slot.amt.div(2).ceil();
-					this.slot.amt = this.slot.amt.div(2).floor();
-				},
-				oneToSlot() {
-					let hold = player.alchemy.holding;
-					this.slot.amt = this.slot.amt.add(1);
-					hold.amt = hold.amt.sub(1);
-				},
-				switchWithSlot() {
-					let hold = player.alchemy.holding;
-					[this.slot.type, this.slot.amt, hold.type, hold.amt] =
-					[hold.type, hold.amt, this.slot.type, this.slot.amt]
-				}
-			},
-			computed: {
-				slot() {return this.invSlot;}
-			},
-			template: `<div class="inventory-slot centre" @click="clickHandler" @contextmenu="rClickHandler">
-				<item-display :type="slot.type" :amt="slot.amt"></item-display>
-				<div class="inventory-tooltip" v-if="slot.amt.floor().gt(0)">
-					{{ITEMS[slot.type].displayName}} x{{formatWhole(slot.amt.floor())}}
-				</div>
-			</div>`
-		});
-		Vue.component("item-display", {
-			props: ["type", "amt"],
-			data() { return {
-				ITEMS
-			}},
-			methods: {
-				formatWhole
-			},
-			template: `<div style="width: 35px; height: 35px; position: relative;" v-if="amt.floor().gt(0)">
-				<img :src="ITEMS[type].texture" width="35" height="35"/>
-				<span style="bottom: -10px; right: -10px; position: absolute; font-size: 14px;">
-					{{formatWhole(amt.floor())}}
-				</span>
-			</div>`
-		});
+		Items.loadVue();
+		SmeltHandler.load();
 	}
 }

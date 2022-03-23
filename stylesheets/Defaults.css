@@ -135,8 +135,8 @@ select {
 	background-color: #85400088;
 	border: 2px solid #0000;
 	height: 40px;
-	width: 80%;
 	margin: 2px;
+	margin-right: 12px;
 }
 .depth-segment:hover, .depth-segment.chosen {
 	background-color: #854000;
@@ -166,13 +166,12 @@ select {
 .inventory-tooltip { 
 	pointer-events: none;
 	text-align: center;
-	width: 75px;
+	min-width: 75px;
 	font-size: 16px;
 	line-height: 1.2;
-	bottom: 100%;
-	left: 50%;
+	white-space: nowrap;
+	transition: 0s;
 	margin-bottom: 5px;
-	transform: translateX(-50%);
 	padding: 7px;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;

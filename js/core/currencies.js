@@ -16,7 +16,7 @@ class CurrencyState {
 					format,
 					formatWhole
 				},
-				template: `<span><span class="${id}">${data.display}</span> {{(whole ? formatWhole : format)(amt || Currency.${id}.amt)}}</span>`
+				template: `<span><span class="${id}">${this.display}</span> {{(whole ? formatWhole : format)(amt || Currency.${id}.amt)}}</span>`
 			})
 			Currency.style += `.${id} {color: var(--${id}-colour)}  `;
 		}.bind(this))

@@ -77,7 +77,7 @@ const IRIDITEDRILL = {
 				if (Depth.canAccess(b, i))
 					idepthMult = idepthMult.add(DEPTHS[i].iridite);
 			}
-			return [mbase.mul(5e9), ebase.mul(1e7), ibase.mul(1e-6)];
+			return [mbase.mul(5e9), ebase.mul(1e7), ibase.mul(idepthMult)];
 		},
 		produceOres(b, d) {},
 		timespeed(x, y) {
